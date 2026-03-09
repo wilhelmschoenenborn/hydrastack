@@ -165,36 +165,70 @@ app.MapPost("/api/orders", async (HttpContext ctx) =>
     }
 });
 
-// GET /api/orders
+// GET /api/orders — includes items for each order
 app.MapGet("/api/orders", async () =>
 {
-    var orders = new List<object>();
+    var orders = new List<Dictionary<string, object>>();
     using var conn = new SqliteConnection(connStr);
     await conn.OpenAsync();
 
-    using var cmd = conn.CreateCommand();
-    cmd.CommandText = @"
-        SELECT o.OrderNumber, o.OrderTotal, o.Status, o.CreatedAt,
-               c.FirstName, c.LastName, c.Email, c.City, c.State
-        FROM Orders o
-        JOIN Customers c ON o.CustomerID = c.CustomerID
-        ORDER BY o.CreatedAt DESC";
-
-    using var reader = await cmd.ExecuteReaderAsync();
-    while (await reader.ReadAsync())
+    // Get all orders with customer info
+    using (var cmd = conn.CreateCommand())
     {
-        orders.Add(new
+        cmd.CommandText = @"
+            SELECT o.OrderID, o.OrderNumber, o.OrderTotal, o.Status, o.CreatedAt,
+                   c.FirstName, c.LastName, c.Email, c.Address, c.City, c.State, c.ZipCode
+            FROM Orders o
+            JOIN Customers c ON o.CustomerID = c.CustomerID
+            ORDER BY o.CreatedAt DESC";
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
         {
-            OrderNumber = reader.GetString(0),
-            OrderTotal = reader.GetDouble(1),
-            Status = reader.GetString(2),
-            CreatedAt = reader.GetString(3),
-            FirstName = reader.GetString(4),
-            LastName = reader.GetString(5),
-            Email = reader.GetString(6),
-            City = reader.GetString(7),
-            State = reader.GetString(8),
-        });
+            orders.Add(new Dictionary<string, object>
+            {
+                ["orderId"] = reader.GetInt64(0),
+                ["orderNumber"] = reader.GetString(1),
+                ["orderTotal"] = reader.GetDouble(2),
+                ["status"] = reader.GetString(3),
+                ["createdAt"] = reader.GetString(4),
+                ["firstName"] = reader.GetString(5),
+                ["lastName"] = reader.GetString(6),
+                ["email"] = reader.GetString(7),
+                ["address"] = reader.GetString(8),
+                ["city"] = reader.GetString(9),
+                ["state"] = reader.GetString(10),
+                ["zip"] = reader.GetString(11),
+                ["items"] = new List<object>(),
+            });
+        }
+    }
+
+    // Get items for each order
+    foreach (var order in orders)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+            SELECT ProductName, LidType, BaseType, LidColor, MidColor, BaseColor, Quantity, Price
+            FROM OrderItems WHERE OrderID = $oid";
+        cmd.Parameters.AddWithValue("$oid", order["orderId"]);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+        var items = (List<object>)order["items"];
+        while (await reader.ReadAsync())
+        {
+            items.Add(new
+            {
+                product = reader.GetString(0),
+                lidType = reader.GetString(1),
+                baseType = reader.GetString(2),
+                lidColor = reader.GetString(3),
+                midColor = reader.GetString(4),
+                baseColor = reader.GetString(5),
+                quantity = reader.GetInt32(6),
+                price = reader.GetDouble(7),
+            });
+        }
     }
 
     return Results.Json(orders);
