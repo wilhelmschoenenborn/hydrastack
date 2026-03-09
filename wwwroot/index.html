@@ -1,0 +1,2657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HydraStack — Modular Tube System</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --steel: #B8C4CE;
+    --dark: #1A1D23;
+    --accent: #3ECFCF;
+    --accent2: #2AA8D8;
+    --warm: #F5F0EB;
+    --mid-section: #8EAAB8;
+    --bottom-section: #6B8A9E;
+    --lid-section: #C8D4DC;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 2rem;
+    background: radial-gradient(ellipse at 50% 30%, #2a3040 0%, var(--dark) 70%);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  .brand-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.3s;
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.5s;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: #8899AA;
+    text-align: center;
+    max-width: 560px;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.7s;
+  }
+
+  /* Section headers */
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-header h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-header h2 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-header p {
+    color: #8899AA;
+    font-weight: 300;
+    max-width: 580px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* === TUBE CONCEPT === */
+  .tube-concept {
+    padding: 5rem 2rem;
+    text-align: center;
+    background: linear-gradient(180deg, var(--dark), #151820);
+  }
+
+  .tube-diagram {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8rem;
+    flex-wrap: wrap;
+    max-width: 950px;
+    margin: 0 auto;
+  }
+
+  .tube-bottle {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .tube-lid {
+    width: 90px;
+    height: 50px;
+    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
+    border-radius: 14px 14px 0 0;
+    position: relative;
+    box-shadow: inset 0 2px 8px rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .tube-lid::before {
+    content: '';
+    width: 36px; height: 16px;
+    background: linear-gradient(180deg, #E8EEF2, #B0BEC5);
+    border-radius: 9px 9px 3px 3px;
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
+  }
+
+  .tube-mid {
+    width: 90px;
+    height: 180px;
+    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
+    position: relative;
+    box-shadow: inset 2px 0 6px rgba(255,255,255,0.12), inset -2px 0 6px rgba(0,0,0,0.12);
+  }
+
+  .tube-mid .shine {
+    position: absolute;
+    top: 10px; bottom: 10px; left: 7px;
+    width: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .tube-bottom {
+    width: 90px;
+    height: 100px;
+    background: linear-gradient(180deg, var(--bottom-section), #5A7A8E);
+    border-radius: 0 0 10px 10px;
+    position: relative;
+    box-shadow: inset 2px 0 6px rgba(255,255,255,0.08), inset -2px 0 6px rgba(0,0,0,0.15), 0 6px 16px rgba(0,0,0,0.3);
+  }
+
+  .tube-bottom .base-grip {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 0 0 10px 10px;
+  }
+
+  .thread-gap {
+    height: 3px;
+    background: rgba(62,207,207,0.3);
+    width: 60%;
+  }
+
+  /* Labels positioned far outside to avoid overlap */
+  .tube-label {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .tube-label.left {
+    right: calc(100% + 20px);
+    flex-direction: row-reverse;
+  }
+
+  .tube-label.right {
+    left: calc(100% + 20px);
+  }
+
+  .label-line {
+    width: 24px; height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .info-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+    max-width: 360px;
+    flex-shrink: 0;
+  }
+
+  .info-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    border-left: 4px solid var(--accent);
+  }
+
+  .info-card .card-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .info-card p {
+    font-size: 0.85rem;
+    color: #AAB8CC;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* === BASE SIZE COMPARISON === */
+  .size-comparison {
+    padding: 5rem 2rem;
+    text-align: center;
+    background: #151820;
+  }
+
+  .compare-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .compare-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .compare-bottle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .c-lid {
+    width: 74px; height: 36px;
+    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
+    border-radius: 11px 11px 0 0;
+    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25);
+  }
+
+  .c-mid {
+    width: 74px; height: 120px;
+    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
+    box-shadow: inset 2px 0 5px rgba(255,255,255,0.1), inset -2px 0 5px rgba(0,0,0,0.1);
+  }
+
+  .c-bottom-standard {
+    width: 74px; height: 74px;
+    background: linear-gradient(180deg, var(--bottom-section), #5A7A8E);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  }
+
+  .c-bottom-narrow-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .c-adapter-ring {
+    width: 74px; height: 12px;
+    background: linear-gradient(180deg, #556B7A, #4A5E6C);
+    clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+  }
+
+  .c-bottom-narrow {
+    width: 52px; height: 74px;
+    background: linear-gradient(180deg, #D4585C, #A83235);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  }
+
+  .c-bottom-xl {
+    width: 74px; height: 100px;
+    background: linear-gradient(180deg, #4CAF50, #2E7D32);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  }
+
+  /* Heated base */
+  .c-bottom-heated-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .c-bottom-heated {
+    width: 74px; height: 74px;
+    background: linear-gradient(180deg, #E88A30, #C06820);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .c-bottom-heated::after {
+    content: '';
+    position: absolute;
+    bottom: 8px; left: 50%;
+    transform: translateX(-50%);
+    width: 30px; height: 30px;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,100,30,0.4), transparent 70%);
+  }
+
+  .compare-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .compare-desc {
+    font-size: 0.75rem;
+    color: #8899AA;
+    font-weight: 300;
+    max-width: 160px;
+    line-height: 1.5;
+  }
+
+  .compare-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 0.3rem;
+  }
+
+  .badge-red { color: #D4585C; background: rgba(212,88,92,0.15); border: 1px solid rgba(212,88,92,0.3); }
+  .badge-blue { color: var(--accent); background: rgba(62,207,207,0.1); border: 1px solid rgba(62,207,207,0.25); }
+  .badge-green { color: #4CAF50; background: rgba(76,175,80,0.12); border: 1px solid rgba(76,175,80,0.3); }
+  .badge-orange { color: #E88A30; background: rgba(232,138,48,0.12); border: 1px solid rgba(232,138,48,0.3); }
+
+  .cupholder-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(212, 88, 92, 0.1);
+    border: 1px solid rgba(212, 88, 92, 0.25);
+    border-radius: 12px;
+    padding: 1rem 1.8rem;
+    margin-top: 1rem;
+    max-width: 600px;
+  }
+
+  .cupholder-note .icon { font-size: 1.5rem; flex-shrink: 0; }
+
+  .cupholder-note p {
+    font-size: 0.85rem;
+    color: #D4585C;
+    text-align: left;
+    line-height: 1.5;
+  }
+
+  .cupholder-note strong { color: #E8A0A2; }
+
+  /* === LID MODULES === */
+  .lid-modules {
+    padding: 5rem 2rem;
+    background: linear-gradient(180deg, #151820, var(--dark));
+    text-align: center;
+  }
+
+  .lid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .lid-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+  }
+
+  .lid-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.14);
+    transform: translateY(-6px);
+  }
+
+  .lid-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .lid-visual {
+    width: 120px; height: 100px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+
+  .handle-lid-body {
+    width: 90px; height: 50px;
+    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
+    border-radius: 14px 14px 4px 4px;
+    position: absolute; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25), 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  .handle-arch {
+    width: 70px; height: 40px;
+    border: 6px solid #A0B0BC;
+    border-bottom: none;
+    border-radius: 35px 35px 0 0;
+    position: absolute; top: 2px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
+  }
+
+  .handle-arch::before, .handle-arch::after {
+    content: '';
+    width: 10px; height: 10px;
+    background: #8A9AA8;
+    border-radius: 50%;
+    position: absolute; bottom: -5px;
+  }
+
+  .handle-arch::before { left: -8px; }
+  .handle-arch::after { right: -8px; }
+
+  .straw-lid-body {
+    width: 90px; height: 50px;
+    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
+    border-radius: 14px 14px 4px 4px;
+    position: absolute; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25), 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  .straw-flip-cover {
+    width: 44px; height: 30px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    border-radius: 12px 12px 4px 4px;
+    position: absolute; top: 14px; left: 28px;
+    box-shadow: 0 -2px 8px rgba(62,207,207,0.3);
+  }
+
+  .straw-flip-cover::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: rgba(255,255,255,0.35);
+    border-radius: 50%;
+    position: absolute; top: 6px; left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .straw-tube {
+    width: 5px; height: 22px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 3px;
+    position: absolute; top: 8px; left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .standard-lid-body {
+    width: 90px; height: 50px;
+    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
+    border-radius: 14px 14px 4px 4px;
+    position: absolute; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25), 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  .standard-flip {
+    width: 34px; height: 16px;
+    background: linear-gradient(180deg, #E0E8EE, #B0BEC5);
+    border-radius: 9px 9px 3px 3px;
+    position: absolute; top: 28px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.12);
+  }
+
+  .lid-card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; }
+
+  .lid-inspired {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 400;
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .lid-card p { font-size: 0.82rem; color: #8899AA; line-height: 1.6; font-weight: 300; }
+
+  .feature-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 1rem; }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 1px;
+    color: var(--warm);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 4px 10px;
+  }
+
+  /* === BOTTLE BUILDER === */
+  .builder-section {
+    padding: 5rem 2rem;
+    background: linear-gradient(180deg, var(--dark), #0F1115);
+    text-align: center;
+  }
+
+  .builder-layout {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .builder-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 200px;
+    position: sticky;
+    top: 2rem;
+  }
+
+  .preview-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .preview-bottle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.4s ease;
+  }
+
+  .pv-lid {
+    height: 55px;
+    border-radius: 16px 16px 0 0;
+    position: relative;
+    transition: all 0.4s ease;
+    box-shadow: inset 0 2px 8px rgba(255,255,255,0.25), 0 3px 10px rgba(0,0,0,0.25);
+    width: 100px;
+  }
+
+  .pv-handle-arch {
+    width: 74px; height: 42px;
+    border: 7px solid;
+    border-bottom: none;
+    border-radius: 37px 37px 0 0;
+    position: absolute;
+    top: -38px; left: 50%;
+    transform: translateX(-50%);
+    transition: all 0.4s ease;
+  }
+
+  .pv-handle-arch::before, .pv-handle-arch::after {
+    content: '';
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    position: absolute; bottom: -6px;
+    transition: all 0.4s ease;
+  }
+
+  .pv-handle-arch::before { left: -9px; }
+  .pv-handle-arch::after { right: -9px; }
+
+  .pv-straw-btn {
+    width: 46px; height: 24px;
+    border-radius: 12px 12px 4px 4px;
+    position: absolute;
+    top: -18px; left: 50%;
+    transform: translateX(-50%);
+    transition: all 0.4s ease;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+  }
+
+  .pv-straw-btn::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    position: absolute; top: 5px; left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .pv-classic-knob {
+    width: 36px; height: 14px;
+    border-radius: 8px 8px 3px 3px;
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    transition: all 0.4s ease;
+  }
+
+  .pv-thread {
+    height: 3px;
+    width: 70%;
+    background: rgba(62,207,207,0.3);
+    transition: all 0.4s ease;
+  }
+
+  .pv-mid {
+    width: 100px;
+    height: 180px;
+    position: relative;
+    transition: all 0.4s ease;
+    box-shadow: inset 2px 0 8px rgba(255,255,255,0.1), inset -2px 0 8px rgba(0,0,0,0.12);
+  }
+
+  .pv-mid .pv-shine {
+    position: absolute;
+    top: 12px; bottom: 12px; left: 8px;
+    width: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .pv-base-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.4s ease;
+  }
+
+  .pv-adapter {
+    height: 14px;
+    transition: all 0.4s ease;
+    display: none;
+  }
+
+  .pv-base {
+    height: 100px;
+    border-radius: 0 0 12px 12px;
+    position: relative;
+    transition: all 0.4s ease;
+    box-shadow: inset 2px 0 6px rgba(255,255,255,0.08), inset -2px 0 6px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.35);
+  }
+
+  .pv-base-grip {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 0 0 12px 12px;
+  }
+
+  /* Heat ring glow */
+  .pv-heat-ring {
+    position: absolute;
+    bottom: 14px; left: 50%;
+    transform: translateX(-50%);
+    width: 36px; height: 36px;
+    border: 2px solid rgba(255,150,50,0.4);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,100,30,0.25), transparent 70%);
+    display: none;
+    transition: all 0.4s ease;
+    animation: heatPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes heatPulse {
+    0%, 100% { opacity: 0.6; box-shadow: 0 0 8px rgba(255,100,30,0.2); }
+    50% { opacity: 1; box-shadow: 0 0 18px rgba(255,100,30,0.4); }
+  }
+
+  /* Builder options */
+  .builder-options {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 280px;
+    max-width: 440px;
+    text-align: left;
+  }
+
+  .option-group { }
+
+  .option-group-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .option-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .option-btn {
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .option-btn:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .option-btn.active {
+    background: rgba(62,207,207,0.1);
+    border-color: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
+
+  .option-btn .mini-icon { font-size: 0.9rem; }
+
+  /* Per-section color pickers */
+  .color-section-picker {
+    margin-top: 0.5rem;
+  }
+
+  .color-section-label {
+    font-size: 0.72rem;
+    color: #7788AA;
+    font-weight: 400;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .color-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+  }
+
+  .builder-swatch {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+  }
+
+  .builder-swatch:hover { transform: scale(1.12); }
+
+  .builder-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(62,207,207,0.3);
+  }
+
+  /* Build summary */
+  .build-summary {
+    margin-top: 1rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+  }
+
+  .build-summary .summary-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    font-size: 0.8rem;
+    color: #AAB8CC;
+    font-weight: 300;
+  }
+
+  .summary-line .val { color: var(--warm); font-weight: 500; }
+
+  /* Features */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 4rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-4px); }
+
+  .feature-icon { font-size: 2rem; margin-bottom: 0.8rem; display: block; }
+  .feature-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .feature-card p { font-size: 0.78rem; color: #7788AA; line-height: 1.5; font-weight: 300; }
+
+  .footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: #556677;
+    letter-spacing: 2px;
+    background: #0F1115;
+  }
+
+  /* === SHOP === */
+  .shop-section {
+    padding: 5rem 2rem;
+    background: linear-gradient(180deg, #0F1115, #0D0F13);
+    text-align: center;
+  }
+
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+  /* Starter Bundle Card */
+  .starter-bundle {
+    max-width: 1050px;
+    margin: 0 auto 2.5rem;
+    background: linear-gradient(135deg, rgba(62,207,207,0.08), rgba(42,168,216,0.06));
+    border: 2px solid rgba(62,207,207,0.2);
+    border-radius: 24px;
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .starter-bundle:hover {
+    border-color: rgba(62,207,207,0.35);
+    box-shadow: 0 8px 32px rgba(62,207,207,0.1);
+  }
+
+  .starter-bundle .bundle-badge {
+    position: absolute;
+    top: 16px; right: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: #4CAF50;
+    background: rgba(76,175,80,0.12);
+    border: 1px solid rgba(76,175,80,0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+  }
+
+  .bundle-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .bv-lid {
+    width: 64px; height: 35px;
+    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
+    border-radius: 10px 10px 0 0;
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.25);
+    position: relative;
+  }
+
+  .bv-lid::before {
+    content: '';
+    width: 24px; height: 10px;
+    background: linear-gradient(180deg, #E8EEF2, #B0BEC5);
+    border-radius: 6px 6px 2px 2px;
+    position: absolute;
+    top: -7px; left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .bv-thread {
+    width: 45px; height: 2px;
+    background: rgba(62,207,207,0.3);
+  }
+
+  .bv-mid {
+    width: 64px; height: 100px;
+    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
+    box-shadow: inset 2px 0 4px rgba(255,255,255,0.1), inset -2px 0 4px rgba(0,0,0,0.1);
+    position: relative;
+  }
+
+  .bv-mid .bv-shine {
+    position: absolute;
+    top: 8px; bottom: 8px; left: 5px;
+    width: 2px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .bv-base {
+    width: 64px; height: 55px;
+    background: linear-gradient(180deg, var(--bottom-section), #5A7A8E);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .bundle-info {
+    flex: 1;
+  }
+
+  .bundle-info .bundle-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .bundle-info h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+
+  .bundle-info .bundle-desc {
+    font-size: 0.88rem;
+    color: #8899AA;
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    max-width: 420px;
+  }
+
+  .bundle-pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .bundle-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .bundle-original {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: #667788;
+    text-decoration: line-through;
+  }
+
+  .bundle-savings {
+    font-size: 0.78rem;
+    color: #4CAF50;
+    font-weight: 600;
+  }
+
+  .bundle-includes {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+
+  .bundle-includes .bi-item {
+    font-size: 0.72rem;
+    color: #AAB8CC;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .bundle-atc {
+    padding: 0.8rem 2rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .bundle-atc:hover {
+    background: #50E0E0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(62,207,207,0.3);
+  }
+
+  .bundle-atc.added {
+    background: #4CAF50;
+    color: white;
+  }
+
+  @media (max-width: 650px) {
+    .starter-bundle {
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      gap: 1.5rem;
+    }
+    .bundle-includes { justify-content: center; }
+    .bundle-pricing { justify-content: center; }
+  }
+
+  .product-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 18px;
+    padding: 1.8rem 1.4rem 1.4rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .product-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.14);
+    transform: translateY(-4px);
+  }
+
+  .product-card .prod-icon {
+    width: 60px; height: 60px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+  }
+
+  .product-card h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .product-card .prod-desc {
+    font-size: 0.72rem;
+    color: #7788AA;
+    line-height: 1.4;
+    font-weight: 300;
+    margin-bottom: 0.8rem;
+    min-height: 32px;
+  }
+
+  .product-card .prod-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .add-to-cart-btn {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    background: rgba(62,207,207,0.12);
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    color: var(--accent);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .add-to-cart-btn:hover {
+    background: var(--accent);
+    color: var(--dark);
+  }
+
+  .add-to-cart-btn.added {
+    background: rgba(76,175,80,0.15);
+    border-color: #4CAF50;
+    color: #4CAF50;
+    pointer-events: none;
+  }
+
+  /* Floating cart button */
+  .cart-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px; height: 60px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(62,207,207,0.4);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    border: none;
+    color: var(--dark);
+  }
+
+  .cart-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 28px rgba(62,207,207,0.5);
+  }
+
+  .cart-fab .cart-count {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 22px; height: 22px;
+    background: #D4585C;
+    border-radius: 50%;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .cart-fab .cart-count.empty { display: none; }
+
+  /* Cart Drawer */
+  .cart-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+
+  .cart-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .cart-drawer {
+    position: fixed;
+    top: 0; right: 0;
+    width: 420px;
+    max-width: 92vw;
+    height: 100vh;
+    background: #13161C;
+    border-left: 1px solid rgba(255,255,255,0.08);
+    z-index: 1002;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .cart-drawer.open { transform: translateX(0); }
+
+  .cart-header {
+    padding: 1.5rem 1.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .cart-header h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cart-close {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    color: #8899AA;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .cart-close:hover { background: rgba(255,255,255,0.12); color: white; }
+
+  .cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.8rem;
+  }
+
+  .cart-empty {
+    text-align: center;
+    color: #556677;
+    padding: 3rem 1rem;
+    font-weight: 300;
+  }
+
+  .cart-empty .empty-icon { font-size: 2.5rem; margin-bottom: 0.8rem; display: block; }
+
+  .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .cart-item .ci-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .cart-item .ci-info { flex: 1; }
+
+  .cart-item .ci-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+  }
+
+  .cart-item .ci-detail {
+    font-size: 0.7rem;
+    color: #7788AA;
+    font-weight: 300;
+  }
+
+  .cart-item .ci-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .cart-item .ci-remove {
+    background: none;
+    border: none;
+    color: #665555;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .cart-item .ci-remove:hover { color: #D4585C; }
+
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .qty-btn {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--warm);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .qty-btn:hover { background: rgba(255,255,255,0.12); }
+
+  .qty-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  .cart-footer {
+    padding: 1.5rem 1.8rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+
+  .cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .cart-total-label {
+    font-size: 0.9rem;
+    color: #8899AA;
+  }
+
+  .cart-total-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .checkout-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.5px;
+  }
+
+  .checkout-btn:hover {
+    background: #50E0E0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(62,207,207,0.3);
+  }
+
+  .checkout-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* === CHECKOUT MODAL === */
+  .checkout-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    padding: 1rem;
+  }
+
+  .checkout-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .checkout-modal {
+    background: #181C24;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    width: 520px;
+    max-width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(30px) scale(0.97);
+    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    padding: 2.5rem 2rem;
+  }
+
+  .checkout-overlay.open .checkout-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .checkout-modal h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+    text-align: center;
+  }
+
+  .checkout-modal .co-sub {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #7788AA;
+    font-weight: 300;
+    margin-bottom: 2rem;
+  }
+
+  .co-section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .co-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .co-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .co-field label {
+    font-size: 0.72rem;
+    color: #8899AA;
+    font-weight: 400;
+  }
+
+  .co-field input, .co-field select {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .co-field input:focus, .co-field select:focus {
+    border-color: var(--accent);
+  }
+
+  .co-field input::placeholder {
+    color: #556677;
+  }
+
+  .co-field select option {
+    background: #1A1D23;
+    color: var(--warm);
+  }
+
+  .co-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 1.5rem 0;
+  }
+
+  .co-order-summary {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .co-order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 0;
+    font-size: 0.82rem;
+    color: #AAB8CC;
+  }
+
+  .co-order-item .co-oi-price {
+    font-family: 'Space Mono', monospace;
+    color: var(--warm);
+    font-weight: 500;
+  }
+
+  .co-order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.6rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-weight: 600;
+  }
+
+  .co-order-total .co-oi-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .place-order-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 14px;
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.5px;
+    margin-top: 0.5rem;
+  }
+
+  .place-order-btn:hover {
+    background: #50E0E0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(62,207,207,0.3);
+  }
+
+  .co-back-btn {
+    width: 100%;
+    padding: 0.7rem;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: #8899AA;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 0.6rem;
+    transition: all 0.2s;
+  }
+
+  .co-back-btn:hover {
+    border-color: rgba(255,255,255,0.2);
+    color: var(--warm);
+  }
+
+  /* Confirmation */
+  .confirm-view {
+    text-align: center;
+    padding: 2rem 0;
+    display: none;
+  }
+
+  .confirm-view.active { display: block; }
+
+  .confirm-check {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(76,175,80,0.12);
+    border: 3px solid #4CAF50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1.5rem;
+    animation: popIn 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .confirm-view h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+
+  .confirm-view .order-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .confirm-view p {
+    font-size: 0.88rem;
+    color: #8899AA;
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 360px;
+    margin: 0 auto 2rem;
+  }
+
+  .confirm-close-btn {
+    padding: 0.8rem 2.5rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .confirm-close-btn:hover { background: #50E0E0; }
+
+  .form-view { }
+  .form-view.hidden { display: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .tube-diagram, .compare-row { flex-direction: column; align-items: center; }
+    .lid-grid { grid-template-columns: 1fr; }
+    .tube-label { display: none; }
+    .builder-layout { flex-direction: column; align-items: center; }
+    .builder-preview { position: static; }
+    .builder-options { min-width: auto; width: 100%; max-width: 400px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="brand-tag">Modular Tube System</div>
+  <h1>HYDRA<span>STACK</span></h1>
+  <p class="tagline">One universal tube. Swap your lid. Size your base. Build the exact bottle you need — every time.</p>
+</section>
+
+<!-- Tube Concept -->
+<section class="tube-concept">
+  <div class="section-header">
+    <h2>The <span>Tube</span> Principle</h2>
+    <p>Every section shares the same thread pitch. The lid screws onto the mid, the mid screws onto the base. Swap any piece, anytime.</p>
+  </div>
+
+  <div class="tube-diagram">
+    <div class="tube-bottle">
+      <div class="tube-lid" style="position:relative;">
+        <div class="tube-label left" style="top: 15px;">
+          <span>LID MODULE</span>
+          <div class="label-line"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+      <div class="thread-gap"></div>
+      <div class="tube-mid" style="position:relative;">
+        <div class="shine"></div>
+        <div class="tube-label left" style="top: 75px;">
+          <span>MID CHAMBER</span>
+          <div class="label-line"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+      <div class="thread-gap"></div>
+      <div class="tube-bottom" style="position:relative;">
+        <div class="base-grip"></div>
+        <div class="tube-label left" style="top: 40px;">
+          <span>BASE MODULE</span>
+          <div class="label-line"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-cards">
+      <div class="info-card" style="border-left-color: var(--accent);">
+        <span class="card-tag" style="color: var(--accent);">UNIVERSAL THREADING</span>
+        <p>Every connection uses the same thread pitch. The lid screws onto the mid, the mid screws onto the base. You can even stack two mids together for double capacity.</p>
+      </div>
+      <div class="info-card" style="border-left-color: var(--mid-section);">
+        <span class="card-tag" style="color: var(--mid-section);">STANDARD DIAMETER 3.2"</span>
+        <p>The lid and mid chamber share a 3.2" outer diameter — a clean straight cylinder. This is your core tube that holds your drink.</p>
+      </div>
+      <div class="info-card" style="border-left-color: #D4585C;">
+        <span class="card-tag" style="color: #D4585C;">ADAPTIVE BASE WIDTH</span>
+        <p>The base module comes in standard (3.2") or narrow (2.5") diameter. A tapered adapter ring connects the narrow base to the mid — perfect for tight cupholders.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Base Size Comparison -->
+<section class="size-comparison">
+  <div class="section-header">
+    <h2>Swap Your Base</h2>
+    <p>Same mid chamber, same lid — the base module controls the bottom profile. The narrow base uses a tapered adapter ring to step down from 3.2" to a slimmer 2.5" that slides into tight car cupholders.</p>
+  </div>
+
+  <div class="compare-row">
+    <div class="compare-item">
+      <div class="compare-bottle">
+        <div class="c-lid"></div>
+        <div class="c-mid"></div>
+        <div class="c-bottom-narrow-wrap">
+          <div class="c-adapter-ring"></div>
+          <div class="c-bottom-narrow"></div>
+        </div>
+      </div>
+      <div style="margin-top: 1.5rem;">
+        <div class="compare-label">Narrow Base</div>
+        <div class="compare-badge badge-red">2.5" DIAMETER</div>
+        <div class="compare-desc" style="margin-top: 0.5rem;">Tapered adapter steps down to a slimmer cylinder. Fits compact car cupholders.</div>
+      </div>
+    </div>
+
+    <div class="compare-item">
+      <div class="compare-bottle">
+        <div class="c-lid"></div>
+        <div class="c-mid"></div>
+        <div class="c-bottom-standard"></div>
+      </div>
+      <div style="margin-top: 1.5rem;">
+        <div class="compare-label">Standard Base</div>
+        <div class="compare-badge badge-blue">3.2" DIAMETER</div>
+        <div class="compare-desc" style="margin-top: 0.5rem;">Same width as the mid — seamless tube. Sealed storage for vitamins or keys. Fits most cupholders.</div>
+      </div>
+    </div>
+
+    <div class="compare-item">
+      <div class="compare-bottle">
+        <div class="c-lid"></div>
+        <div class="c-mid"></div>
+        <div class="c-bottom-xl"></div>
+      </div>
+      <div style="margin-top: 1.5rem;">
+        <div class="compare-label">XL Base</div>
+        <div class="compare-badge badge-green">3.2" × TALL</div>
+        <div class="compare-desc" style="margin-top: 0.5rem;">Full diameter, extra tall. Maximum liquid capacity for all-day hydration.</div>
+      </div>
+    </div>
+
+    <div class="compare-item">
+      <div class="compare-bottle">
+        <div class="c-lid"></div>
+        <div class="c-mid"></div>
+        <div class="c-bottom-heated-wrap">
+          <div class="c-bottom-heated"></div>
+        </div>
+      </div>
+      <div style="margin-top: 1.5rem;">
+        <div class="compare-label">Heated Base</div>
+        <div class="compare-badge badge-orange">3.2" + HEAT</div>
+        <div class="compare-desc" style="margin-top: 0.5rem;">Built-in rechargeable heating element. Keeps coffee and tea at your ideal drinking temperature for hours.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cupholder-note">
+    <div class="icon">🚗</div>
+    <p><strong>Tight cupholder?</strong> The narrow base tapers to 2.5" via the adapter ring. The full-size 3.2" mid sits above the rim while the narrow base drops in snugly below.</p>
+  </div>
+</section>
+
+<!-- Lid Modules -->
+<section class="lid-modules">
+  <div class="section-header">
+    <h2>Swap Your <span>Lid</span></h2>
+    <p>The lid threads on with the same universal connection. Choose the drinking style that fits your day — and swap it whenever you want.</p>
+  </div>
+
+  <div class="lid-grid">
+    <div class="lid-card">
+      <span class="lid-badge">LID MODULE 01</span>
+      <div class="lid-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="handle-arch"></div>
+          <div class="handle-lid-body"></div>
+        </div>
+      </div>
+      <h3>Handle Lid</h3>
+      <span class="lid-inspired">Stanley-style carry handle</span>
+      <p>Built-in arch handle for one-handed carry and clipping to bags. Flip-top spout underneath. Grab it and go.</p>
+      <div class="feature-tags">
+        <span class="tag">ONE-HAND CARRY</span>
+        <span class="tag">FLIP SPOUT</span>
+        <span class="tag">CARABINER LOOP</span>
+      </div>
+    </div>
+
+    <div class="lid-card">
+      <span class="lid-badge">LID MODULE 02</span>
+      <div class="lid-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="straw-lid-body">
+            <div class="straw-tube"></div>
+          </div>
+          <div class="straw-flip-cover"></div>
+        </div>
+      </div>
+      <h3>Straw Lid</h3>
+      <span class="lid-inspired">Owala-style push-button straw</span>
+      <p>Push-button flip reveals a built-in straw for sipping without tilting. Lock it closed for leak-proof transport.</p>
+      <div class="feature-tags">
+        <span class="tag">PUSH-BUTTON FLIP</span>
+        <span class="tag">BUILT-IN STRAW</span>
+        <span class="tag">LEAK-PROOF LOCK</span>
+      </div>
+    </div>
+
+    <div class="lid-card">
+      <span class="lid-badge">LID MODULE 03</span>
+      <div class="lid-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="standard-lid-body"></div>
+          <div class="standard-flip"></div>
+        </div>
+      </div>
+      <h3>Classic Lid</h3>
+      <span class="lid-inspired">Simple flip-top spout</span>
+      <p>No frills. Clean flip-top with wide mouth for easy filling and ice. Lightest, most durable lid option.</p>
+      <div class="feature-tags">
+        <span class="tag">WIDE MOUTH</span>
+        <span class="tag">LIGHTWEIGHT</span>
+        <span class="tag">ICE-FRIENDLY</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === BOTTLE BUILDER === -->
+<section class="builder-section">
+  <div class="section-header">
+    <h2>Build Your <span>Bottle</span></h2>
+    <p>Pick your lid, base, and color for each section — the preview updates live.</p>
+  </div>
+
+  <div class="builder-layout">
+    <!-- Live Preview -->
+    <div class="builder-preview">
+      <div class="preview-label">YOUR BUILD</div>
+      <div class="preview-bottle" id="previewBottle">
+        <div class="pv-lid" id="pvLid">
+          <div class="pv-handle-arch" id="pvHandleArch"></div>
+          <div class="pv-straw-btn" id="pvStrawBtn" style="display:none;"></div>
+          <div class="pv-classic-knob" id="pvClassicKnob" style="display:none;"></div>
+        </div>
+        <div class="pv-thread"></div>
+        <div class="pv-mid" id="pvMid">
+          <div class="pv-shine"></div>
+        </div>
+        <div class="pv-thread"></div>
+        <div class="pv-base-wrap" id="pvBaseWrap">
+          <div class="pv-adapter" id="pvAdapter"></div>
+          <div class="pv-base" id="pvBase">
+            <div class="pv-base-grip"></div>
+            <div class="pv-heat-ring" id="pvHeatRing"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Options -->
+    <div class="builder-options">
+      <!-- Lid -->
+      <div class="option-group">
+        <span class="option-group-title">01 — LID MODULE</span>
+        <div class="option-row">
+          <button class="option-btn active" data-lid="handle" onclick="selectLid('handle')">
+            <span class="mini-icon">🔗</span> Handle
+          </button>
+          <button class="option-btn" data-lid="straw" onclick="selectLid('straw')">
+            <span class="mini-icon">🥤</span> Straw
+          </button>
+          <button class="option-btn" data-lid="classic" onclick="selectLid('classic')">
+            <span class="mini-icon">⬆️</span> Classic
+          </button>
+        </div>
+      </div>
+
+      <!-- Base -->
+      <div class="option-group">
+        <span class="option-group-title">02 — BASE MODULE</span>
+        <div class="option-row">
+          <button class="option-btn" data-base="narrow" onclick="selectBase('narrow')">
+            <span class="mini-icon">🚗</span> Narrow
+          </button>
+          <button class="option-btn active" data-base="standard" onclick="selectBase('standard')">
+            <span class="mini-icon">📐</span> Standard
+          </button>
+          <button class="option-btn" data-base="xl" onclick="selectBase('xl')">
+            <span class="mini-icon">💧</span> XL
+          </button>
+          <button class="option-btn" data-base="heated" onclick="selectBase('heated')">
+            <span class="mini-icon">🔥</span> Heated
+          </button>
+        </div>
+      </div>
+
+      <!-- Per-section colors -->
+      <div class="option-group">
+        <span class="option-group-title">03 — COLORS</span>
+
+        <div class="color-section-picker">
+          <span class="color-section-label">Lid Color</span>
+          <div class="color-row" id="lidColorRow"></div>
+        </div>
+
+        <div class="color-section-picker">
+          <span class="color-section-label">Mid Chamber Color</span>
+          <div class="color-row" id="midColorRow"></div>
+        </div>
+
+        <div class="color-section-picker">
+          <span class="color-section-label">Base Color</span>
+          <div class="color-row" id="baseColorRow"></div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="build-summary">
+        <span class="summary-title">YOUR HYDRASTACK</span>
+        <div class="summary-line">
+          <span>Lid</span>
+          <span class="val" id="sumLid">Handle Lid</span>
+        </div>
+        <div class="summary-line">
+          <span>Mid</span>
+          <span class="val">16 oz Insulated</span>
+        </div>
+        <div class="summary-line">
+          <span>Base</span>
+          <span class="val" id="sumBase">Standard 3.2"</span>
+        </div>
+        <div class="summary-line">
+          <span>Lid Color</span>
+          <span class="val" id="sumLidColor">Stealth</span>
+        </div>
+        <div class="summary-line">
+          <span>Mid Color</span>
+          <span class="val" id="sumMidColor">Stealth</span>
+        </div>
+        <div class="summary-line">
+          <span>Base Color</span>
+          <span class="val" id="sumBaseColor">Stealth</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<div class="features-grid">
+  <div class="feature-card">
+    <span class="feature-icon">📐</span>
+    <h4>Uniform Core Tube</h4>
+    <p>Lid + mid share a 3.2" diameter. The base adapts to your cupholder.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">♻️</span>
+    <h4>18/8 Stainless</h4>
+    <p>Food-grade metal throughout. No plastic taste. Built for life.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">🧊</span>
+    <h4>Vacuum Insulated</h4>
+    <p>Double-wall mid chamber — 24hr cold, 12hr hot.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">🔥</span>
+    <h4>Heated Base</h4>
+    <p>Rechargeable heating element keeps drinks at your ideal temp.</p>
+  </div>
+</div>
+
+<!-- === SHOP === -->
+<section class="shop-section">
+  <div class="section-header">
+    <h2>Shop <span>Modules</span></h2>
+    <p>Grab the starter set or build your own — every piece sold individually.</p>
+  </div>
+
+  <!-- Starter Bundle -->
+  <div class="starter-bundle">
+    <div class="bundle-badge">SAVE 40%</div>
+    <div class="bundle-visual">
+      <div class="bv-lid"></div>
+      <div class="bv-thread"></div>
+      <div class="bv-mid"><div class="bv-shine"></div></div>
+      <div class="bv-thread"></div>
+      <div class="bv-base"></div>
+    </div>
+    <div class="bundle-info">
+      <span class="bundle-tag">STARTER SET</span>
+      <h3>HydraStack Complete Bottle</h3>
+      <p class="bundle-desc">Everything you need to start — Classic Lid, 16oz insulated Mid Chamber, and Standard Base. A fully functional vacuum-insulated water bottle, ready to go out of the box.</p>
+      <div class="bundle-includes">
+        <span class="bi-item">⬆️ Classic Lid</span>
+        <span class="bi-item">🧊 Mid Chamber 16oz</span>
+        <span class="bi-item">📐 Standard Base</span>
+      </div>
+      <div class="bundle-pricing">
+        <span class="bundle-price">$29.99</span>
+        <span class="bundle-original">$49.97</span>
+        <span class="bundle-savings">Save $19.98</span>
+      </div>
+      <button class="bundle-atc" id="atc-starter" onclick="addToCart('starter-bundle')">Add Starter Set to Cart</button>
+    </div>
+  </div>
+
+  <div class="shop-grid" id="shopGrid"></div>
+</section>
+
+<!-- Cart FAB -->
+<button class="cart-fab" onclick="toggleCart()">
+  🛒
+  <div class="cart-count empty" id="cartCount">0</div>
+</button>
+
+<!-- Cart Overlay -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+
+<!-- Cart Drawer -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>🛒 Your Cart</h3>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty" id="cartEmpty">
+      <span class="empty-icon">🫗</span>
+      Your cart is empty.<br>Add some modules to get started.
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span class="cart-total-label">Subtotal</span>
+      <span class="cart-total-val" id="cartTotal">$0.00</span>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn" disabled onclick="openCheckout()">Proceed to Checkout</button>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+
+    <!-- Form View -->
+    <div class="form-view" id="formView">
+      <h2>Checkout</h2>
+      <p class="co-sub">Fill in your details below to place your order.</p>
+
+      <span class="co-section-label">SHIPPING INFORMATION</span>
+      <div class="co-row">
+        <div class="co-field">
+          <label>First Name</label>
+          <input type="text" placeholder="John" id="coFirstName">
+        </div>
+        <div class="co-field">
+          <label>Last Name</label>
+          <input type="text" placeholder="Doe" id="coLastName">
+        </div>
+      </div>
+      <div class="co-row">
+        <div class="co-field">
+          <label>Email</label>
+          <input type="email" placeholder="john@example.com" id="coEmail">
+        </div>
+      </div>
+      <div class="co-row">
+        <div class="co-field">
+          <label>Address</label>
+          <input type="text" placeholder="123 Main St" id="coAddress">
+        </div>
+      </div>
+      <div class="co-row">
+        <div class="co-field">
+          <label>City</label>
+          <input type="text" placeholder="Cincinnati" id="coCity">
+        </div>
+        <div class="co-field">
+          <label>State</label>
+          <input type="text" placeholder="OH" id="coState">
+        </div>
+        <div class="co-field">
+          <label>ZIP</label>
+          <input type="text" placeholder="45202" id="coZip">
+        </div>
+      </div>
+
+      <div class="co-divider"></div>
+
+      <span class="co-section-label">PAYMENT</span>
+      <p style="color: #7788AA; font-size: 0.8rem; margin-bottom: 1rem;">Payment processing via Stripe — coming soon. Orders are saved for fulfillment.</p>
+
+      <div class="co-divider"></div>
+
+      <span class="co-section-label">ORDER SUMMARY</span>
+      <div class="co-order-summary" id="coOrderSummary"></div>
+
+      <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
+      <button class="co-back-btn" onclick="closeCheckout()">← Back to Cart</button>
+    </div>
+
+    <!-- Confirmation View -->
+    <div class="confirm-view" id="confirmView">
+      <div class="confirm-check">✓</div>
+      <h3>Order Confirmed!</h3>
+      <span class="order-num" id="orderNum">HS-000000</span>
+      <p>Thanks for your order! This is a concept demo, so nothing will actually ship — but your HydraStack would be on its way if it were real.</p>
+      <button class="confirm-close-btn" onclick="closeConfirm()">Continue Shopping</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  HYDRASTACK &mdash; MODULAR TUBE SYSTEM &mdash; CONCEPT PRODUCT DESIGN
+</div>
+
+<script>
+  // State
+  let currentLid = 'handle';
+  let currentBase = 'standard';
+  let lidColor = 'stealth';
+  let midColor = 'stealth';
+  let baseColor = 'stealth';
+
+  const colorData = {
+    stealth:  { name: 'Stealth',  main: ['#3a4550','#2C3E50'], accent: '#4a5f6e', adapter: '#333D45', swatch: 'linear-gradient(135deg, #2C3E50, #1A252F)' },
+    titanium: { name: 'Titanium', main: ['#C8D4DE','#9EB0BE'], accent: '#A8B8C6', adapter: '#8A9AAA', swatch: 'linear-gradient(135deg, #B8C4CE, #8EAAB8)' },
+    arctic:   { name: 'Arctic',   main: ['#4DD8D8','#2EB8C8'], accent: '#3ECFCF', adapter: '#2A9AA8', swatch: 'linear-gradient(135deg, #3ECFCF, #2AA8D8)' },
+    sand:     { name: 'Sand',     main: ['#EEDCC2','#C8B090'], accent: '#D4C0A0', adapter: '#B0A080', swatch: 'linear-gradient(135deg, #E8D5B7, #C4A882)' },
+    ember:    { name: 'Ember',    main: ['#E06468','#B83438'], accent: '#D45458', adapter: '#983030', swatch: 'linear-gradient(135deg, #D4585C, #A83235)' },
+    alpine:   { name: 'Alpine',   main: ['#58B85C','#308834'], accent: '#48A84C', adapter: '#287028', swatch: 'linear-gradient(135deg, #4CAF50, #2E7D32)' }
+  };
+
+  const lidNames = { handle: 'Handle Lid', straw: 'Straw Lid', classic: 'Classic Lid' };
+  const baseNames = { narrow: 'Narrow 2.5"', standard: 'Standard 3.2"', xl: 'XL Liquid', heated: 'Heated 3.2"' };
+
+  // Build color swatches for each section
+  function buildSwatches() {
+    const sections = [
+      { rowId: 'lidColorRow', stateKey: 'lid' },
+      { rowId: 'midColorRow', stateKey: 'mid' },
+      { rowId: 'baseColorRow', stateKey: 'base' }
+    ];
+
+    sections.forEach(sec => {
+      const row = document.getElementById(sec.rowId);
+      row.innerHTML = '';
+      Object.keys(colorData).forEach(key => {
+        const el = document.createElement('div');
+        el.className = 'builder-swatch' + (getColorForSection(sec.stateKey) === key ? ' active' : '');
+        el.style.background = colorData[key].swatch;
+        el.setAttribute('data-section', sec.stateKey);
+        el.setAttribute('data-color', key);
+        el.onclick = () => selectSectionColor(sec.stateKey, key);
+        row.appendChild(el);
+      });
+    });
+  }
+
+  function getColorForSection(section) {
+    if (section === 'lid') return lidColor;
+    if (section === 'mid') return midColor;
+    return baseColor;
+  }
+
+  function selectSectionColor(section, color) {
+    if (section === 'lid') lidColor = color;
+    else if (section === 'mid') midColor = color;
+    else baseColor = color;
+
+    // Update active states for this row
+    const rowId = section === 'lid' ? 'lidColorRow' : section === 'mid' ? 'midColorRow' : 'baseColorRow';
+    document.querySelectorAll(`#${rowId} .builder-swatch`).forEach(s => {
+      s.classList.toggle('active', s.getAttribute('data-color') === color);
+    });
+
+    updatePreview();
+  }
+
+  function selectLid(lid) {
+    currentLid = lid;
+    document.querySelectorAll('[data-lid]').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-lid="${lid}"]`).classList.add('active');
+    updatePreview();
+  }
+
+  function selectBase(base) {
+    currentBase = base;
+    document.querySelectorAll('[data-base]').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-base="${base}"]`).classList.add('active');
+    updatePreview();
+  }
+
+  function updatePreview() {
+    const lc = colorData[lidColor];
+    const mc = colorData[midColor];
+    const bc = colorData[baseColor];
+
+    const lidGrad = `linear-gradient(180deg, ${lc.main[0]}, ${lc.main[1]})`;
+    const midGrad = `linear-gradient(180deg, ${mc.main[0]}, ${mc.main[1]})`;
+    const baseGrad = `linear-gradient(180deg, ${bc.main[0]}, ${bc.main[1]})`;
+
+    // Lid
+    const pvLid = document.getElementById('pvLid');
+    pvLid.style.background = lidGrad;
+
+    const pvHandleArch = document.getElementById('pvHandleArch');
+    const pvStrawBtn = document.getElementById('pvStrawBtn');
+    const pvClassicKnob = document.getElementById('pvClassicKnob');
+
+    pvHandleArch.style.display = 'none';
+    pvStrawBtn.style.display = 'none';
+    pvClassicKnob.style.display = 'none';
+
+    if (currentLid === 'handle') {
+      pvHandleArch.style.display = 'block';
+      pvHandleArch.style.borderColor = lc.accent;
+      pvHandleArch.style.setProperty('--knob-color', lc.accent);
+    } else if (currentLid === 'straw') {
+      pvStrawBtn.style.display = 'block';
+      pvStrawBtn.style.background = lc.accent;
+    } else {
+      pvClassicKnob.style.display = 'block';
+      pvClassicKnob.style.background = lc.accent;
+    }
+
+    // Mid
+    document.getElementById('pvMid').style.background = midGrad;
+
+    // Base
+    const pvBase = document.getElementById('pvBase');
+    const pvAdapter = document.getElementById('pvAdapter');
+    const pvHeatRing = document.getElementById('pvHeatRing');
+
+    pvBase.style.background = baseGrad;
+    pvHeatRing.style.display = 'none';
+
+    if (currentBase === 'narrow') {
+      pvAdapter.style.display = 'block';
+      pvAdapter.style.width = '100px';
+      pvAdapter.style.background = bc.adapter;
+      pvAdapter.style.clipPath = 'polygon(0 0, 100% 0, 78% 100%, 22% 100%)';
+      pvBase.style.width = '65px';
+      pvBase.style.height = '100px';
+    } else if (currentBase === 'xl') {
+      pvAdapter.style.display = 'none';
+      pvBase.style.width = '100px';
+      pvBase.style.height = '140px';
+    } else if (currentBase === 'heated') {
+      pvAdapter.style.display = 'none';
+      pvBase.style.width = '100px';
+      pvBase.style.height = '110px';
+      pvHeatRing.style.display = 'block';
+    } else {
+      pvAdapter.style.display = 'none';
+      pvBase.style.width = '100px';
+      pvBase.style.height = '100px';
+    }
+
+    // Summary
+    document.getElementById('sumLid').textContent = lidNames[currentLid];
+    document.getElementById('sumBase').textContent = baseNames[currentBase];
+    document.getElementById('sumLidColor').textContent = lc.name;
+    document.getElementById('sumMidColor').textContent = mc.name;
+    document.getElementById('sumBaseColor').textContent = bc.name;
+  }
+
+  // Init
+  buildSwatches();
+  updatePreview();
+
+  // === SHOP & CART SYSTEM ===
+  const products = [
+    { id: 'starter-bundle', name: 'Starter Set',     desc: 'Classic Lid + Mid 16oz + Standard Base', price: 29.99, icon: '📦', bg: 'rgba(62,207,207,0.12)', bundle: true },
+    { id: 'lid-handle',   name: 'Handle Lid',       desc: 'Stanley-style arch carry handle',   price: 13.99, icon: '🔗', bg: 'rgba(62,207,207,0.1)' },
+    { id: 'lid-straw',    name: 'Straw Lid',        desc: 'Owala-style push-button straw',     price: 11.99, icon: '🥤', bg: 'rgba(42,168,216,0.1)' },
+    { id: 'lid-classic',  name: 'Classic Lid',       desc: 'Simple wide-mouth flip-top',        price: 7.99, icon: '⬆️', bg: 'rgba(184,196,206,0.12)' },
+    { id: 'mid-16',       name: 'Mid Chamber 16oz',  desc: 'Double-wall vacuum insulated',      price: 29.99, icon: '🧊', bg: 'rgba(142,170,184,0.12)' },
+    { id: 'base-narrow',  name: 'Narrow Base',       desc: '2.5" diameter + adapter ring',      price: 14.99, icon: '🚗', bg: 'rgba(212,88,92,0.1)' },
+    { id: 'base-standard',name: 'Standard Base',     desc: '3.2" diameter sealed storage',      price: 11.99, icon: '📐', bg: 'rgba(62,207,207,0.08)' },
+    { id: 'base-xl',      name: 'XL Liquid Base',    desc: '3.2" extra tall for max capacity',  price: 17.99, icon: '💧', bg: 'rgba(76,175,80,0.1)' },
+    { id: 'base-heated',  name: 'Heated Base',       desc: 'Rechargeable heating element',      price: 39.99, icon: '🔥', bg: 'rgba(232,138,48,0.1)' },
+    { id: 'acc-infuser',  name: 'Infuser Insert',    desc: 'Mesh tea & fruit infuser',          price: 4.99,  icon: '🍵', bg: 'rgba(200,180,144,0.1)' },
+  ];
+
+  let cart = [];
+
+  function buildShop() {
+    const grid = document.getElementById('shopGrid');
+    grid.innerHTML = '';
+    products.forEach(p => {
+      if (p.bundle) return; // Starter bundle has its own hero card
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <div class="prod-icon" style="background: ${p.bg};">${p.icon}</div>
+        <h4>${p.name}</h4>
+        <div class="prod-desc">${p.desc}</div>
+        <div class="prod-price">$${p.price.toFixed(2)}</div>
+        <button class="add-to-cart-btn" id="atc-${p.id}" onclick="addToCart('${p.id}')">Add to Cart</button>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function addToCart(productId) {
+    const existing = cart.find(c => c.id === productId);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ id: productId, qty: 1 });
+    }
+    // Button feedback
+    const btn = document.getElementById('atc-' + productId);
+    if (btn) {
+      const origText = btn.textContent;
+      if (btn.classList.contains('bundle-atc')) {
+        btn.textContent = '✓ Added to Cart!';
+        btn.classList.add('added');
+        setTimeout(() => {
+          btn.textContent = 'Add Starter Set to Cart';
+          btn.classList.remove('added');
+        }, 1500);
+      } else {
+        btn.textContent = '✓ Added';
+        btn.classList.add('added');
+        setTimeout(() => {
+          btn.textContent = 'Add to Cart';
+          btn.classList.remove('added');
+        }, 1200);
+      }
+    }
+    updateCart();
+  }
+
+  function removeFromCart(productId) {
+    cart = cart.filter(c => c.id !== productId);
+    updateCart();
+  }
+
+  function changeQty(productId, delta) {
+    const item = cart.find(c => c.id === productId);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty < 1) {
+      removeFromCart(productId);
+      return;
+    }
+    updateCart();
+  }
+
+  function getProduct(id) {
+    return products.find(p => p.id === id);
+  }
+
+  function getCartTotal() {
+    return cart.reduce((sum, c) => {
+      const p = getProduct(c.id);
+      return sum + (p ? p.price * c.qty : 0);
+    }, 0);
+  }
+
+  function updateCart() {
+    const count = cart.reduce((s, c) => s + c.qty, 0);
+    const countEl = document.getElementById('cartCount');
+    countEl.textContent = count;
+    countEl.classList.toggle('empty', count === 0);
+
+    const itemsEl = document.getElementById('cartItems');
+    const emptyEl = document.getElementById('cartEmpty');
+
+    if (cart.length === 0) {
+      emptyEl.style.display = 'block';
+      itemsEl.querySelectorAll('.cart-item').forEach(el => el.remove());
+    } else {
+      emptyEl.style.display = 'none';
+      // Rebuild items
+      itemsEl.querySelectorAll('.cart-item').forEach(el => el.remove());
+      cart.forEach(c => {
+        const p = getProduct(c.id);
+        if (!p) return;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <div class="ci-icon" style="background: ${p.bg};">${p.icon}</div>
+          <div class="ci-info">
+            <div class="ci-name">${p.name}</div>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changeQty('${p.id}', -1)">−</button>
+              <span class="qty-num">${c.qty}</span>
+              <button class="qty-btn" onclick="changeQty('${p.id}', 1)">+</button>
+            </div>
+          </div>
+          <div class="ci-price">$${(p.price * c.qty).toFixed(2)}</div>
+          <button class="ci-remove" onclick="removeFromCart('${p.id}')">✕</button>
+        `;
+        itemsEl.appendChild(div);
+      });
+    }
+
+    document.getElementById('cartTotal').textContent = '$' + getCartTotal().toFixed(2);
+    document.getElementById('checkoutBtn').disabled = cart.length === 0;
+  }
+
+  function toggleCart() {
+    const drawer = document.getElementById('cartDrawer');
+    const overlay = document.getElementById('cartOverlay');
+    const isOpen = drawer.classList.contains('open');
+    drawer.classList.toggle('open');
+    overlay.classList.toggle('open');
+    document.body.style.overflow = isOpen ? '' : 'hidden';
+  }
+
+  // === CHECKOUT ===
+  function openCheckout() {
+    toggleCart(); // close cart
+    setTimeout(() => {
+      const overlay = document.getElementById('checkoutOverlay');
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // Build order summary
+      buildOrderSummary();
+    }, 300);
+  }
+
+  function closeCheckout() {
+    document.getElementById('checkoutOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function buildOrderSummary() {
+    const el = document.getElementById('coOrderSummary');
+    let html = '';
+    cart.forEach(c => {
+      const p = getProduct(c.id);
+      if (!p) return;
+      html += `<div class="co-order-item">
+        <span>${p.icon} ${p.name}${c.qty > 1 ? ' × ' + c.qty : ''}</span>
+        <span class="co-oi-price">$${(p.price * c.qty).toFixed(2)}</span>
+      </div>`;
+    });
+    const shipping = 5.99;
+    const subtotal = getCartTotal();
+    const tax = Math.round(subtotal * 0.08 * 100) / 100;
+    const total = subtotal + shipping + tax;
+    html += `<div class="co-order-item" style="color:#7788AA;">
+      <span>Shipping</span>
+      <span class="co-oi-price" style="color:#AAB8CC;">$${shipping.toFixed(2)}</span>
+    </div>`;
+    html += `<div class="co-order-item" style="color:#7788AA;">
+      <span>Tax (8%)</span>
+      <span class="co-oi-price" style="color:#AAB8CC;">$${tax.toFixed(2)}</span>
+    </div>`;
+    html += `<div class="co-order-total">
+      <span>Total</span>
+      <span class="co-oi-price">$${total.toFixed(2)}</span>
+    </div>`;
+    el.innerHTML = html;
+  }
+
+  async function placeOrder() {
+    const btn = document.querySelector('.place-order-btn');
+    btn.disabled = true;
+    btn.textContent = 'Placing Order...';
+
+    const customer = {
+      firstName: document.getElementById('coFirstName').value.trim(),
+      lastName: document.getElementById('coLastName').value.trim(),
+      email: document.getElementById('coEmail').value.trim(),
+      address: document.getElementById('coAddress').value.trim(),
+      city: document.getElementById('coCity').value.trim(),
+      state: document.getElementById('coState').value.trim(),
+      zip: document.getElementById('coZip').value.trim(),
+    };
+
+    if (!customer.firstName || !customer.lastName || !customer.email) {
+      alert('Please fill in your name and email.');
+      btn.disabled = false;
+      btn.textContent = 'Place Order';
+      return;
+    }
+
+    const items = cart.map(c => {
+      const p = getProduct(c.id);
+      return {
+        name: p.name,
+        quantity: c.qty,
+        price: p.price,
+        lidType: currentLid || '',
+        baseType: currentBase || '',
+        lidColor: lidColor || '',
+        midColor: midColor || '',
+        baseColor: baseColor || '',
+      };
+    });
+
+    const subtotal = getCartTotal();
+    const shipping = 5.99;
+    const tax = Math.round(subtotal * 0.08 * 100) / 100;
+    const orderTotal = subtotal + shipping + tax;
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customer, items, orderTotal }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById('orderNum').textContent = data.orderNumber;
+        document.getElementById('formView').classList.add('hidden');
+        const cv = document.getElementById('confirmView');
+        cv.classList.add('active');
+        cv.style.display = 'block';
+        cart = [];
+        updateCart();
+      } else {
+        alert('Order failed: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Could not connect to server. Make sure the backend is running.');
+      console.error(err);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Place Order';
+  }
+
+  function closeConfirm() {
+    document.getElementById('checkoutOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    // Reset views
+    setTimeout(() => {
+      document.getElementById('formView').classList.remove('hidden');
+      const cv = document.getElementById('confirmView');
+      cv.classList.remove('active');
+      cv.style.display = 'none';
+      // Clear form
+      ['coFirstName','coLastName','coEmail','coAddress','coCity','coState','coZip'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+    }, 400);
+  }
+
+  // Init on DOM load
+  document.addEventListener('DOMContentLoaded', () => {});
+
+  // Build shop on load
+  buildShop();
+</script>
+
+</body>
+</html>

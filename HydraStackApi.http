@@ -1,0 +1,6 @@
+@HydraStackApi_HostAddress = http://localhost:5215
+
+GET {{HydraStackApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
