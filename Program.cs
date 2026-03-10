@@ -1,4 +1,4 @@
-using Microsoft.Data.Sqlite;
+using Npgsql;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,18 +15,23 @@ app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader())
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// SQLite database file — stored in the app directory
-var dbPath = Path.Combine(app.Environment.ContentRootPath, "hydrastack.db");
-var connStr = $"Data Source={dbPath}";
+// PostgreSQL connection string from environment variable
+var connStr = Environment.GetEnvironmentVariable("DATABASE_URL") ?? "";
+
+if (string.IsNullOrEmpty(connStr))
+{
+    Console.Error.WriteLine("ERROR: DATABASE_URL environment variable is not set.");
+    Console.Error.WriteLine("Set it to your Neon PostgreSQL connection string.");
+    Environment.Exit(1);
+}
 
 // Initialize database tables
-using (var conn = new SqliteConnection(connStr))
+using (var conn = new NpgsqlConnection(connStr))
 {
-    conn.Open();
-    using var cmd = conn.CreateCommand();
-    cmd.CommandText = @"
+    await conn.OpenAsync();
+    using var cmd = new NpgsqlCommand(@"
         CREATE TABLE IF NOT EXISTS Customers (
-            CustomerID INTEGER PRIMARY KEY AUTOINCREMENT,
+            CustomerID SERIAL PRIMARY KEY,
             FirstName TEXT NOT NULL,
             LastName TEXT NOT NULL,
             Email TEXT NOT NULL,
@@ -34,23 +39,22 @@ using (var conn = new SqliteConnection(connStr))
             City TEXT DEFAULT '',
             State TEXT DEFAULT '',
             ZipCode TEXT DEFAULT '',
-            CreatedAt TEXT DEFAULT (datetime('now'))
+            CreatedAt TIMESTAMP DEFAULT NOW()
         );
 
         CREATE TABLE IF NOT EXISTS Orders (
-            OrderID INTEGER PRIMARY KEY AUTOINCREMENT,
+            OrderID SERIAL PRIMARY KEY,
             OrderNumber TEXT NOT NULL UNIQUE,
-            CustomerID INTEGER NOT NULL,
-            OrderTotal REAL NOT NULL DEFAULT 0,
+            CustomerID INTEGER NOT NULL REFERENCES Customers(CustomerID),
+            OrderTotal NUMERIC(10,2) NOT NULL DEFAULT 0,
             PaymentReference TEXT,
             Status TEXT DEFAULT 'pending',
-            CreatedAt TEXT DEFAULT (datetime('now')),
-            FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+            CreatedAt TIMESTAMP DEFAULT NOW()
         );
 
         CREATE TABLE IF NOT EXISTS OrderItems (
-            ItemID INTEGER PRIMARY KEY AUTOINCREMENT,
-            OrderID INTEGER NOT NULL,
+            ItemID SERIAL PRIMARY KEY,
+            OrderID INTEGER NOT NULL REFERENCES Orders(OrderID),
             ProductName TEXT NOT NULL,
             LidType TEXT DEFAULT '',
             BaseType TEXT DEFAULT '',
@@ -58,14 +62,13 @@ using (var conn = new SqliteConnection(connStr))
             MidColor TEXT DEFAULT '',
             BaseColor TEXT DEFAULT '',
             Quantity INTEGER NOT NULL DEFAULT 1,
-            Price REAL NOT NULL DEFAULT 0,
-            FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+            Price NUMERIC(10,2) NOT NULL DEFAULT 0
         );
-    ";
-    cmd.ExecuteNonQuery();
+    ", conn);
+    await cmd.ExecuteNonQueryAsync();
 }
 
-Console.WriteLine($"Database ready at: {dbPath}");
+Console.WriteLine("Database tables ready (PostgreSQL)");
 
 // POST /api/orders
 app.MapPost("/api/orders", async (HttpContext ctx) =>
@@ -74,7 +77,7 @@ app.MapPost("/api/orders", async (HttpContext ctx) =>
 
     var customer = body.GetProperty("customer");
     var items = body.GetProperty("items");
-    var orderTotal = body.TryGetProperty("orderTotal", out var ot) ? ot.GetDouble() : 0.0;
+    var orderTotal = body.TryGetProperty("orderTotal", out var ot) ? ot.GetDecimal() : 0m;
 
     var firstName = customer.GetProperty("firstName").GetString() ?? "";
     var lastName = customer.GetProperty("lastName").GetString() ?? "";
@@ -93,64 +96,58 @@ app.MapPost("/api/orders", async (HttpContext ctx) =>
 
     try
     {
-        using var conn = new SqliteConnection(connStr);
+        using var conn = new NpgsqlConnection(connStr);
         await conn.OpenAsync();
-        using var tx = conn.BeginTransaction();
+        using var tx = await conn.BeginTransactionAsync();
 
         // Insert customer
-        long customerId;
-        using (var cmd = conn.CreateCommand())
+        int customerId;
+        using (var cmd = new NpgsqlCommand(@"
+            INSERT INTO Customers (FirstName, LastName, Email, Address, City, State, ZipCode)
+            VALUES (@fn, @ln, @em, @addr, @city, @state, @zip)
+            RETURNING CustomerID", conn, tx))
         {
-            cmd.Transaction = tx;
-            cmd.CommandText = @"
-                INSERT INTO Customers (FirstName, LastName, Email, Address, City, State, ZipCode)
-                VALUES ($fn, $ln, $em, $addr, $city, $state, $zip);
-                SELECT last_insert_rowid();";
-            cmd.Parameters.AddWithValue("$fn", firstName);
-            cmd.Parameters.AddWithValue("$ln", lastName);
-            cmd.Parameters.AddWithValue("$em", email);
-            cmd.Parameters.AddWithValue("$addr", address);
-            cmd.Parameters.AddWithValue("$city", city);
-            cmd.Parameters.AddWithValue("$state", state);
-            cmd.Parameters.AddWithValue("$zip", zip);
-            customerId = (long)(await cmd.ExecuteScalarAsync())!;
+            cmd.Parameters.AddWithValue("@fn", firstName);
+            cmd.Parameters.AddWithValue("@ln", lastName);
+            cmd.Parameters.AddWithValue("@em", email);
+            cmd.Parameters.AddWithValue("@addr", address);
+            cmd.Parameters.AddWithValue("@city", city);
+            cmd.Parameters.AddWithValue("@state", state);
+            cmd.Parameters.AddWithValue("@zip", zip);
+            customerId = (int)(await cmd.ExecuteScalarAsync())!;
         }
 
         var orderNumber = "HS-" + Random.Shared.Next(100000, 999999);
 
         // Insert order
-        long orderId;
-        using (var cmd = conn.CreateCommand())
+        int orderId;
+        using (var cmd = new NpgsqlCommand(@"
+            INSERT INTO Orders (OrderNumber, CustomerID, OrderTotal, Status)
+            VALUES (@on, @cid, @total, 'pending')
+            RETURNING OrderID", conn, tx))
         {
-            cmd.Transaction = tx;
-            cmd.CommandText = @"
-                INSERT INTO Orders (OrderNumber, CustomerID, OrderTotal, Status)
-                VALUES ($on, $cid, $total, 'pending');
-                SELECT last_insert_rowid();";
-            cmd.Parameters.AddWithValue("$on", orderNumber);
-            cmd.Parameters.AddWithValue("$cid", customerId);
-            cmd.Parameters.AddWithValue("$total", orderTotal);
-            orderId = (long)(await cmd.ExecuteScalarAsync())!;
+            cmd.Parameters.AddWithValue("@on", orderNumber);
+            cmd.Parameters.AddWithValue("@cid", customerId);
+            cmd.Parameters.AddWithValue("@total", orderTotal);
+            orderId = (int)(await cmd.ExecuteScalarAsync())!;
         }
 
         // Insert items
         for (int i = 0; i < items.GetArrayLength(); i++)
         {
             var item = items[i];
-            using var cmd = conn.CreateCommand();
-            cmd.Transaction = tx;
-            cmd.CommandText = @"
+            using var cmd = new NpgsqlCommand(@"
                 INSERT INTO OrderItems (OrderID, ProductName, LidType, BaseType, LidColor, MidColor, BaseColor, Quantity, Price)
-                VALUES ($oid, $name, $lid, $base, $lc, $mc, $bc, $qty, $price)";
-            cmd.Parameters.AddWithValue("$oid", orderId);
-            cmd.Parameters.AddWithValue("$name", item.TryGetProperty("name", out var n) ? n.GetString() ?? "HydraStack" : "HydraStack");
-            cmd.Parameters.AddWithValue("$lid", item.TryGetProperty("lidType", out var lt) ? lt.GetString() ?? "" : "");
-            cmd.Parameters.AddWithValue("$base", item.TryGetProperty("baseType", out var bt) ? bt.GetString() ?? "" : "");
-            cmd.Parameters.AddWithValue("$lc", item.TryGetProperty("lidColor", out var lc2) ? lc2.GetString() ?? "" : "");
-            cmd.Parameters.AddWithValue("$mc", item.TryGetProperty("midColor", out var mc) ? mc.GetString() ?? "" : "");
-            cmd.Parameters.AddWithValue("$bc", item.TryGetProperty("baseColor", out var bc) ? bc.GetString() ?? "" : "");
-            cmd.Parameters.AddWithValue("$qty", item.TryGetProperty("quantity", out var q) ? q.GetInt32() : 1);
-            cmd.Parameters.AddWithValue("$price", item.TryGetProperty("price", out var p) ? p.GetDouble() : 0.0);
+                VALUES (@oid, @name, @lid, @base, @lc, @mc, @bc, @qty, @price)", conn, tx);
+            cmd.Parameters.AddWithValue("@oid", orderId);
+            cmd.Parameters.AddWithValue("@name", item.TryGetProperty("name", out var n) ? n.GetString() ?? "HydraStack" : "HydraStack");
+            cmd.Parameters.AddWithValue("@lid", item.TryGetProperty("lidType", out var lt) ? lt.GetString() ?? "" : "");
+            cmd.Parameters.AddWithValue("@base", item.TryGetProperty("baseType", out var bt) ? bt.GetString() ?? "" : "");
+            cmd.Parameters.AddWithValue("@lc", item.TryGetProperty("lidColor", out var lc2) ? lc2.GetString() ?? "" : "");
+            cmd.Parameters.AddWithValue("@mc", item.TryGetProperty("midColor", out var mc) ? mc.GetString() ?? "" : "");
+            cmd.Parameters.AddWithValue("@bc", item.TryGetProperty("baseColor", out var bc) ? bc.GetString() ?? "" : "");
+            cmd.Parameters.AddWithValue("@qty", item.TryGetProperty("quantity", out var q) ? q.GetInt32() : 1);
+            cmd.Parameters.AddWithValue("@price", item.TryGetProperty("price", out var p) ? p.GetDecimal() : 0m);
             await cmd.ExecuteNonQueryAsync();
         }
 
@@ -169,29 +166,27 @@ app.MapPost("/api/orders", async (HttpContext ctx) =>
 app.MapGet("/api/orders", async () =>
 {
     var orders = new List<Dictionary<string, object>>();
-    using var conn = new SqliteConnection(connStr);
+    using var conn = new NpgsqlConnection(connStr);
     await conn.OpenAsync();
 
     // Get all orders with customer info
-    using (var cmd = conn.CreateCommand())
+    using (var cmd = new NpgsqlCommand(@"
+        SELECT o.OrderID, o.OrderNumber, o.OrderTotal, o.Status, o.CreatedAt,
+               c.FirstName, c.LastName, c.Email, c.Address, c.City, c.State, c.ZipCode
+        FROM Orders o
+        JOIN Customers c ON o.CustomerID = c.CustomerID
+        ORDER BY o.CreatedAt DESC", conn))
     {
-        cmd.CommandText = @"
-            SELECT o.OrderID, o.OrderNumber, o.OrderTotal, o.Status, o.CreatedAt,
-                   c.FirstName, c.LastName, c.Email, c.Address, c.City, c.State, c.ZipCode
-            FROM Orders o
-            JOIN Customers c ON o.CustomerID = c.CustomerID
-            ORDER BY o.CreatedAt DESC";
-
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
             orders.Add(new Dictionary<string, object>
             {
-                ["orderId"] = reader.GetInt64(0),
+                ["orderId"] = reader.GetInt32(0),
                 ["orderNumber"] = reader.GetString(1),
-                ["orderTotal"] = reader.GetDouble(2),
+                ["orderTotal"] = reader.GetDecimal(2),
                 ["status"] = reader.GetString(3),
-                ["createdAt"] = reader.GetString(4),
+                ["createdAt"] = reader.GetDateTime(4).ToString("o"),
                 ["firstName"] = reader.GetString(5),
                 ["lastName"] = reader.GetString(6),
                 ["email"] = reader.GetString(7),
@@ -207,17 +202,16 @@ app.MapGet("/api/orders", async () =>
     // Get items for each order
     foreach (var order in orders)
     {
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"
+        using var cmd = new NpgsqlCommand(@"
             SELECT ProductName, LidType, BaseType, LidColor, MidColor, BaseColor, Quantity, Price
-            FROM OrderItems WHERE OrderID = $oid";
-        cmd.Parameters.AddWithValue("$oid", order["orderId"]);
+            FROM OrderItems WHERE OrderID = @oid", conn);
+        cmd.Parameters.AddWithValue("@oid", (int)order["orderId"]);
 
         using var reader = await cmd.ExecuteReaderAsync();
-        var items = (List<object>)order["items"];
+        var itemsList = (List<object>)order["items"];
         while (await reader.ReadAsync())
         {
-            items.Add(new
+            itemsList.Add(new
             {
                 product = reader.GetString(0),
                 lidType = reader.GetString(1),
@@ -226,7 +220,7 @@ app.MapGet("/api/orders", async () =>
                 midColor = reader.GetString(4),
                 baseColor = reader.GetString(5),
                 quantity = reader.GetInt32(6),
-                price = reader.GetDouble(7),
+                price = reader.GetDecimal(7),
             });
         }
     }
