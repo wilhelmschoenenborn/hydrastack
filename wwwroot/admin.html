@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HydraStack — Orders Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #1A1D23;
+    --accent: #3ECFCF;
+    --accent2: #2AA8D8;
+    --warm: #F5F0EB;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+  }
+
+  .header h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header p {
+    color: #8899AA;
+    font-size: 0.9rem;
+  }
+
+  .stats {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem 2rem;
+    text-align: center;
+    min-width: 160px;
+  }
+
+  .stat-card .num {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-card .label {
+    font-size: 0.75rem;
+    color: #8899AA;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  .refresh-btn {
+    display: block;
+    margin: 0 auto 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .refresh-btn:hover { opacity: 0.85; }
+
+  .orders-list {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .order-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .order-card:hover {
+    border-color: rgba(62,207,207,0.3);
+  }
+
+  .order-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .order-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  .order-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(62,207,207,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(62,207,207,0.25);
+  }
+
+  .order-date {
+    font-size: 0.75rem;
+    color: #7788AA;
+  }
+
+  .order-body {
+    padding: 1.2rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .order-body { grid-template-columns: 1fr; }
+  }
+
+  .customer-info h4, .items-info h4 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .info-row {
+    font-size: 0.85rem;
+    color: #AAB8CC;
+    margin-bottom: 0.4rem;
+    line-height: 1.5;
+  }
+
+  .info-row strong {
+    color: var(--warm);
+    font-weight: 600;
+  }
+
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.85rem;
+    color: #AAB8CC;
+  }
+
+  .item-row:last-child { border-bottom: none; }
+
+  .item-name { font-weight: 600; color: var(--warm); }
+  .item-colors { font-size: 0.7rem; color: #7788AA; margin-top: 2px; }
+  .item-qty { color: #7788AA; }
+  .item-price { font-weight: 600; color: var(--warm); }
+
+  .order-footer {
+    padding: 0.8rem 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .order-total {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .order-total span {
+    color: #8899AA;
+    font-weight: 400;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+  }
+
+  .empty-msg {
+    text-align: center;
+    color: #7788AA;
+    padding: 3rem;
+    font-size: 1.1rem;
+  }
+
+  .loading {
+    text-align: center;
+    color: var(--accent);
+    padding: 3rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>HYDRA<span>STACK</span></h1>
+  <p>Orders Dashboard</p>
+</div>
+
+<div class="stats" id="stats">
+  <div class="stat-card"><div class="num" id="totalOrders">-</div><div class="label">Orders</div></div>
+  <div class="stat-card"><div class="num" id="totalRevenue">-</div><div class="label">Revenue</div></div>
+  <div class="stat-card"><div class="num" id="totalCustomers">-</div><div class="label">Customers</div></div>
+</div>
+
+<button class="refresh-btn" onclick="loadOrders()">Refresh Orders</button>
+
+<div class="orders-list" id="ordersList">
+  <div class="loading">Loading orders...</div>
+</div>
+
+<script>
+  async function loadOrders() {
+    const list = document.getElementById('ordersList');
+    list.innerHTML = '<div class="loading">Loading orders...</div>';
+
+    try {
+      const res = await fetch('/api/orders');
+      const orders = await res.json();
+
+      // Stats
+      document.getElementById('totalOrders').textContent = orders.length;
+      const revenue = orders.reduce((sum, o) => sum + (o.orderTotal || 0), 0);
+      document.getElementById('totalRevenue').textContent = '$' + revenue.toFixed(2);
+      const emails = new Set(orders.map(o => o.email));
+      document.getElementById('totalCustomers').textContent = emails.size;
+
+      if (orders.length === 0) {
+        list.innerHTML = '<div class="empty-msg">No orders yet. Share your link and they\'ll show up here!</div>';
+        return;
+      }
+
+      list.innerHTML = '';
+
+      orders.forEach(order => {
+        const date = new Date(order.createdAt).toLocaleString();
+
+        let itemsHtml = '';
+        if (order.items && order.items.length > 0) {
+          order.items.forEach(item => {
+            const colors = [item.lidColor, item.midColor, item.baseColor].filter(c => c).join(', ');
+            const config = [item.lidType, item.baseType].filter(c => c).join(' / ');
+            let details = '';
+            if (config) details += config;
+            if (colors) details += (details ? ' — ' : '') + colors;
+
+            itemsHtml += `
+              <div class="item-row">
+                <div>
+                  <div class="item-name">${item.product}</div>
+                  ${details ? `<div class="item-colors">${details}</div>` : ''}
+                </div>
+                <div class="item-qty">x${item.quantity}</div>
+                <div class="item-price">$${item.price.toFixed(2)}</div>
+              </div>`;
+          });
+        } else {
+          itemsHtml = '<div class="info-row">No items recorded</div>';
+        }
+
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <div class="order-top">
+            <div class="order-num">${order.orderNumber}</div>
+            <div class="order-status">${order.status}</div>
+            <div class="order-date">${date}</div>
+          </div>
+          <div class="order-body">
+            <div class="customer-info">
+              <h4>Customer</h4>
+              <div class="info-row"><strong>${order.firstName} ${order.lastName}</strong></div>
+              <div class="info-row">${order.email}</div>
+              <div class="info-row">${order.address || ''}</div>
+              <div class="info-row">${order.city || ''}${order.state ? ', ' + order.state : ''} ${order.zip || ''}</div>
+            </div>
+            <div class="items-info">
+              <h4>Items</h4>
+              ${itemsHtml}
+            </div>
+          </div>
+          <div class="order-footer">
+            <div class="order-total"><span>Total</span>$${order.orderTotal.toFixed(2)}</div>
+          </div>`;
+        list.appendChild(card);
+      });
+    } catch (err) {
+      list.innerHTML = '<div class="empty-msg">Failed to load orders. Is the server running?</div>';
+      console.error(err);
+    }
+  }
+
+  loadOrders();
+</script>
+</body>
+</html>
