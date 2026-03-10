@@ -16,14 +16,30 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 // PostgreSQL connection string from environment variable
-var connStr = Environment.GetEnvironmentVariable("DATABASE_URL") ?? "";
+var rawConnStr = Environment.GetEnvironmentVariable("DATABASE_URL") ?? "";
 
-if (string.IsNullOrEmpty(connStr))
+if (string.IsNullOrEmpty(rawConnStr))
 {
     Console.Error.WriteLine("ERROR: DATABASE_URL environment variable is not set.");
     Console.Error.WriteLine("Set it to your Neon PostgreSQL connection string.");
     Environment.Exit(1);
 }
+
+// Strip channel_binding param that Npgsql doesn't support, then build connection string
+var uri = new Uri(rawConnStr.Replace("postgresql://", "http://"));
+var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+queryParams.Remove("channel_binding");
+
+var connBuilder = new NpgsqlConnectionStringBuilder
+{
+    Host = uri.Host,
+    Port = uri.Port > 0 ? uri.Port : 5432,
+    Database = uri.AbsolutePath.TrimStart('/'),
+    Username = uri.UserInfo.Split(':')[0],
+    Password = Uri.UnescapeDataString(uri.UserInfo.Split(':')[1]),
+    SslMode = SslMode.Require,
+};
+var connStr = connBuilder.ToString();
 
 // Initialize database tables
 using (var conn = new NpgsqlConnection(connStr))
