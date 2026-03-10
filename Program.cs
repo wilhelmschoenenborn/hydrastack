@@ -25,21 +25,10 @@ if (string.IsNullOrEmpty(rawConnStr))
     Environment.Exit(1);
 }
 
-// Strip channel_binding param that Npgsql doesn't support, then build connection string
-var uri = new Uri(rawConnStr.Replace("postgresql://", "http://"));
-var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-queryParams.Remove("channel_binding");
-
-var connBuilder = new NpgsqlConnectionStringBuilder
-{
-    Host = uri.Host,
-    Port = uri.Port > 0 ? uri.Port : 5432,
-    Database = uri.AbsolutePath.TrimStart('/'),
-    Username = uri.UserInfo.Split(':')[0],
-    Password = Uri.UnescapeDataString(uri.UserInfo.Split(':')[1]),
-    SslMode = SslMode.Require,
-};
-var connStr = connBuilder.ToString();
+// Convert postgresql:// URI to Npgsql key-value format
+var dbUri = new Uri(rawConnStr);
+var userInfo = dbUri.UserInfo.Split(':');
+var connStr = $"Host={dbUri.Host};Port={(dbUri.Port > 0 ? dbUri.Port : 5432)};Database={dbUri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={Uri.UnescapeDataString(userInfo[1])};SSL Mode=Require;Trust Server Certificate=true";
 
 // Initialize database tables
 using (var conn = new NpgsqlConnection(connStr))
