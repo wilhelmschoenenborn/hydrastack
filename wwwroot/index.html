@@ -24,6 +24,123 @@
     color: var(--warm);
     font-family: 'Outfit', sans-serif;
     overflow-x: hidden;
+    padding-top: 56px;
+  }
+
+  /* === TOP BAR === */
+  .top-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(26, 29, 35, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    z-index: 1000;
+  }
+
+  .top-bar-brand {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--warm);
+  }
+
+  .top-bar-brand span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .top-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .top-bar-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .top-bar-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .top-bar-btn.accent {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    color: var(--dark);
+    font-weight: 700;
+  }
+
+  .top-bar-btn.accent:hover {
+    opacity: 0.9;
+  }
+
+  .top-bar-user {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .top-bar-user-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+  }
+
+  .top-bar-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #22262E;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 0.4rem 0;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    display: none;
+    z-index: 1001;
+  }
+
+  .top-bar-dropdown.open {
+    display: block;
+  }
+
+  .top-bar-dropdown button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .top-bar-dropdown button:hover {
+    background: rgba(255,255,255,0.06);
   }
 
   /* Hero */
@@ -1188,6 +1305,84 @@
     pointer-events: none;
   }
 
+  /* Per-product color selector */
+  .prod-color-label {
+    font-size: 0.65rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    color: #7788AA;
+    margin-bottom: 0.3rem;
+    text-align: center;
+  }
+
+  .prod-color-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 0.8rem;
+  }
+
+  .prod-swatch {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .prod-swatch:hover {
+    transform: scale(1.15);
+  }
+
+  .prod-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(62,207,207,0.4);
+  }
+
+  /* Color name tag in cart items */
+  .ci-color {
+    font-size: 0.65rem;
+    color: #7788AA;
+    font-weight: 400;
+  }
+
+  /* Bundle color row */
+  .bundle-color-section {
+    margin-bottom: 1.2rem;
+  }
+
+  .bundle-color-label {
+    font-size: 0.65rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    color: #7788AA;
+    margin-bottom: 0.4rem;
+  }
+
+  .bundle-color-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .bundle-swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .bundle-swatch:hover {
+    transform: scale(1.15);
+  }
+
+  .bundle-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px rgba(62,207,207,0.4);
+  }
+
   /* Floating cart button */
   .cart-fab {
     position: fixed;
@@ -1549,6 +1744,17 @@
     color: #556677;
   }
 
+  .co-field input.invalid {
+    border-color: #D4585C;
+  }
+
+  .field-error {
+    font-size: 0.7rem;
+    color: #D4585C;
+    margin-top: 0.2rem;
+    min-height: 0;
+  }
+
   .co-field select option {
     background: #1A1D23;
     color: var(--warm);
@@ -1707,6 +1913,277 @@
 
   .confirm-close-btn:hover { background: #50E0E0; }
 
+  /* === AUTH MODAL === */
+  .auth-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .auth-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .auth-modal {
+    background: #1E2128;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .auth-modal h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 0.6rem;
+    background: rgba(255,255,255,0.03);
+    border: none;
+    color: #7788AA;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .auth-tab.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+  }
+
+  .auth-form {
+    display: none;
+  }
+
+  .auth-form.active {
+    display: block;
+  }
+
+  .auth-field {
+    margin-bottom: 1rem;
+  }
+
+  .auth-field label {
+    display: block;
+    font-size: 0.72rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    color: #7788AA;
+    margin-bottom: 0.35rem;
+  }
+
+  .auth-field input {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .auth-field input:focus {
+    border-color: var(--accent);
+  }
+
+  .auth-field input::placeholder {
+    color: #556677;
+  }
+
+  .auth-error {
+    color: #D4585C;
+    font-size: 0.78rem;
+    margin-bottom: 0.8rem;
+    min-height: 1.2em;
+  }
+
+  .auth-submit-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 12px;
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .auth-submit-btn:hover {
+    opacity: 0.9;
+  }
+
+  .auth-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .auth-close-btn {
+    display: block;
+    width: 100%;
+    margin-top: 0.8rem;
+    padding: 0.5rem;
+    background: none;
+    border: none;
+    color: #7788AA;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .auth-close-btn:hover {
+    color: var(--warm);
+  }
+
+  /* === ORDER HISTORY MODAL === */
+  .orders-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .orders-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .orders-modal {
+    background: #1E2128;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 550px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .orders-modal h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+
+  .order-history-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .order-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+  }
+
+  .order-history-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+  }
+
+  .order-history-date {
+    font-size: 0.72rem;
+    color: #7788AA;
+  }
+
+  .order-history-status {
+    font-size: 0.6rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(232,138,48,0.12);
+    color: #E88A30;
+    border: 1px solid rgba(232,138,48,0.3);
+  }
+
+  .order-history-items {
+    font-size: 0.78rem;
+    color: #AAB8CC;
+    line-height: 1.6;
+  }
+
+  .order-history-total {
+    margin-top: 0.6rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--warm);
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .orders-empty {
+    text-align: center;
+    color: #7788AA;
+    padding: 2rem 0;
+    font-size: 0.9rem;
+  }
+
+  .orders-close-btn {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.65rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .orders-close-btn:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
   .form-view { }
   .form-view.hidden { display: none; }
 
@@ -1726,6 +2203,17 @@
 </style>
 </head>
 <body>
+
+<!-- Top Bar -->
+<nav class="top-bar">
+  <div class="top-bar-brand">HYDRA<span>STACK</span></div>
+  <div class="top-bar-actions">
+    <button class="top-bar-btn" onclick="document.querySelector('.shop-section').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+    <div id="authArea">
+      <button class="top-bar-btn accent" id="authBtn" onclick="openAuthModal()">Sign In</button>
+    </div>
+  </div>
+</nav>
 
 <!-- Hero -->
 <section class="hero">
@@ -2101,6 +2589,10 @@
         <span class="bundle-original">$49.97</span>
         <span class="bundle-savings">Save $19.98</span>
       </div>
+      <div class="bundle-color-section">
+        <div class="bundle-color-label">COLOR</div>
+        <div class="bundle-color-row" id="bundleColorRow"></div>
+      </div>
       <button class="bundle-atc" id="atc-starter" onclick="addToCart('starter-bundle')">Add Starter Set to Cart</button>
     </div>
   </div>
@@ -2161,7 +2653,8 @@
       <div class="co-row">
         <div class="co-field">
           <label>Email</label>
-          <input type="email" placeholder="john@example.com" id="coEmail">
+          <input type="email" placeholder="john@example.com" id="coEmail" onblur="validateEmailField(this)">
+          <div class="field-error" id="emailError"></div>
         </div>
       </div>
       <div class="co-row">
@@ -2208,6 +2701,62 @@
       <button class="confirm-close-btn" onclick="closeConfirm()">Continue Shopping</button>
     </div>
 
+  </div>
+</div>
+
+<!-- Auth Modal -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-modal">
+    <h2>Account</h2>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+    </div>
+
+    <!-- Login Form -->
+    <div class="auth-form active" id="loginForm">
+      <div class="auth-field">
+        <label>USERNAME</label>
+        <input type="text" placeholder="Enter your username" id="loginUsername">
+      </div>
+      <div class="auth-field">
+        <label>PASSWORD</label>
+        <input type="password" placeholder="Enter your password" id="loginPassword">
+      </div>
+      <div class="auth-error" id="loginError"></div>
+      <button class="auth-submit-btn" onclick="handleLogin()">Sign In</button>
+    </div>
+
+    <!-- Register Form -->
+    <div class="auth-form" id="registerForm">
+      <div class="auth-field">
+        <label>USERNAME</label>
+        <input type="text" placeholder="Choose a username (3+ characters)" id="regUsername">
+      </div>
+      <div class="auth-field">
+        <label>PASSWORD</label>
+        <input type="password" placeholder="Create a password (6+ characters)" id="regPassword">
+      </div>
+      <div class="auth-field">
+        <label>CONFIRM PASSWORD</label>
+        <input type="password" placeholder="Re-enter your password" id="regConfirmPassword">
+      </div>
+      <div class="auth-error" id="registerError"></div>
+      <button class="auth-submit-btn" onclick="handleRegister()">Create Account</button>
+    </div>
+
+    <button class="auth-close-btn" onclick="closeAuthModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- Order History Modal -->
+<div class="orders-overlay" id="ordersOverlay">
+  <div class="orders-modal">
+    <h2>My Orders</h2>
+    <div id="ordersContent">
+      <div class="orders-empty">Loading...</div>
+    </div>
+    <button class="orders-close-btn" onclick="closeOrdersModal()">Close</button>
   </div>
 </div>
 
@@ -2386,6 +2935,38 @@
 
   let cart = [];
 
+  // Track selected color per product
+  const productColors = {};
+  products.forEach(p => { productColors[p.id] = 'stealth'; });
+
+  function selectProductColor(productId, color) {
+    productColors[productId] = color;
+    // Update swatch active states
+    document.querySelectorAll(`.prod-swatch[data-product="${productId}"]`).forEach(s => {
+      s.classList.toggle('active', s.getAttribute('data-color') === color);
+    });
+    // Also update bundle swatches
+    document.querySelectorAll(`.bundle-swatch[data-product="${productId}"]`).forEach(s => {
+      s.classList.toggle('active', s.getAttribute('data-color') === color);
+    });
+  }
+
+  function buildBundleSwatches() {
+    const row = document.getElementById('bundleColorRow');
+    if (!row) return;
+    row.innerHTML = '';
+    Object.keys(colorData).forEach(key => {
+      const el = document.createElement('div');
+      el.className = 'bundle-swatch' + (productColors['starter-bundle'] === key ? ' active' : '');
+      el.style.background = colorData[key].swatch;
+      el.setAttribute('data-product', 'starter-bundle');
+      el.setAttribute('data-color', key);
+      el.title = colorData[key].name;
+      el.onclick = () => selectProductColor('starter-bundle', key);
+      row.appendChild(el);
+    });
+  }
+
   function buildShop() {
     const grid = document.getElementById('shopGrid');
     grid.innerHTML = '';
@@ -2393,28 +2974,45 @@
       if (p.bundle) return; // Starter bundle has its own hero card
       const card = document.createElement('div');
       card.className = 'product-card';
+
+      // Build color swatches HTML
+      let swatchesHtml = '<div class="prod-color-label">COLOR</div><div class="prod-color-row">';
+      Object.keys(colorData).forEach(key => {
+        const isActive = productColors[p.id] === key ? ' active' : '';
+        swatchesHtml += `<div class="prod-swatch${isActive}" style="background: ${colorData[key].swatch};" data-product="${p.id}" data-color="${key}" title="${colorData[key].name}" onclick="selectProductColor('${p.id}', '${key}')"></div>`;
+      });
+      swatchesHtml += '</div>';
+
       card.innerHTML = `
         <div class="prod-icon" style="background: ${p.bg};">${p.icon}</div>
         <h4>${p.name}</h4>
         <div class="prod-desc">${p.desc}</div>
         <div class="prod-price">$${p.price.toFixed(2)}</div>
+        ${swatchesHtml}
         <button class="add-to-cart-btn" id="atc-${p.id}" onclick="addToCart('${p.id}')">Add to Cart</button>
       `;
       grid.appendChild(card);
     });
+    buildBundleSwatches();
+  }
+
+  // Cart key combines product id and color
+  function cartKey(productId, color) {
+    return productId + ':' + color;
   }
 
   function addToCart(productId) {
-    const existing = cart.find(c => c.id === productId);
+    const color = productColors[productId] || 'stealth';
+    const key = cartKey(productId, color);
+    const existing = cart.find(c => c.key === key);
     if (existing) {
       existing.qty++;
     } else {
-      cart.push({ id: productId, qty: 1 });
+      cart.push({ id: productId, qty: 1, color: color, key: key });
     }
     // Button feedback
     const btn = document.getElementById('atc-' + productId);
     if (btn) {
-      const origText = btn.textContent;
       if (btn.classList.contains('bundle-atc')) {
         btn.textContent = '✓ Added to Cart!';
         btn.classList.add('added');
@@ -2434,17 +3032,17 @@
     updateCart();
   }
 
-  function removeFromCart(productId) {
-    cart = cart.filter(c => c.id !== productId);
+  function removeFromCart(cartItemKey) {
+    cart = cart.filter(c => c.key !== cartItemKey);
     updateCart();
   }
 
-  function changeQty(productId, delta) {
-    const item = cart.find(c => c.id === productId);
+  function changeQty(cartItemKey, delta) {
+    const item = cart.find(c => c.key === cartItemKey);
     if (!item) return;
     item.qty += delta;
     if (item.qty < 1) {
-      removeFromCart(productId);
+      removeFromCart(cartItemKey);
       return;
     }
     updateCart();
@@ -2480,20 +3078,23 @@
       cart.forEach(c => {
         const p = getProduct(c.id);
         if (!p) return;
+        const colorName = colorData[c.color] ? colorData[c.color].name : c.color;
+        const escapedKey = c.key.replace(/'/g, "\\'");
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
           <div class="ci-icon" style="background: ${p.bg};">${p.icon}</div>
           <div class="ci-info">
             <div class="ci-name">${p.name}</div>
+            <div class="ci-color">${colorName}</div>
             <div class="qty-control">
-              <button class="qty-btn" onclick="changeQty('${p.id}', -1)">−</button>
+              <button class="qty-btn" onclick="changeQty('${escapedKey}', -1)">−</button>
               <span class="qty-num">${c.qty}</span>
-              <button class="qty-btn" onclick="changeQty('${p.id}', 1)">+</button>
+              <button class="qty-btn" onclick="changeQty('${escapedKey}', 1)">+</button>
             </div>
           </div>
           <div class="ci-price">$${(p.price * c.qty).toFixed(2)}</div>
-          <button class="ci-remove" onclick="removeFromCart('${p.id}')">✕</button>
+          <button class="ci-remove" onclick="removeFromCart('${escapedKey}')">✕</button>
         `;
         itemsEl.appendChild(div);
       });
@@ -2510,6 +3111,24 @@
     drawer.classList.toggle('open');
     overlay.classList.toggle('open');
     document.body.style.overflow = isOpen ? '' : 'hidden';
+  }
+
+  // === EMAIL VALIDATION ===
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validateEmailField(input) {
+    const errorEl = input.parentElement.querySelector('.field-error');
+    if (input.value.trim() && !isValidEmail(input.value.trim())) {
+      input.classList.add('invalid');
+      if (errorEl) errorEl.textContent = 'Please enter a valid email address';
+      return false;
+    } else {
+      input.classList.remove('invalid');
+      if (errorEl) errorEl.textContent = '';
+      return true;
+    }
   }
 
   // === CHECKOUT ===
@@ -2535,8 +3154,9 @@
     cart.forEach(c => {
       const p = getProduct(c.id);
       if (!p) return;
+      const colorName = colorData[c.color] ? colorData[c.color].name : '';
       html += `<div class="co-order-item">
-        <span>${p.icon} ${p.name}${c.qty > 1 ? ' × ' + c.qty : ''}</span>
+        <span>${p.icon} ${p.name}${colorName ? ' — ' + colorName : ''}${c.qty > 1 ? ' × ' + c.qty : ''}</span>
         <span class="co-oi-price">$${(p.price * c.qty).toFixed(2)}</span>
       </div>`;
     });
@@ -2581,17 +3201,32 @@
       return;
     }
 
+    if (!isValidEmail(customer.email)) {
+      const emailInput = document.getElementById('coEmail');
+      validateEmailField(emailInput);
+      alert('Please enter a valid email address.');
+      btn.disabled = false;
+      btn.textContent = 'Place Order';
+      return;
+    }
+
     const items = cart.map(c => {
       const p = getProduct(c.id);
+      const itemColor = c.color || 'stealth';
+      // Map product type to the appropriate color field
+      const isLid = c.id.startsWith('lid-');
+      const isMid = c.id.startsWith('mid-');
+      const isBase = c.id.startsWith('base-');
+      const isBundle = c.id === 'starter-bundle';
       return {
         name: p.name,
         quantity: c.qty,
         price: p.price,
         lidType: currentLid || '',
         baseType: currentBase || '',
-        lidColor: lidColor || '',
-        midColor: midColor || '',
-        baseColor: baseColor || '',
+        lidColor: (isLid || isBundle) ? itemColor : '',
+        midColor: (isMid || isBundle) ? itemColor : '',
+        baseColor: (isBase || isBundle) ? itemColor : '',
       };
     });
 
@@ -2601,10 +3236,14 @@
     const orderTotal = subtotal + shipping + tax;
 
     try {
+      const orderPayload = { customer, items, orderTotal };
+      if (currentUser && currentUser.userId) {
+        orderPayload.userId = currentUser.userId;
+      }
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customer, items, orderTotal }),
+        body: JSON.stringify(orderPayload),
       });
 
       const data = await res.json();
@@ -2645,6 +3284,233 @@
       });
     }, 400);
   }
+
+  // === AUTH SYSTEM ===
+  let currentUser = null;
+
+  function loadUser() {
+    try {
+      const stored = localStorage.getItem('hydrastack_user');
+      if (stored) {
+        currentUser = JSON.parse(stored);
+        updateAuthUI();
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  function saveUser(user) {
+    currentUser = user;
+    localStorage.setItem('hydrastack_user', JSON.stringify(user));
+    updateAuthUI();
+  }
+
+  function clearUser() {
+    currentUser = null;
+    localStorage.removeItem('hydrastack_user');
+    updateAuthUI();
+  }
+
+  function updateAuthUI() {
+    const authArea = document.getElementById('authArea');
+    if (currentUser) {
+      authArea.innerHTML = `
+        <div class="top-bar-user">
+          <span class="top-bar-user-name" onclick="toggleUserDropdown()">Hi, ${currentUser.username} ▾</span>
+          <div class="top-bar-dropdown" id="userDropdown">
+            <button onclick="openOrdersModal()">My Orders</button>
+            <button onclick="handleSignOut()">Sign Out</button>
+          </div>
+        </div>
+      `;
+    } else {
+      authArea.innerHTML = `<button class="top-bar-btn accent" id="authBtn" onclick="openAuthModal()">Sign In</button>`;
+    }
+  }
+
+  function toggleUserDropdown() {
+    const dd = document.getElementById('userDropdown');
+    if (dd) dd.classList.toggle('open');
+  }
+
+  // Close dropdown when clicking elsewhere
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.top-bar-user')) {
+      const dd = document.getElementById('userDropdown');
+      if (dd) dd.classList.remove('open');
+    }
+  });
+
+  function openAuthModal() {
+    document.getElementById('authOverlay').classList.add('open');
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('registerError').textContent = '';
+  }
+
+  function closeAuthModal() {
+    document.getElementById('authOverlay').classList.remove('open');
+  }
+
+  function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach((t, i) => {
+      t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+    });
+    document.getElementById('loginForm').classList.toggle('active', tab === 'login');
+    document.getElementById('registerForm').classList.toggle('active', tab === 'register');
+    document.getElementById('loginError').textContent = '';
+    document.getElementById('registerError').textContent = '';
+  }
+
+  async function handleLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('loginError');
+
+    if (!username || !password) {
+      errorEl.textContent = 'Please fill in all fields.';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        saveUser(data.user);
+        closeAuthModal();
+        // Clear form
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+      } else {
+        errorEl.textContent = data.error || 'Login failed.';
+      }
+    } catch (err) {
+      errorEl.textContent = 'Could not connect to server.';
+    }
+  }
+
+  async function handleRegister() {
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirm = document.getElementById('regConfirmPassword').value;
+    const errorEl = document.getElementById('registerError');
+
+    if (!username || !password || !confirm) {
+      errorEl.textContent = 'Please fill in all fields.';
+      return;
+    }
+
+    if (username.length < 3) {
+      errorEl.textContent = 'Username must be at least 3 characters.';
+      return;
+    }
+
+    if (password.length < 6) {
+      errorEl.textContent = 'Password must be at least 6 characters.';
+      return;
+    }
+
+    if (password !== confirm) {
+      errorEl.textContent = 'Passwords do not match.';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        saveUser(data.user);
+        closeAuthModal();
+        // Clear form
+        document.getElementById('regUsername').value = '';
+        document.getElementById('regPassword').value = '';
+        document.getElementById('regConfirmPassword').value = '';
+      } else {
+        errorEl.textContent = data.error || 'Registration failed.';
+      }
+    } catch (err) {
+      errorEl.textContent = 'Could not connect to server.';
+    }
+  }
+
+  function handleSignOut() {
+    clearUser();
+    const dd = document.getElementById('userDropdown');
+    if (dd) dd.classList.remove('open');
+  }
+
+  // === ORDER HISTORY ===
+  function openOrdersModal() {
+    const dd = document.getElementById('userDropdown');
+    if (dd) dd.classList.remove('open');
+    document.getElementById('ordersOverlay').classList.add('open');
+    loadOrderHistory();
+  }
+
+  function closeOrdersModal() {
+    document.getElementById('ordersOverlay').classList.remove('open');
+  }
+
+  async function loadOrderHistory() {
+    const contentEl = document.getElementById('ordersContent');
+    contentEl.innerHTML = '<div class="orders-empty">Loading...</div>';
+
+    if (!currentUser) {
+      contentEl.innerHTML = '<div class="orders-empty">Please sign in to view orders.</div>';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/auth/orders/${currentUser.userId}`);
+      const orders = await res.json();
+
+      if (!orders.length) {
+        contentEl.innerHTML = '<div class="orders-empty">No orders yet. Start shopping!</div>';
+        return;
+      }
+
+      let html = '';
+      orders.forEach(o => {
+        const date = new Date(o.createdAt).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', year: 'numeric'
+        });
+        let itemsHtml = '';
+        if (o.items && o.items.length) {
+          o.items.forEach(item => {
+            const colorInfo = [item.lidColor, item.midColor, item.baseColor].filter(Boolean).join(', ');
+            itemsHtml += `<div>${item.product} × ${item.quantity}${colorInfo ? ' (' + colorInfo + ')' : ''}</div>`;
+          });
+        }
+        html += `
+          <div class="order-history-card">
+            <div class="order-history-header">
+              <div>
+                <span class="order-history-num">${o.orderNumber}</span>
+                <span class="order-history-date" style="margin-left: 0.8rem;">${date}</span>
+              </div>
+              <span class="order-history-status">${o.status.toUpperCase()}</span>
+            </div>
+            <div class="order-history-items">${itemsHtml}</div>
+            <div class="order-history-total">$${Number(o.orderTotal).toFixed(2)}</div>
+          </div>
+        `;
+      });
+      contentEl.innerHTML = html;
+    } catch (err) {
+      contentEl.innerHTML = '<div class="orders-empty">Could not load orders. Make sure the server is running.</div>';
+    }
+  }
+
+  // Load user state on page load
+  loadUser();
 
   // Init on DOM load
   document.addEventListener('DOMContentLoaded', () => {});
