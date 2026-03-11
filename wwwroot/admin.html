@@ -168,6 +168,11 @@
     height: auto !important;
   }
 
+  .chart-container.pie-size {
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
   .chart-legend {
     display: flex;
     flex-wrap: wrap;
@@ -437,8 +442,8 @@
     <!-- Color Popularity (Pie Chart) -->
     <div class="chart-card">
       <div class="chart-title">Color Popularity</div>
-      <div class="chart-container">
-        <canvas id="colorChart" width="300" height="200"></canvas>
+      <div class="chart-container pie-size">
+        <canvas id="colorChart" width="240" height="240"></canvas>
       </div>
       <div class="chart-legend" id="colorLegend"></div>
     </div>
@@ -446,8 +451,8 @@
     <!-- Lid Type Breakdown (Pie Chart) -->
     <div class="chart-card">
       <div class="chart-title">Lid Type Breakdown</div>
-      <div class="chart-container">
-        <canvas id="lidChart" width="300" height="200"></canvas>
+      <div class="chart-container pie-size">
+        <canvas id="lidChart" width="240" height="240"></canvas>
       </div>
       <div class="chart-legend" id="lidLegend"></div>
     </div>
@@ -455,8 +460,8 @@
     <!-- Base Type Breakdown (Pie Chart) -->
     <div class="chart-card">
       <div class="chart-title">Base Type Breakdown</div>
-      <div class="chart-container">
-        <canvas id="baseChart" width="300" height="200"></canvas>
+      <div class="chart-container pie-size">
+        <canvas id="baseChart" width="240" height="240"></canvas>
       </div>
       <div class="chart-legend" id="baseLegend"></div>
     </div>
@@ -472,8 +477,8 @@
     <!-- Repeat vs New Customers -->
     <div class="chart-card">
       <div class="chart-title">New vs Repeat Customers</div>
-      <div class="chart-container">
-        <canvas id="customerChart" width="300" height="200"></canvas>
+      <div class="chart-container pie-size">
+        <canvas id="customerChart" width="240" height="240"></canvas>
       </div>
       <div class="chart-legend" id="customerLegend"></div>
     </div>
