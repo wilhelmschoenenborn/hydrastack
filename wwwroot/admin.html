@@ -79,6 +79,163 @@
     margin-top: 0.3rem;
   }
 
+  /* === TAB NAVIGATION === */
+  .tab-nav {
+    display: flex;
+    gap: 0;
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    background: rgba(255,255,255,0.03);
+    border: none;
+    color: #7788AA;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+  }
+
+  .tab-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  /* === ANALYTICS SECTION === */
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto 2.5rem;
+  }
+
+  @media (max-width: 800px) {
+    .analytics-grid { grid-template-columns: 1fr; }
+  }
+
+  .chart-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: border-color 0.3s;
+  }
+
+  .chart-card:hover {
+    border-color: rgba(62,207,207,0.2);
+  }
+
+  .chart-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .chart-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .chart-container canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: #AAB8CC;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .chart-empty {
+    text-align: center;
+    color: #556677;
+    padding: 2rem;
+    font-size: 0.85rem;
+  }
+
+  /* Metric row inside chart card */
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .metric-row:last-child { border-bottom: none; }
+
+  .metric-label {
+    font-size: 0.82rem;
+    color: #AAB8CC;
+  }
+
+  .metric-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--warm);
+  }
+
+  .metric-bar-wrap {
+    flex: 1;
+    margin: 0 1rem;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .metric-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  /* === ORDERS LIST === */
   .refresh-btn {
     display: block;
     margin: 0 auto 2rem;
@@ -249,15 +406,496 @@
   <div class="stat-card"><div class="num" id="totalOrders">-</div><div class="label">Orders</div></div>
   <div class="stat-card"><div class="num" id="totalRevenue">-</div><div class="label">Revenue</div></div>
   <div class="stat-card"><div class="num" id="totalCustomers">-</div><div class="label">Customers</div></div>
+  <div class="stat-card"><div class="num" id="avgOrderValue">-</div><div class="label">Avg Order</div></div>
+  <div class="stat-card"><div class="num" id="totalItems">-</div><div class="label">Items Sold</div></div>
 </div>
 
-<button class="refresh-btn" onclick="loadOrders()">Refresh Orders</button>
+<!-- Tab Navigation -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('analytics')">Analytics</button>
+  <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
+</div>
 
-<div class="orders-list" id="ordersList">
-  <div class="loading">Loading orders...</div>
+<!-- Analytics Tab -->
+<div class="tab-content active" id="tab-analytics">
+  <div class="analytics-grid">
+
+    <!-- Revenue Over Time (Bar Chart) -->
+    <div class="chart-card full-width">
+      <div class="chart-title">Revenue Over Time (Last 14 Days)</div>
+      <div class="chart-container">
+        <canvas id="revenueChart" width="1000" height="300"></canvas>
+      </div>
+    </div>
+
+    <!-- Top Products (Horizontal Bar) -->
+    <div class="chart-card">
+      <div class="chart-title">Top Products</div>
+      <div id="topProductsList"></div>
+    </div>
+
+    <!-- Color Popularity (Pie Chart) -->
+    <div class="chart-card">
+      <div class="chart-title">Color Popularity</div>
+      <div class="chart-container">
+        <canvas id="colorChart" width="400" height="280"></canvas>
+      </div>
+      <div class="chart-legend" id="colorLegend"></div>
+    </div>
+
+    <!-- Lid Type Breakdown (Pie Chart) -->
+    <div class="chart-card">
+      <div class="chart-title">Lid Type Breakdown</div>
+      <div class="chart-container">
+        <canvas id="lidChart" width="400" height="280"></canvas>
+      </div>
+      <div class="chart-legend" id="lidLegend"></div>
+    </div>
+
+    <!-- Base Type Breakdown (Pie Chart) -->
+    <div class="chart-card">
+      <div class="chart-title">Base Type Breakdown</div>
+      <div class="chart-container">
+        <canvas id="baseChart" width="400" height="280"></canvas>
+      </div>
+      <div class="chart-legend" id="baseLegend"></div>
+    </div>
+
+    <!-- Orders by Day of Week -->
+    <div class="chart-card">
+      <div class="chart-title">Orders by Day of Week</div>
+      <div class="chart-container">
+        <canvas id="dayOfWeekChart" width="400" height="280"></canvas>
+      </div>
+    </div>
+
+    <!-- Repeat vs New Customers -->
+    <div class="chart-card">
+      <div class="chart-title">New vs Repeat Customers</div>
+      <div class="chart-container">
+        <canvas id="customerChart" width="400" height="280"></canvas>
+      </div>
+      <div class="chart-legend" id="customerLegend"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Orders Tab -->
+<div class="tab-content" id="tab-orders">
+  <button class="refresh-btn" onclick="loadOrders()">Refresh Orders</button>
+  <div class="orders-list" id="ordersList">
+    <div class="loading">Loading orders...</div>
+  </div>
 </div>
 
 <script>
+  // ===========================
+  // CHART DRAWING UTILITIES
+  // ===========================
+
+  const CHART_COLORS = [
+    '#3ECFCF', '#2AA8D8', '#D4585C', '#4CAF50', '#E88A30', '#9C6ADE',
+    '#F5C542', '#B8C4CE', '#E06468', '#58B85C', '#C8B090', '#7A9AAE'
+  ];
+
+  const COLOR_MAP = {
+    stealth:  { label: 'Stealth',  color: '#2C3E50' },
+    titanium: { label: 'Titanium', color: '#B8C4CE' },
+    arctic:   { label: 'Arctic',   color: '#3ECFCF' },
+    sand:     { label: 'Sand',     color: '#E8D5B7' },
+    ember:    { label: 'Ember',    color: '#D4585C' },
+    alpine:   { label: 'Alpine',   color: '#4CAF50' },
+  };
+
+  function getCtx(id) {
+    const canvas = document.getElementById(id);
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = canvas.getAttribute('width') * dpr;
+    canvas.height = canvas.getAttribute('height') * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, w: +canvas.getAttribute('width'), h: +canvas.getAttribute('height') };
+  }
+
+  // Draw a pie/donut chart
+  function drawPieChart(canvasId, legendId, data, isDonut = true) {
+    if (!data.length) {
+      document.getElementById(canvasId).parentElement.innerHTML = '<div class="chart-empty">No data yet</div>';
+      return;
+    }
+
+    const { ctx, w, h } = getCtx(canvasId);
+    const total = data.reduce((s, d) => s + d.value, 0);
+    if (total === 0) return;
+
+    const cx = w / 2;
+    const cy = h / 2;
+    const radius = Math.min(cx, cy) - 20;
+    const innerRadius = isDonut ? radius * 0.55 : 0;
+
+    let startAngle = -Math.PI / 2;
+
+    data.forEach((d, i) => {
+      const sliceAngle = (d.value / total) * Math.PI * 2;
+      const endAngle = startAngle + sliceAngle;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, startAngle, endAngle);
+      if (isDonut) {
+        ctx.arc(cx, cy, innerRadius, endAngle, startAngle, true);
+      } else {
+        ctx.lineTo(cx, cy);
+      }
+      ctx.closePath();
+      ctx.fillStyle = d.color || CHART_COLORS[i % CHART_COLORS.length];
+      ctx.fill();
+
+      // Draw percentage label if slice is big enough
+      if (sliceAngle > 0.3) {
+        const midAngle = startAngle + sliceAngle / 2;
+        const labelR = isDonut ? (radius + innerRadius) / 2 : radius * 0.65;
+        const lx = cx + Math.cos(midAngle) * labelR;
+        const ly = cy + Math.sin(midAngle) * labelR;
+        const pct = Math.round((d.value / total) * 100);
+        ctx.fillStyle = '#FFF';
+        ctx.font = '700 11px Outfit';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(pct + '%', lx, ly);
+      }
+
+      startAngle = endAngle;
+    });
+
+    // Center label for donut
+    if (isDonut) {
+      ctx.fillStyle = '#F5F0EB';
+      ctx.font = '800 22px Outfit';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(total, cx, cy - 6);
+      ctx.fillStyle = '#8899AA';
+      ctx.font = '400 10px "Space Mono"';
+      ctx.fillText('TOTAL', cx, cy + 12);
+    }
+
+    // Legend
+    if (legendId) {
+      const legendEl = document.getElementById(legendId);
+      legendEl.innerHTML = data.map((d, i) => {
+        const pct = Math.round((d.value / total) * 100);
+        return `<div class="legend-item">
+          <div class="legend-dot" style="background:${d.color || CHART_COLORS[i % CHART_COLORS.length]}"></div>
+          ${d.label} (${d.value} &mdash; ${pct}%)
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Draw a vertical bar chart
+  function drawBarChart(canvasId, labels, values, barColor) {
+    if (!values.length || values.every(v => v === 0)) {
+      document.getElementById(canvasId).parentElement.innerHTML = '<div class="chart-empty">No data yet</div>';
+      return;
+    }
+
+    const { ctx, w, h } = getCtx(canvasId);
+    const padL = 55, padR = 15, padT = 15, padB = 50;
+    const chartW = w - padL - padR;
+    const chartH = h - padT - padB;
+    const maxVal = Math.max(...values, 1);
+
+    // Grid lines
+    const gridCount = 4;
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#556677';
+    ctx.font = '400 10px "Space Mono"';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i <= gridCount; i++) {
+      const y = padT + chartH - (i / gridCount) * chartH;
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(w - padR, y);
+      ctx.stroke();
+      const val = (maxVal * i / gridCount);
+      ctx.fillText(val >= 1000 ? '$' + (val/1000).toFixed(1) + 'k' : '$' + val.toFixed(0), padL - 8, y);
+    }
+
+    // Bars
+    const barGap = 6;
+    const barW = Math.max(8, (chartW / labels.length) - barGap);
+
+    values.forEach((val, i) => {
+      const barH = (val / maxVal) * chartH;
+      const x = padL + (i * (chartW / labels.length)) + (chartW / labels.length - barW) / 2;
+      const y = padT + chartH - barH;
+
+      // Gradient bar
+      const grad = ctx.createLinearGradient(x, y, x, y + barH);
+      grad.addColorStop(0, barColor || '#3ECFCF');
+      grad.addColorStop(1, barColor ? barColor + '88' : '#2AA8D888');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+      ctx.fill();
+
+      // Value on top
+      if (val > 0) {
+        ctx.fillStyle = '#AAB8CC';
+        ctx.font = '600 9px "Space Mono"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('$' + val.toFixed(0), x + barW / 2, y - 4);
+      }
+
+      // Label
+      ctx.fillStyle = '#7788AA';
+      ctx.font = '400 9px Outfit';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.save();
+      ctx.translate(x + barW / 2, padT + chartH + 8);
+      ctx.rotate(-0.4);
+      ctx.fillText(labels[i], 0, 0);
+      ctx.restore();
+    });
+  }
+
+  // Draw vertical bar chart for day-of-week (count based, not dollar)
+  function drawCountBarChart(canvasId, labels, values, barColor) {
+    if (!values.length || values.every(v => v === 0)) {
+      document.getElementById(canvasId).parentElement.innerHTML = '<div class="chart-empty">No data yet</div>';
+      return;
+    }
+
+    const { ctx, w, h } = getCtx(canvasId);
+    const padL = 40, padR = 15, padT = 15, padB = 40;
+    const chartW = w - padL - padR;
+    const chartH = h - padT - padB;
+    const maxVal = Math.max(...values, 1);
+
+    // Grid lines
+    const gridCount = 4;
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    ctx.fillStyle = '#556677';
+    ctx.font = '400 10px "Space Mono"';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i <= gridCount; i++) {
+      const y = padT + chartH - (i / gridCount) * chartH;
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(w - padR, y);
+      ctx.stroke();
+      ctx.fillText(Math.round(maxVal * i / gridCount), padL - 8, y);
+    }
+
+    // Bars
+    const barGap = 8;
+    const barW = Math.max(12, (chartW / labels.length) - barGap);
+
+    values.forEach((val, i) => {
+      const barH = (val / maxVal) * chartH;
+      const x = padL + (i * (chartW / labels.length)) + (chartW / labels.length - barW) / 2;
+      const y = padT + chartH - barH;
+
+      const grad = ctx.createLinearGradient(x, y, x, y + barH);
+      grad.addColorStop(0, barColor || '#3ECFCF');
+      grad.addColorStop(1, barColor ? barColor + '88' : '#2AA8D888');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+      ctx.fill();
+
+      if (val > 0) {
+        ctx.fillStyle = '#AAB8CC';
+        ctx.font = '600 10px "Space Mono"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(val, x + barW / 2, y - 4);
+      }
+
+      ctx.fillStyle = '#7788AA';
+      ctx.font = '500 10px Outfit';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(labels[i], x + barW / 2, padT + chartH + 8);
+    });
+  }
+
+
+  // ===========================
+  // DATA PROCESSING
+  // ===========================
+
+  function processAnalytics(orders) {
+    // --- Revenue over last 14 days ---
+    const now = new Date();
+    const dayLabels = [];
+    const dayRevenue = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      dayLabels.push(label);
+      const dayTotal = orders
+        .filter(o => o.createdAt && o.createdAt.slice(0, 10) === key)
+        .reduce((s, o) => s + (o.orderTotal || 0), 0);
+      dayRevenue.push(dayTotal);
+    }
+    drawBarChart('revenueChart', dayLabels, dayRevenue);
+
+    // --- Top products ---
+    const productCounts = {};
+    orders.forEach(o => {
+      if (!o.items) return;
+      o.items.forEach(item => {
+        const name = item.product || 'Unknown';
+        productCounts[name] = (productCounts[name] || 0) + item.quantity;
+      });
+    });
+    const sortedProducts = Object.entries(productCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    renderTopProducts(sortedProducts, productCounts);
+
+    // --- Color popularity ---
+    const colorCounts = {};
+    orders.forEach(o => {
+      if (!o.items) return;
+      o.items.forEach(item => {
+        [item.lidColor, item.midColor, item.baseColor].forEach(c => {
+          if (c && c.trim()) {
+            const key = c.trim().toLowerCase();
+            colorCounts[key] = (colorCounts[key] || 0) + 1;
+          }
+        });
+      });
+    });
+    const colorData = Object.entries(colorCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([key, val]) => ({
+        label: COLOR_MAP[key]?.label || key,
+        value: val,
+        color: COLOR_MAP[key]?.color || CHART_COLORS[0],
+      }));
+    drawPieChart('colorChart', 'colorLegend', colorData);
+
+    // --- Lid type breakdown ---
+    const lidCounts = {};
+    orders.forEach(o => {
+      if (!o.items) return;
+      o.items.forEach(item => {
+        if (item.lidType && item.lidType.trim()) {
+          const key = item.lidType.trim();
+          lidCounts[key] = (lidCounts[key] || 0) + item.quantity;
+        }
+      });
+    });
+    const lidData = Object.entries(lidCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([key, val], i) => ({
+        label: key.charAt(0).toUpperCase() + key.slice(1) + ' Lid',
+        value: val,
+        color: CHART_COLORS[i % CHART_COLORS.length],
+      }));
+    drawPieChart('lidChart', 'lidLegend', lidData);
+
+    // --- Base type breakdown ---
+    const baseCounts = {};
+    orders.forEach(o => {
+      if (!o.items) return;
+      o.items.forEach(item => {
+        if (item.baseType && item.baseType.trim()) {
+          const key = item.baseType.trim();
+          baseCounts[key] = (baseCounts[key] || 0) + item.quantity;
+        }
+      });
+    });
+    const baseData = Object.entries(baseCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([key, val], i) => ({
+        label: key.charAt(0).toUpperCase() + key.slice(1) + ' Base',
+        value: val,
+        color: CHART_COLORS[(i + 2) % CHART_COLORS.length],
+      }));
+    drawPieChart('baseChart', 'baseLegend', baseData);
+
+    // --- Orders by day of week ---
+    const dayCounts = [0, 0, 0, 0, 0, 0, 0]; // Sun-Sat
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    orders.forEach(o => {
+      if (o.createdAt) {
+        const d = new Date(o.createdAt);
+        dayCounts[d.getDay()]++;
+      }
+    });
+    drawCountBarChart('dayOfWeekChart', dayNames, dayCounts, '#9C6ADE');
+
+    // --- New vs repeat customers ---
+    const emailOrders = {};
+    orders.forEach(o => {
+      if (o.email) {
+        emailOrders[o.email] = (emailOrders[o.email] || 0) + 1;
+      }
+    });
+    const newCount = Object.values(emailOrders).filter(c => c === 1).length;
+    const repeatCount = Object.values(emailOrders).filter(c => c > 1).length;
+    drawPieChart('customerChart', 'customerLegend', [
+      { label: 'New Customers', value: newCount, color: '#3ECFCF' },
+      { label: 'Repeat Customers', value: repeatCount, color: '#E88A30' },
+    ]);
+  }
+
+  function renderTopProducts(sortedProducts, productCounts) {
+    const el = document.getElementById('topProductsList');
+    if (!sortedProducts.length) {
+      el.innerHTML = '<div class="chart-empty">No data yet</div>';
+      return;
+    }
+    const maxCount = sortedProducts[0][1];
+    const barColors = ['#3ECFCF', '#2AA8D8', '#D4585C', '#4CAF50', '#E88A30', '#9C6ADE', '#F5C542', '#B8C4CE'];
+
+    el.innerHTML = sortedProducts.map(([name, count], i) => {
+      const pct = Math.round((count / maxCount) * 100);
+      return `<div class="metric-row">
+        <div class="metric-label" style="min-width:120px;">${name}</div>
+        <div class="metric-bar-wrap">
+          <div class="metric-bar" style="width:${pct}%;background:${barColors[i % barColors.length]};"></div>
+        </div>
+        <div class="metric-value">${count}</div>
+      </div>`;
+    }).join('');
+  }
+
+
+  // ===========================
+  // TAB SWITCHING
+  // ===========================
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.toLowerCase().includes(tab));
+    });
+    document.querySelectorAll('.tab-content').forEach(tc => {
+      tc.classList.remove('active');
+    });
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+
+  // ===========================
+  // LOAD ORDERS + RENDER ALL
+  // ===========================
+
+  let allOrders = [];
+
   async function loadOrders() {
     const list = document.getElementById('ordersList');
     list.innerHTML = '<div class="loading">Loading orders...</div>';
@@ -265,6 +903,7 @@
     try {
       const res = await fetch('/api/orders');
       const orders = await res.json();
+      allOrders = orders;
 
       // Stats
       document.getElementById('totalOrders').textContent = orders.length;
@@ -273,6 +912,19 @@
       const emails = new Set(orders.map(o => o.email));
       document.getElementById('totalCustomers').textContent = emails.size;
 
+      const avgOrder = orders.length > 0 ? revenue / orders.length : 0;
+      document.getElementById('avgOrderValue').textContent = '$' + avgOrder.toFixed(2);
+
+      const totalItems = orders.reduce((sum, o) => {
+        if (!o.items) return sum;
+        return sum + o.items.reduce((s, item) => s + item.quantity, 0);
+      }, 0);
+      document.getElementById('totalItems').textContent = totalItems;
+
+      // Analytics
+      processAnalytics(orders);
+
+      // Orders list
       if (orders.length === 0) {
         list.innerHTML = '<div class="empty-msg">No orders yet. Share your link and they\'ll show up here!</div>';
         return;
