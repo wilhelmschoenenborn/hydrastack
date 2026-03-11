@@ -165,21 +165,7 @@
 
   .chart-container canvas {
     display: block;
-  }
-
-  .chart-container.bar-chart canvas {
-    width: 100% !important;
-    height: auto !important;
-  }
-
-  .chart-container.pie-size {
-    display: flex;
-    justify-content: center;
-  }
-
-  .chart-container.pie-size canvas {
-    width: 180px !important;
-    height: 180px !important;
+    margin: 0 auto;
   }
 
   .chart-legend {
@@ -437,7 +423,7 @@
     <!-- Revenue Over Time (Bar Chart) -->
     <div class="chart-card full-width">
       <div class="chart-title">Revenue Over Time (Last 14 Days)</div>
-      <div class="chart-container bar-chart">
+      <div class="chart-container">
         <canvas id="revenueChart" width="1000" height="300"></canvas>
       </div>
     </div>
@@ -451,7 +437,7 @@
     <!-- Color Popularity (Pie Chart) -->
     <div class="chart-card">
       <div class="chart-title">Color Popularity</div>
-      <div class="chart-container pie-size">
+      <div class="chart-container">
         <canvas id="colorChart" width="180" height="180"></canvas>
       </div>
       <div class="chart-legend" id="colorLegend"></div>
@@ -460,7 +446,7 @@
     <!-- Lid Type Breakdown (Pie Chart) -->
     <div class="chart-card">
       <div class="chart-title">Lid Type Breakdown</div>
-      <div class="chart-container pie-size">
+      <div class="chart-container">
         <canvas id="lidChart" width="180" height="180"></canvas>
       </div>
       <div class="chart-legend" id="lidLegend"></div>
@@ -469,7 +455,7 @@
     <!-- Base Type Breakdown (Pie Chart) -->
     <div class="chart-card">
       <div class="chart-title">Base Type Breakdown</div>
-      <div class="chart-container pie-size">
+      <div class="chart-container">
         <canvas id="baseChart" width="180" height="180"></canvas>
       </div>
       <div class="chart-legend" id="baseLegend"></div>
@@ -478,7 +464,7 @@
     <!-- Orders by Day of Week -->
     <div class="chart-card">
       <div class="chart-title">Orders by Day of Week</div>
-      <div class="chart-container bar-chart">
+      <div class="chart-container">
         <canvas id="dayOfWeekChart" width="400" height="220"></canvas>
       </div>
     </div>
@@ -486,7 +472,7 @@
     <!-- Repeat vs New Customers -->
     <div class="chart-card">
       <div class="chart-title">New vs Repeat Customers</div>
-      <div class="chart-container pie-size">
+      <div class="chart-container">
         <canvas id="customerChart" width="180" height="180"></canvas>
       </div>
       <div class="chart-legend" id="customerLegend"></div>
@@ -522,15 +508,29 @@
     alpine:   { label: 'Alpine',   color: '#4CAF50' },
   };
 
-  function getCtx(id) {
+  function getCtx(id, fillContainer) {
     const canvas = document.getElementById(id);
     const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = canvas.getAttribute('width') * dpr;
-    canvas.height = canvas.getAttribute('height') * dpr;
+    let logicalW, logicalH;
+
+    if (fillContainer) {
+      // Bar charts: fill parent container width, use height attribute for aspect ratio
+      const containerW = canvas.parentElement.clientWidth;
+      logicalW = containerW;
+      logicalH = Math.round(containerW * (+canvas.getAttribute('height') / +canvas.getAttribute('width')));
+    } else {
+      // Pie charts: use exact attribute dimensions
+      logicalW = +canvas.getAttribute('width');
+      logicalH = +canvas.getAttribute('height');
+    }
+
+    canvas.width = logicalW * dpr;
+    canvas.height = logicalH * dpr;
+    canvas.style.width = logicalW + 'px';
+    canvas.style.height = logicalH + 'px';
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
-    return { ctx, w: +canvas.getAttribute('width'), h: +canvas.getAttribute('height') };
+    return { ctx, w: logicalW, h: logicalH };
   }
 
   // Draw a pie/donut chart
@@ -615,7 +615,7 @@
       return;
     }
 
-    const { ctx, w, h } = getCtx(canvasId);
+    const { ctx, w, h } = getCtx(canvasId, true);
     const padL = 55, padR = 15, padT = 15, padB = 50;
     const chartW = w - padL - padR;
     const chartH = h - padT - padB;
@@ -687,7 +687,7 @@
       return;
     }
 
-    const { ctx, w, h } = getCtx(canvasId);
+    const { ctx, w, h } = getCtx(canvasId, true);
     const padL = 40, padR = 15, padT = 15, padB = 40;
     const chartW = w - padL - padR;
     const chartH = h - padT - padB;
