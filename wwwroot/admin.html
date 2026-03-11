@@ -164,13 +164,17 @@
   }
 
   .chart-container canvas {
+    display: block;
+  }
+
+  .chart-container.bar-chart canvas {
     width: 100% !important;
     height: auto !important;
   }
 
   .chart-container.pie-size {
-    max-width: 240px;
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
   }
 
   .chart-legend {
@@ -428,7 +432,7 @@
     <!-- Revenue Over Time (Bar Chart) -->
     <div class="chart-card full-width">
       <div class="chart-title">Revenue Over Time (Last 14 Days)</div>
-      <div class="chart-container">
+      <div class="chart-container bar-chart">
         <canvas id="revenueChart" width="1000" height="300"></canvas>
       </div>
     </div>
@@ -443,7 +447,7 @@
     <div class="chart-card">
       <div class="chart-title">Color Popularity</div>
       <div class="chart-container pie-size">
-        <canvas id="colorChart" width="240" height="240"></canvas>
+        <canvas id="colorChart" width="180" height="180"></canvas>
       </div>
       <div class="chart-legend" id="colorLegend"></div>
     </div>
@@ -452,7 +456,7 @@
     <div class="chart-card">
       <div class="chart-title">Lid Type Breakdown</div>
       <div class="chart-container pie-size">
-        <canvas id="lidChart" width="240" height="240"></canvas>
+        <canvas id="lidChart" width="180" height="180"></canvas>
       </div>
       <div class="chart-legend" id="lidLegend"></div>
     </div>
@@ -461,7 +465,7 @@
     <div class="chart-card">
       <div class="chart-title">Base Type Breakdown</div>
       <div class="chart-container pie-size">
-        <canvas id="baseChart" width="240" height="240"></canvas>
+        <canvas id="baseChart" width="180" height="180"></canvas>
       </div>
       <div class="chart-legend" id="baseLegend"></div>
     </div>
@@ -469,7 +473,7 @@
     <!-- Orders by Day of Week -->
     <div class="chart-card">
       <div class="chart-title">Orders by Day of Week</div>
-      <div class="chart-container">
+      <div class="chart-container bar-chart">
         <canvas id="dayOfWeekChart" width="400" height="220"></canvas>
       </div>
     </div>
@@ -478,7 +482,7 @@
     <div class="chart-card">
       <div class="chart-title">New vs Repeat Customers</div>
       <div class="chart-container pie-size">
-        <canvas id="customerChart" width="240" height="240"></canvas>
+        <canvas id="customerChart" width="180" height="180"></canvas>
       </div>
       <div class="chart-legend" id="customerLegend"></div>
     </div>
