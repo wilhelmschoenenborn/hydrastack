@@ -712,6 +712,7 @@
     min-width: 200px;
     position: sticky;
     top: 2rem;
+    padding-top: 45px;
   }
 
   .preview-label {
@@ -1015,6 +1016,458 @@
     color: #556677;
     letter-spacing: 2px;
     background: #0F1115;
+  }
+
+  /* === BUILDER ACTION BUTTONS === */
+  .builder-actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .builder-action-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.7rem 1.2rem;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .builder-action-btn.save-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--warm);
+  }
+
+  .builder-action-btn.save-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--accent);
+  }
+
+  .builder-action-btn.cart-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+    font-weight: 700;
+  }
+
+  .builder-action-btn.cart-btn:hover { opacity: 0.9; }
+
+  .builder-action-btn.added {
+    background: #2ecc71 !important;
+    color: #fff !important;
+    border-color: #2ecc71 !important;
+  }
+
+  /* === SAVE BUILD NAME PROMPT === */
+  .save-name-prompt {
+    display: none;
+    margin-top: 0.8rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .save-name-prompt.open { display: block; }
+
+  .save-name-prompt input {
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    margin-bottom: 0.6rem;
+    outline: none;
+  }
+
+  .save-name-prompt input:focus { border-color: var(--accent); }
+
+  .save-name-prompt .save-name-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .save-name-prompt button {
+    flex: 1;
+    padding: 0.45rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .save-name-confirm {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+  }
+
+  .save-name-cancel {
+    background: rgba(255,255,255,0.06);
+    color: var(--warm);
+    border: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  /* === MY BUILDS MODAL === */
+  .builds-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .builds-overlay.open { display: flex; }
+
+  .builds-modal {
+    background: #1E2228;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.08);
+    width: 90%;
+    max-width: 750px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+
+  .builds-modal h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .builds-modal h2 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .builds-close {
+    float: right;
+    background: none;
+    border: none;
+    color: #7788AA;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .builds-close:hover { color: var(--warm); }
+
+  .builds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .build-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+
+  .build-card:hover { border-color: rgba(62,207,207,0.25); }
+
+  .build-card-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    color: var(--warm);
+  }
+
+  .build-card-config {
+    font-size: 0.7rem;
+    color: #7788AA;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .build-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .build-card-actions button {
+    width: 100%;
+    padding: 0.4rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .build-load-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+  }
+
+  .build-cart-btn {
+    background: rgba(255,255,255,0.06);
+    color: var(--warm);
+    border: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  .build-share-btn {
+    background: rgba(255,255,255,0.04);
+    color: #7788AA;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+  }
+
+  .build-share-btn.shared {
+    color: var(--accent);
+    border-color: rgba(62,207,207,0.2) !important;
+  }
+
+  .build-delete-btn {
+    background: rgba(212,88,92,0.1);
+    color: #D4585C;
+    border: 1px solid rgba(212,88,92,0.15) !important;
+  }
+
+  .builds-empty {
+    text-align: center;
+    color: #556677;
+    padding: 3rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* Mini bottle preview for cards */
+  .mini-bottle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0.5rem auto 0.8rem;
+    transform: scale(0.45);
+    transform-origin: top center;
+    height: 160px;
+  }
+
+  .mini-bottle .pv-lid { width: 60px; height: 32px; border-radius: 10px 10px 0 0; box-shadow: inset 0 2px 4px rgba(255,255,255,0.2); }
+  .mini-bottle .pv-thread { height: 2px; width: 42px; background: rgba(62,207,207,0.3); }
+  .mini-bottle .pv-mid { width: 60px; height: 100px; box-shadow: inset 1px 0 4px rgba(255,255,255,0.1); }
+  .mini-bottle .pv-base { width: 60px; height: 58px; border-radius: 0 0 8px 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
+  /* === COMMUNITY BUILDS SECTION === */
+  .community-section {
+    padding: 5rem 2rem;
+    background: linear-gradient(180deg, #0D0F13, #0F1115);
+    text-align: center;
+  }
+
+  .community-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+  .community-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .community-card:hover { border-color: rgba(62,207,207,0.25); transform: translateY(-3px); }
+
+  .community-card-user {
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .community-card-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0.3rem 0 0.5rem;
+    color: var(--warm);
+  }
+
+  .community-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+  }
+
+  .community-card-actions button {
+    flex: 1;
+    padding: 0.45rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .community-load-btn {
+    background: rgba(255,255,255,0.06);
+    color: var(--warm);
+    border: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  .community-cart-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+  }
+
+  .community-empty {
+    text-align: center;
+    color: #556677;
+    padding: 3rem 1rem;
+    font-size: 0.9rem;
+    grid-column: 1 / -1;
+  }
+
+  /* === FEEDBACK / REVIEWS SECTION === */
+  .feedback-section {
+    padding: 5rem 2rem;
+    background: linear-gradient(180deg, #0F1115, #0D0F13);
+    text-align: center;
+  }
+
+  .feedback-form {
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    text-align: left;
+  }
+
+  .feedback-form label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .feedback-form input,
+  .feedback-form textarea {
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .feedback-form input:focus,
+  .feedback-form textarea:focus { border-color: var(--accent); }
+
+  .feedback-form textarea { height: 100px; resize: vertical; }
+
+  .star-rating {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+  }
+
+  .star-rating .star {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #3a4550;
+    transition: color 0.15s;
+  }
+
+  .star-rating .star.active { color: #F5C542; }
+  .star-rating .star:hover { color: #F5C542; }
+
+  .feedback-submit {
+    display: block;
+    width: 100%;
+    margin-top: 1.2rem;
+    padding: 0.7rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .feedback-submit:hover { opacity: 0.9; }
+
+  .feedback-msg {
+    text-align: center;
+    font-size: 0.82rem;
+    margin-top: 0.6rem;
+    min-height: 1.2rem;
+  }
+
+  .reviews-list {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .review-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    text-align: left;
+  }
+
+  .review-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .review-card-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .review-card-stars { color: #F5C542; font-size: 0.85rem; }
+
+  .review-card-msg {
+    font-size: 0.82rem;
+    color: #AAB8CC;
+    line-height: 1.5;
+  }
+
+  .review-card-date {
+    font-size: 0.65rem;
+    color: #556677;
+    margin-top: 0.4rem;
+    font-family: 'Space Mono', monospace;
   }
 
   /* === SHOP === */
@@ -2530,6 +2983,21 @@
           <span class="val" id="sumBaseColor">Stealth</span>
         </div>
       </div>
+
+      <!-- Builder Action Buttons -->
+      <div class="builder-actions">
+        <button class="builder-action-btn save-btn" id="saveBuildBtn" onclick="handleSaveBuild()">Save Build</button>
+        <button class="builder-action-btn cart-btn" id="addBuildCartBtn" onclick="addBuildToCart()">Add Build to Cart</button>
+      </div>
+
+      <!-- Save Build Name Prompt -->
+      <div class="save-name-prompt" id="saveNamePrompt">
+        <input type="text" id="buildNameInput" placeholder="Name your build..." maxlength="40">
+        <div class="save-name-actions">
+          <button class="save-name-confirm" onclick="confirmSaveBuild()">Save</button>
+          <button class="save-name-cancel" onclick="cancelSaveBuild()">Cancel</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -2757,6 +3225,61 @@
       <div class="orders-empty">Loading...</div>
     </div>
     <button class="orders-close-btn" onclick="closeOrdersModal()">Close</button>
+  </div>
+</div>
+
+<!-- === COMMUNITY BUILDS === -->
+<section class="community-section">
+  <div class="section-header">
+    <h2>Community <span>Builds</span></h2>
+    <p>Check out what other HydraStack users have created and shared.</p>
+  </div>
+  <div class="community-grid" id="communityGrid">
+    <div class="community-empty">Loading community builds...</div>
+  </div>
+</section>
+
+<!-- === FEEDBACK & REVIEWS === -->
+<section class="feedback-section">
+  <div class="section-header">
+    <h2>Leave <span>Feedback</span></h2>
+    <p>Let us know what you think about HydraStack.</p>
+  </div>
+
+  <div class="feedback-form" id="feedbackForm">
+    <label>YOUR NAME</label>
+    <input type="text" id="reviewName" placeholder="Your name">
+
+    <label>EMAIL (OPTIONAL)</label>
+    <input type="email" id="reviewEmail" placeholder="your@email.com">
+
+    <label>RATING</label>
+    <div class="star-rating" id="starRating">
+      <span class="star" data-val="1" onclick="setRating(1)">&#9733;</span>
+      <span class="star" data-val="2" onclick="setRating(2)">&#9733;</span>
+      <span class="star" data-val="3" onclick="setRating(3)">&#9733;</span>
+      <span class="star" data-val="4" onclick="setRating(4)">&#9733;</span>
+      <span class="star" data-val="5" onclick="setRating(5)">&#9733;</span>
+    </div>
+
+    <label>YOUR REVIEW</label>
+    <textarea id="reviewMessage" placeholder="Tell us about your experience..."></textarea>
+
+    <button class="feedback-submit" onclick="submitReview()">Submit Review</button>
+    <div class="feedback-msg" id="feedbackMsg"></div>
+  </div>
+
+  <div class="reviews-list" id="reviewsList"></div>
+</section>
+
+<!-- === MY BUILDS MODAL === -->
+<div class="builds-overlay" id="buildsOverlay">
+  <div class="builds-modal">
+    <button class="builds-close" onclick="closeBuildsModal()">&#10005;</button>
+    <h2>My <span>Builds</span></h2>
+    <div class="builds-grid" id="buildsGrid">
+      <div class="builds-empty">Loading...</div>
+    </div>
   </div>
 </div>
 
@@ -3517,6 +4040,398 @@
 
   // Build shop on load
   buildShop();
+
+  // === SAVE BUILD SYSTEM ===
+
+  function handleSaveBuild() {
+    if (!currentUser) {
+      openAuthModal();
+      return;
+    }
+    document.getElementById('saveNamePrompt').classList.add('open');
+    document.getElementById('buildNameInput').focus();
+  }
+
+  function cancelSaveBuild() {
+    document.getElementById('saveNamePrompt').classList.remove('open');
+    document.getElementById('buildNameInput').value = '';
+  }
+
+  async function confirmSaveBuild() {
+    const nameInput = document.getElementById('buildNameInput');
+    const buildName = nameInput.value.trim() || 'My Build';
+    const btn = document.getElementById('saveBuildBtn');
+
+    try {
+      const res = await fetch('/api/builds', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser.userId,
+          buildName,
+          lidType: currentLid,
+          baseType: currentBase,
+          lidColor,
+          midColor,
+          baseColor,
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        btn.textContent = 'Saved!';
+        btn.classList.add('added');
+        setTimeout(() => {
+          btn.textContent = 'Save Build';
+          btn.classList.remove('added');
+        }, 1500);
+        cancelSaveBuild();
+      } else {
+        alert(data.error || 'Failed to save build.');
+      }
+    } catch (err) {
+      alert('Could not connect to server.');
+    }
+  }
+
+  // === ADD BUILD TO CART ===
+
+  function addBuildToCart() {
+    const lidProductId = 'lid-' + currentLid;
+    const midProductId = 'mid-16';
+    const baseProductId = 'base-' + currentBase;
+
+    // Set colors for each product before adding
+    productColors[lidProductId] = lidColor;
+    productColors[midProductId] = midColor;
+    productColors[baseProductId] = baseColor;
+
+    // Add each piece
+    [lidProductId, midProductId, baseProductId].forEach(pid => {
+      const color = productColors[pid];
+      const key = cartKey(pid, color);
+      const existing = cart.find(c => c.key === key);
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ id: pid, qty: 1, color, key });
+      }
+    });
+
+    updateCart();
+
+    const btn = document.getElementById('addBuildCartBtn');
+    btn.textContent = 'Added to Cart!';
+    btn.classList.add('added');
+    setTimeout(() => {
+      btn.textContent = 'Add Build to Cart';
+      btn.classList.remove('added');
+    }, 1500);
+  }
+
+  // === MY BUILDS MODAL ===
+
+  function openBuildsModal() {
+    const dd = document.getElementById('userDropdown');
+    if (dd) dd.classList.remove('open');
+    document.getElementById('buildsOverlay').classList.add('open');
+    loadMyBuilds();
+  }
+
+  function closeBuildsModal() {
+    document.getElementById('buildsOverlay').classList.remove('open');
+  }
+
+  async function loadMyBuilds() {
+    const grid = document.getElementById('buildsGrid');
+    grid.innerHTML = '<div class="builds-empty">Loading...</div>';
+
+    if (!currentUser) {
+      grid.innerHTML = '<div class="builds-empty">Please sign in to view saved builds.</div>';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/builds/${currentUser.userId}`);
+      const builds = await res.json();
+
+      if (!builds.length) {
+        grid.innerHTML = '<div class="builds-empty">No saved builds yet. Go build one!</div>';
+        return;
+      }
+
+      grid.innerHTML = '';
+      builds.forEach(b => {
+        const lc = colorData[b.lidColor] || colorData.stealth;
+        const mc = colorData[b.midColor] || colorData.stealth;
+        const bc = colorData[b.baseColor] || colorData.stealth;
+        const lidLabel = lidNames[b.lidType] || b.lidType;
+        const baseLabel = baseNames[b.baseType] || b.baseType;
+
+        const card = document.createElement('div');
+        card.className = 'build-card';
+        card.innerHTML = `
+          <div class="build-card-name">${escapeHtml(b.buildName)}</div>
+          <div class="mini-bottle">
+            <div class="pv-lid" style="background: linear-gradient(180deg, ${lc.main[0]}, ${lc.main[1]});"></div>
+            <div class="pv-thread"></div>
+            <div class="pv-mid" style="background: linear-gradient(180deg, ${mc.main[0]}, ${mc.main[1]});"></div>
+            <div class="pv-thread"></div>
+            <div class="pv-base" style="background: linear-gradient(180deg, ${bc.main[0]}, ${bc.main[1]});"></div>
+          </div>
+          <div class="build-card-config">${lidLabel} / ${baseLabel}<br>${lc.name} / ${mc.name} / ${bc.name}</div>
+          <div class="build-card-actions">
+            <button class="build-load-btn" onclick="loadBuild('${b.lidType}','${b.baseType}','${b.lidColor}','${b.midColor}','${b.baseColor}')">Load Build</button>
+            <button class="build-cart-btn" onclick="addBuildFromConfig('${b.lidType}','${b.baseType}','${b.lidColor}','${b.midColor}','${b.baseColor}')">Add to Cart</button>
+            <button class="build-share-btn ${b.isShared ? 'shared' : ''}" onclick="toggleShareBuild(${b.buildId}, this)">${b.isShared ? 'Shared' : 'Share'}</button>
+            <button class="build-delete-btn" onclick="deleteBuild(${b.buildId}, this)">Delete</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    } catch (err) {
+      grid.innerHTML = '<div class="builds-empty">Could not load builds. Make sure the server is running.</div>';
+    }
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function loadBuild(lid, base, lc, mc, bc) {
+    currentLid = lid;
+    currentBase = base;
+    lidColor = lc;
+    midColor = mc;
+    baseColor = bc;
+
+    // Update option buttons
+    document.querySelectorAll('[data-lid]').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-lid') === lid));
+    document.querySelectorAll('[data-base]').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-base') === base));
+
+    // Update color swatches
+    buildSwatches();
+    updatePreview();
+
+    closeBuildsModal();
+    // Scroll to builder
+    document.querySelector('.builder-section').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function addBuildFromConfig(lid, base, lc, mc, bc) {
+    const lidPid = 'lid-' + lid;
+    const midPid = 'mid-16';
+    const basePid = 'base-' + base;
+
+    const items = [
+      { id: lidPid, color: lc },
+      { id: midPid, color: mc },
+      { id: basePid, color: bc },
+    ];
+
+    items.forEach(item => {
+      const key = cartKey(item.id, item.color);
+      const existing = cart.find(c => c.key === key);
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ id: item.id, qty: 1, color: item.color, key });
+      }
+    });
+
+    updateCart();
+  }
+
+  async function toggleShareBuild(buildId, btnEl) {
+    try {
+      const res = await fetch(`/api/builds/${buildId}/share`, { method: 'PUT' });
+      const data = await res.json();
+      if (data.success) {
+        btnEl.textContent = data.isShared ? 'Shared' : 'Share';
+        btnEl.classList.toggle('shared', data.isShared);
+        loadCommunityBuilds();
+      }
+    } catch (err) {
+      alert('Could not update share status.');
+    }
+  }
+
+  async function deleteBuild(buildId, btnEl) {
+    if (!confirm('Delete this saved build?')) return;
+    try {
+      const res = await fetch(`/api/builds/${buildId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        btnEl.closest('.build-card').remove();
+        loadCommunityBuilds();
+      }
+    } catch (err) {
+      alert('Could not delete build.');
+    }
+  }
+
+  // Update auth UI to include My Builds
+  const originalUpdateAuthUI = updateAuthUI;
+  updateAuthUI = function() {
+    const authArea = document.getElementById('authArea');
+    if (currentUser) {
+      authArea.innerHTML = `
+        <div class="top-bar-user">
+          <span class="top-bar-user-name" onclick="toggleUserDropdown()">Hi, ${currentUser.username} &#9662;</span>
+          <div class="top-bar-dropdown" id="userDropdown">
+            <button onclick="openOrdersModal()">My Orders</button>
+            <button onclick="openBuildsModal()">My Builds</button>
+            <button onclick="handleSignOut()">Sign Out</button>
+          </div>
+        </div>
+      `;
+    } else {
+      authArea.innerHTML = `<button class="top-bar-btn accent" id="authBtn" onclick="openAuthModal()">Sign In</button>`;
+    }
+  };
+  // Re-run to pick up changes if already logged in
+  if (currentUser) updateAuthUI();
+
+  // === COMMUNITY BUILDS ===
+
+  async function loadCommunityBuilds() {
+    const grid = document.getElementById('communityGrid');
+
+    try {
+      const res = await fetch('/api/builds/community');
+      const builds = await res.json();
+
+      if (!builds.length) {
+        grid.innerHTML = '<div class="community-empty">No shared builds yet. Be the first to share yours!</div>';
+        return;
+      }
+
+      grid.innerHTML = '';
+      builds.forEach(b => {
+        const lc = colorData[b.lidColor] || colorData.stealth;
+        const mc = colorData[b.midColor] || colorData.stealth;
+        const bc = colorData[b.baseColor] || colorData.stealth;
+        const lidLabel = lidNames[b.lidType] || b.lidType;
+        const baseLabel = baseNames[b.baseType] || b.baseType;
+
+        const card = document.createElement('div');
+        card.className = 'community-card';
+        card.innerHTML = `
+          <div class="community-card-user">${escapeHtml(b.username)}</div>
+          <div class="community-card-name">${escapeHtml(b.buildName)}</div>
+          <div class="mini-bottle">
+            <div class="pv-lid" style="background: linear-gradient(180deg, ${lc.main[0]}, ${lc.main[1]});"></div>
+            <div class="pv-thread"></div>
+            <div class="pv-mid" style="background: linear-gradient(180deg, ${mc.main[0]}, ${mc.main[1]});"></div>
+            <div class="pv-thread"></div>
+            <div class="pv-base" style="background: linear-gradient(180deg, ${bc.main[0]}, ${bc.main[1]});"></div>
+          </div>
+          <div class="build-card-config">${lidLabel} / ${baseLabel}</div>
+          <div class="community-card-actions">
+            <button class="community-load-btn" onclick="loadBuild('${b.lidType}','${b.baseType}','${b.lidColor}','${b.midColor}','${b.baseColor}')">Load Build</button>
+            <button class="community-cart-btn" onclick="addBuildFromConfig('${b.lidType}','${b.baseType}','${b.lidColor}','${b.midColor}','${b.baseColor}')">Add to Cart</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    } catch (err) {
+      grid.innerHTML = '<div class="community-empty">Could not load community builds.</div>';
+    }
+  }
+
+  // Load community builds on page load
+  loadCommunityBuilds();
+
+  // === REVIEWS / FEEDBACK ===
+
+  let selectedRating = 0;
+
+  function setRating(val) {
+    selectedRating = val;
+    document.querySelectorAll('#starRating .star').forEach(star => {
+      star.classList.toggle('active', parseInt(star.getAttribute('data-val')) <= val);
+    });
+  }
+
+  async function submitReview() {
+    const name = document.getElementById('reviewName').value.trim();
+    const email = document.getElementById('reviewEmail').value.trim();
+    const message = document.getElementById('reviewMessage').value.trim();
+    const msgEl = document.getElementById('feedbackMsg');
+
+    if (!name || !message) {
+      msgEl.style.color = '#D4585C';
+      msgEl.textContent = 'Please enter your name and review.';
+      return;
+    }
+
+    if (selectedRating === 0) {
+      msgEl.style.color = '#D4585C';
+      msgEl.textContent = 'Please select a rating.';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, rating: selectedRating, message }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        msgEl.style.color = '#3ECFCF';
+        msgEl.textContent = 'Thank you for your review!';
+        document.getElementById('reviewName').value = '';
+        document.getElementById('reviewEmail').value = '';
+        document.getElementById('reviewMessage').value = '';
+        selectedRating = 0;
+        document.querySelectorAll('#starRating .star').forEach(s => s.classList.remove('active'));
+        loadReviews();
+      } else {
+        msgEl.style.color = '#D4585C';
+        msgEl.textContent = data.error || 'Failed to submit review.';
+      }
+    } catch (err) {
+      msgEl.style.color = '#D4585C';
+      msgEl.textContent = 'Could not connect to server.';
+    }
+  }
+
+  async function loadReviews() {
+    const list = document.getElementById('reviewsList');
+    try {
+      const res = await fetch('/api/reviews/recent');
+      const reviews = await res.json();
+
+      if (!reviews.length) {
+        list.innerHTML = '';
+        return;
+      }
+
+      list.innerHTML = '';
+      reviews.forEach(r => {
+        const stars = '&#9733;'.repeat(r.rating) + '&#9734;'.repeat(5 - r.rating);
+        const date = new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const card = document.createElement('div');
+        card.className = 'review-card';
+        card.innerHTML = `
+          <div class="review-card-header">
+            <span class="review-card-name">${escapeHtml(r.name)}</span>
+            <span class="review-card-stars">${stars}</span>
+          </div>
+          <div class="review-card-msg">${escapeHtml(r.message)}</div>
+          <div class="review-card-date">${date}</div>
+        `;
+        list.appendChild(card);
+      });
+    } catch (err) { /* silently fail */ }
+  }
+
+  // Load reviews on page load
+  loadReviews();
 </script>
 
 </body>

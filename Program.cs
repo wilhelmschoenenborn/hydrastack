@@ -81,6 +81,28 @@ using (var conn = new NpgsqlConnection(connStr))
             PasswordHash TEXT NOT NULL,
             CreatedAt TIMESTAMP DEFAULT NOW()
         );
+
+        CREATE TABLE IF NOT EXISTS SavedBuilds (
+            SavedBuildID SERIAL PRIMARY KEY,
+            UserID INTEGER NOT NULL REFERENCES Users(UserID),
+            BuildName TEXT DEFAULT 'My Build',
+            LidType TEXT NOT NULL,
+            BaseType TEXT NOT NULL,
+            LidColor TEXT NOT NULL,
+            MidColor TEXT NOT NULL,
+            BaseColor TEXT NOT NULL,
+            IsShared BOOLEAN DEFAULT FALSE,
+            CreatedAt TIMESTAMP DEFAULT NOW()
+        );
+
+        CREATE TABLE IF NOT EXISTS Reviews (
+            ReviewID SERIAL PRIMARY KEY,
+            Name TEXT NOT NULL,
+            Email TEXT DEFAULT '',
+            Rating INTEGER NOT NULL,
+            Message TEXT NOT NULL,
+            CreatedAt TIMESTAMP DEFAULT NOW()
+        );
     ", conn);
     await cmd.ExecuteNonQueryAsync();
 
@@ -430,6 +452,280 @@ app.MapGet("/api/orders", async () =>
     }
 
     return Results.Json(orders);
+});
+
+// === SAVED BUILDS API ===
+
+// POST /api/builds — Save a build
+app.MapPost("/api/builds", async (HttpContext ctx) =>
+{
+    var body = await JsonSerializer.DeserializeAsync<JsonElement>(ctx.Request.Body);
+
+    var userId = body.TryGetProperty("userId", out var uid) ? uid.GetInt32() : 0;
+    var buildName = body.TryGetProperty("buildName", out var bn) ? bn.GetString()?.Trim() ?? "My Build" : "My Build";
+    var lidType = body.TryGetProperty("lidType", out var lt) ? lt.GetString() ?? "" : "";
+    var baseType = body.TryGetProperty("baseType", out var bt) ? bt.GetString() ?? "" : "";
+    var lidColor = body.TryGetProperty("lidColor", out var lc) ? lc.GetString() ?? "" : "";
+    var midColor = body.TryGetProperty("midColor", out var mc) ? mc.GetString() ?? "" : "";
+    var baseColor = body.TryGetProperty("baseColor", out var bc) ? bc.GetString() ?? "" : "";
+
+    if (userId == 0)
+    {
+        ctx.Response.StatusCode = 401;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Please sign in to save builds." });
+        return;
+    }
+
+    if (string.IsNullOrWhiteSpace(lidType) || string.IsNullOrWhiteSpace(baseType))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Invalid build configuration." });
+        return;
+    }
+
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        using var cmd = new NpgsqlCommand(@"
+            INSERT INTO SavedBuilds (UserID, BuildName, LidType, BaseType, LidColor, MidColor, BaseColor)
+            VALUES (@uid, @name, @lid, @base, @lc, @mc, @bc)
+            RETURNING SavedBuildID", conn);
+        cmd.Parameters.AddWithValue("@uid", userId);
+        cmd.Parameters.AddWithValue("@name", buildName);
+        cmd.Parameters.AddWithValue("@lid", lidType);
+        cmd.Parameters.AddWithValue("@base", baseType);
+        cmd.Parameters.AddWithValue("@lc", lidColor);
+        cmd.Parameters.AddWithValue("@mc", midColor);
+        cmd.Parameters.AddWithValue("@bc", baseColor);
+
+        var buildId = (int)(await cmd.ExecuteScalarAsync())!;
+        await ctx.Response.WriteAsJsonAsync(new { success = true, buildId });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Save build error: {ex.Message}");
+        ctx.Response.StatusCode = 500;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Failed to save build." });
+    }
+});
+
+// GET /api/builds/{userId} — Get user's saved builds
+app.MapGet("/api/builds/{userId:int}", async (int userId) =>
+{
+    var builds = new List<object>();
+    using var conn = new NpgsqlConnection(connStr);
+    await conn.OpenAsync();
+
+    using var cmd = new NpgsqlCommand(@"
+        SELECT SavedBuildID, BuildName, LidType, BaseType, LidColor, MidColor, BaseColor, IsShared, CreatedAt
+        FROM SavedBuilds WHERE UserID = @uid
+        ORDER BY CreatedAt DESC", conn);
+    cmd.Parameters.AddWithValue("@uid", userId);
+
+    using var reader = await cmd.ExecuteReaderAsync();
+    while (await reader.ReadAsync())
+    {
+        builds.Add(new
+        {
+            buildId = reader.GetInt32(0),
+            buildName = reader.GetString(1),
+            lidType = reader.GetString(2),
+            baseType = reader.GetString(3),
+            lidColor = reader.GetString(4),
+            midColor = reader.GetString(5),
+            baseColor = reader.GetString(6),
+            isShared = reader.GetBoolean(7),
+            createdAt = reader.GetDateTime(8).ToString("o"),
+        });
+    }
+
+    return Results.Json(builds);
+});
+
+// DELETE /api/builds/{buildId}
+app.MapDelete("/api/builds/{buildId:int}", async (int buildId) =>
+{
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        using var cmd = new NpgsqlCommand("DELETE FROM SavedBuilds WHERE SavedBuildID = @id", conn);
+        cmd.Parameters.AddWithValue("@id", buildId);
+        await cmd.ExecuteNonQueryAsync();
+
+        return Results.Json(new { success = true });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Delete build error: {ex.Message}");
+        return Results.Json(new { error = "Failed to delete build." });
+    }
+});
+
+// PUT /api/builds/{buildId}/share — Toggle share status
+app.MapPut("/api/builds/{buildId:int}/share", async (int buildId) =>
+{
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        using var cmd = new NpgsqlCommand(@"
+            UPDATE SavedBuilds SET IsShared = NOT IsShared WHERE SavedBuildID = @id
+            RETURNING IsShared", conn);
+        cmd.Parameters.AddWithValue("@id", buildId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return Results.Json(new { success = true, isShared = (bool)result! });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Share toggle error: {ex.Message}");
+        return Results.Json(new { error = "Failed to update share status." });
+    }
+});
+
+// GET /api/builds/community — Get all shared builds
+app.MapGet("/api/builds/community", async () =>
+{
+    var builds = new List<object>();
+    using var conn = new NpgsqlConnection(connStr);
+    await conn.OpenAsync();
+
+    using var cmd = new NpgsqlCommand(@"
+        SELECT sb.SavedBuildID, sb.BuildName, sb.LidType, sb.BaseType, sb.LidColor, sb.MidColor, sb.BaseColor, sb.CreatedAt, u.Username
+        FROM SavedBuilds sb
+        JOIN Users u ON sb.UserID = u.UserID
+        WHERE sb.IsShared = TRUE
+        ORDER BY sb.CreatedAt DESC
+        LIMIT 50", conn);
+
+    using var reader = await cmd.ExecuteReaderAsync();
+    while (await reader.ReadAsync())
+    {
+        builds.Add(new
+        {
+            buildId = reader.GetInt32(0),
+            buildName = reader.GetString(1),
+            lidType = reader.GetString(2),
+            baseType = reader.GetString(3),
+            lidColor = reader.GetString(4),
+            midColor = reader.GetString(5),
+            baseColor = reader.GetString(6),
+            createdAt = reader.GetDateTime(7).ToString("o"),
+            username = reader.GetString(8),
+        });
+    }
+
+    return Results.Json(builds);
+});
+
+// === REVIEWS API ===
+
+// POST /api/reviews — Submit a review
+app.MapPost("/api/reviews", async (HttpContext ctx) =>
+{
+    var body = await JsonSerializer.DeserializeAsync<JsonElement>(ctx.Request.Body);
+
+    var name = body.TryGetProperty("name", out var n) ? n.GetString()?.Trim() ?? "" : "";
+    var email = body.TryGetProperty("email", out var e) ? e.GetString()?.Trim() ?? "" : "";
+    var rating = body.TryGetProperty("rating", out var r) ? r.GetInt32() : 0;
+    var message = body.TryGetProperty("message", out var m) ? m.GetString()?.Trim() ?? "" : "";
+
+    if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(message))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Name and message are required." });
+        return;
+    }
+
+    if (rating < 1 || rating > 5)
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Rating must be between 1 and 5." });
+        return;
+    }
+
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        using var cmd = new NpgsqlCommand(@"
+            INSERT INTO Reviews (Name, Email, Rating, Message)
+            VALUES (@name, @email, @rating, @msg)
+            RETURNING ReviewID", conn);
+        cmd.Parameters.AddWithValue("@name", name);
+        cmd.Parameters.AddWithValue("@email", email);
+        cmd.Parameters.AddWithValue("@rating", rating);
+        cmd.Parameters.AddWithValue("@msg", message);
+
+        var reviewId = (int)(await cmd.ExecuteScalarAsync())!;
+        await ctx.Response.WriteAsJsonAsync(new { success = true, reviewId });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Review error: {ex.Message}");
+        ctx.Response.StatusCode = 500;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Failed to submit review." });
+    }
+});
+
+// GET /api/reviews — All reviews (admin)
+app.MapGet("/api/reviews", async () =>
+{
+    var reviews = new List<object>();
+    using var conn = new NpgsqlConnection(connStr);
+    await conn.OpenAsync();
+
+    using var cmd = new NpgsqlCommand(@"
+        SELECT ReviewID, Name, Email, Rating, Message, CreatedAt
+        FROM Reviews ORDER BY CreatedAt DESC", conn);
+
+    using var reader = await cmd.ExecuteReaderAsync();
+    while (await reader.ReadAsync())
+    {
+        reviews.Add(new
+        {
+            reviewId = reader.GetInt32(0),
+            name = reader.GetString(1),
+            email = reader.GetString(2),
+            rating = reader.GetInt32(3),
+            message = reader.GetString(4),
+            createdAt = reader.GetDateTime(5).ToString("o"),
+        });
+    }
+
+    return Results.Json(reviews);
+});
+
+// GET /api/reviews/recent — Recent reviews for display
+app.MapGet("/api/reviews/recent", async () =>
+{
+    var reviews = new List<object>();
+    using var conn = new NpgsqlConnection(connStr);
+    await conn.OpenAsync();
+
+    using var cmd = new NpgsqlCommand(@"
+        SELECT Name, Rating, Message, CreatedAt
+        FROM Reviews ORDER BY CreatedAt DESC LIMIT 10", conn);
+
+    using var reader = await cmd.ExecuteReaderAsync();
+    while (await reader.ReadAsync())
+    {
+        reviews.Add(new
+        {
+            name = reader.GetString(0),
+            rating = reader.GetInt32(1),
+            message = reader.GetString(2),
+            createdAt = reader.GetDateTime(3).ToString("o"),
+        });
+    }
+
+    return Results.Json(reviews);
 });
 
 app.Run();

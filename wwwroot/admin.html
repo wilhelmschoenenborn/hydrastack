@@ -83,7 +83,7 @@
   .tab-nav {
     display: flex;
     gap: 0;
-    max-width: 500px;
+    max-width: 600px;
     margin: 0 auto 2rem;
     border-radius: 12px;
     overflow: hidden;
@@ -393,6 +393,64 @@
     font-family: 'Space Mono', monospace;
     letter-spacing: 2px;
   }
+
+  /* === REVIEWS TAB === */
+  .reviews-list-admin {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .review-admin-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    transition: border-color 0.3s;
+  }
+
+  .review-admin-card:hover { border-color: rgba(62,207,207,0.25); }
+
+  .review-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .review-admin-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--warm);
+  }
+
+  .review-admin-email {
+    font-size: 0.75rem;
+    color: #7788AA;
+    margin-left: 0.5rem;
+  }
+
+  .review-admin-stars {
+    color: #F5C542;
+    font-size: 0.9rem;
+  }
+
+  .review-admin-msg {
+    font-size: 0.85rem;
+    color: #AAB8CC;
+    line-height: 1.6;
+    margin-bottom: 0.4rem;
+  }
+
+  .review-admin-date {
+    font-size: 0.65rem;
+    color: #556677;
+    font-family: 'Space Mono', monospace;
+  }
 </style>
 </head>
 <body>
@@ -414,6 +472,7 @@
 <div class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('analytics')">Analytics</button>
   <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
+  <button class="tab-btn" onclick="switchTab('reviews')">Reviews</button>
 </div>
 
 <!-- Analytics Tab -->
@@ -486,6 +545,14 @@
   <button class="refresh-btn" onclick="loadOrders()">Refresh Orders</button>
   <div class="orders-list" id="ordersList">
     <div class="loading">Loading orders...</div>
+  </div>
+</div>
+
+<!-- Reviews Tab -->
+<div class="tab-content" id="tab-reviews">
+  <button class="refresh-btn" onclick="loadAdminReviews()">Refresh Reviews</button>
+  <div class="reviews-list-admin" id="adminReviewsList">
+    <div class="loading">Loading reviews...</div>
   </div>
 </div>
 
@@ -1005,6 +1072,55 @@
   }
 
   loadOrders();
+
+  // ===========================
+  // REVIEWS
+  // ===========================
+
+  async function loadAdminReviews() {
+    const list = document.getElementById('adminReviewsList');
+    list.innerHTML = '<div class="loading">Loading reviews...</div>';
+
+    try {
+      const res = await fetch('/api/reviews');
+      const reviews = await res.json();
+
+      if (!reviews.length) {
+        list.innerHTML = '<div class="empty-msg">No reviews yet.</div>';
+        return;
+      }
+
+      list.innerHTML = '';
+      reviews.forEach(r => {
+        const stars = '\u2605'.repeat(r.rating) + '\u2606'.repeat(5 - r.rating);
+        const date = new Date(r.createdAt).toLocaleString();
+        const card = document.createElement('div');
+        card.className = 'review-admin-card';
+        card.innerHTML = `
+          <div class="review-admin-header">
+            <div>
+              <span class="review-admin-name">${escapeHtml(r.name)}</span>
+              ${r.email ? '<span class="review-admin-email">' + escapeHtml(r.email) + '</span>' : ''}
+            </div>
+            <span class="review-admin-stars">${stars}</span>
+          </div>
+          <div class="review-admin-msg">${escapeHtml(r.message)}</div>
+          <div class="review-admin-date">${date}</div>
+        `;
+        list.appendChild(card);
+      });
+    } catch (err) {
+      list.innerHTML = '<div class="empty-msg">Could not load reviews.</div>';
+    }
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  loadAdminReviews();
 </script>
 </body>
 </html>
