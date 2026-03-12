@@ -2763,6 +2763,173 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* === PARALLAX SCROLL ANIMATIONS === */
+  .reveal {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-80px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(80px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-scale {
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-scale.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Stagger children animations */
+  .stagger-children > * {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .stagger-children.visible > *:nth-child(1) { transition-delay: 0s; }
+  .stagger-children.visible > *:nth-child(2) { transition-delay: 0.1s; }
+  .stagger-children.visible > *:nth-child(3) { transition-delay: 0.2s; }
+  .stagger-children.visible > *:nth-child(4) { transition-delay: 0.3s; }
+  .stagger-children.visible > *:nth-child(5) { transition-delay: 0.4s; }
+  .stagger-children.visible > *:nth-child(6) { transition-delay: 0.5s; }
+  .stagger-children.visible > *:nth-child(7) { transition-delay: 0.6s; }
+  .stagger-children.visible > *:nth-child(8) { transition-delay: 0.7s; }
+  .stagger-children.visible > *:nth-child(9) { transition-delay: 0.8s; }
+  .stagger-children.visible > *:nth-child(10) { transition-delay: 0.9s; }
+
+  .stagger-children.visible > * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Parallax floating elements */
+  .parallax-float {
+    transition: transform 0.1s linear;
+    will-change: transform;
+  }
+
+  /* Glow pulse on section headers when revealed */
+  .section-header.reveal.visible h2 span {
+    animation: glowPulse 2s ease-in-out 0.5s;
+  }
+
+  @keyframes glowPulse {
+    0% { filter: drop-shadow(0 0 0px rgba(62,207,207,0)); }
+    50% { filter: drop-shadow(0 0 16px rgba(62,207,207,0.6)); }
+    100% { filter: drop-shadow(0 0 0px rgba(62,207,207,0)); }
+  }
+
+  /* === CUSTOM COLOR PICKER === */
+  .builder-swatch.custom-swatch {
+    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red) !important;
+    position: relative;
+  }
+
+  .builder-swatch.custom-swatch::after {
+    content: '+';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+
+  .custom-color-picker {
+    display: none;
+    margin-top: 0.6rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 0.8rem;
+  }
+
+  .custom-color-picker.open { display: block; }
+
+  .custom-color-picker label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    color: #7788AA;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .custom-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .custom-picker-row input[type="color"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 44px;
+    height: 44px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .custom-picker-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  .custom-picker-row input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+  }
+
+  .custom-color-price {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .custom-color-note {
+    font-size: 0.65rem;
+    color: #556677;
+    margin-top: 0.3rem;
+  }
+
   @media (max-width: 768px) {
     .tube-diagram, .compare-row { flex-direction: column; align-items: center; }
     .lid-grid { grid-template-columns: 1fr; }
@@ -2829,12 +2996,12 @@
 
 <!-- Tube Concept -->
 <section class="tube-concept">
-  <div class="section-header">
+  <div class="section-header reveal">
     <h2>The <span>Tube</span> Principle</h2>
     <p>Every section shares the same thread pitch. The lid screws onto the mid, the mid screws onto the base. Swap any piece, anytime.</p>
   </div>
 
-  <div class="tube-diagram">
+  <div class="tube-diagram reveal-scale">
     <div class="tube-bottle">
       <div class="tube-lid" style="position:relative;">
         <div class="tube-label left" style="top: 15px;">
@@ -2863,7 +3030,7 @@
       </div>
     </div>
 
-    <div class="info-cards">
+    <div class="info-cards stagger-children">
       <div class="info-card" style="border-left-color: var(--accent);">
         <span class="card-tag" style="color: var(--accent);">UNIVERSAL THREADING</span>
         <p>Every connection uses the same thread pitch. The lid screws onto the mid, the mid screws onto the base. You can even stack two mids together for double capacity.</p>
@@ -2882,12 +3049,12 @@
 
 <!-- Base Size Comparison -->
 <section class="size-comparison">
-  <div class="section-header">
+  <div class="section-header reveal">
     <h2>Swap Your Base</h2>
     <p>Same mid chamber, same lid — the base module controls the bottom profile. The narrow base uses a tapered adapter ring to step down from 3.2" to a slimmer 2.5" that slides into tight car cupholders.</p>
   </div>
 
-  <div class="compare-row">
+  <div class="compare-row stagger-children">
     <div class="compare-item">
       <div class="compare-bottle">
         <div class="c-lid"></div>
@@ -2954,12 +3121,12 @@
 
 <!-- Lid Modules -->
 <section class="lid-modules">
-  <div class="section-header">
+  <div class="section-header reveal">
     <h2>Swap Your <span>Lid</span></h2>
     <p>The lid threads on with the same universal connection. Choose the drinking style that fits your day — and swap it whenever you want.</p>
   </div>
 
-  <div class="lid-grid">
+  <div class="lid-grid stagger-children">
     <div class="lid-card">
       <span class="lid-badge">LID MODULE 01</span>
       <div class="lid-visual">
@@ -3020,12 +3187,12 @@
 
 <!-- === BOTTLE BUILDER === -->
 <section class="builder-section">
-  <div class="section-header">
+  <div class="section-header reveal">
     <h2>Build Your <span>Bottle</span></h2>
     <p>Pick your lid, base, and color for each section — the preview updates live.</p>
   </div>
 
-  <div class="builder-layout">
+  <div class="builder-layout reveal">
     <!-- Live Preview -->
     <div class="builder-preview">
       <!-- label removed -->
@@ -3094,16 +3261,46 @@
         <div class="color-section-picker">
           <span class="color-section-label">Lid Color</span>
           <div class="color-row" id="lidColorRow"></div>
+          <div class="custom-color-picker" id="customPickerLid">
+            <label>PICK YOUR CUSTOM COLOR</label>
+            <div class="custom-picker-row">
+              <input type="color" id="customColorLid" value="#8B5CF6" oninput="applyCustomColor('lid', this.value)">
+              <div>
+                <div class="custom-color-price">+ $8.99 per custom section</div>
+                <div class="custom-color-note">Premium custom coating applied to order</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="color-section-picker">
           <span class="color-section-label">Mid Chamber Color</span>
           <div class="color-row" id="midColorRow"></div>
+          <div class="custom-color-picker" id="customPickerMid">
+            <label>PICK YOUR CUSTOM COLOR</label>
+            <div class="custom-picker-row">
+              <input type="color" id="customColorMid" value="#8B5CF6" oninput="applyCustomColor('mid', this.value)">
+              <div>
+                <div class="custom-color-price">+ $8.99 per custom section</div>
+                <div class="custom-color-note">Premium custom coating applied to order</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="color-section-picker">
           <span class="color-section-label">Base Color</span>
           <div class="color-row" id="baseColorRow"></div>
+          <div class="custom-color-picker" id="customPickerBase">
+            <label>PICK YOUR CUSTOM COLOR</label>
+            <div class="custom-picker-row">
+              <input type="color" id="customColorBase" value="#8B5CF6" oninput="applyCustomColor('base', this.value)">
+              <div>
+                <div class="custom-color-price">+ $8.99 per custom section</div>
+                <div class="custom-color-note">Premium custom coating applied to order</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -3155,7 +3352,7 @@
 </section>
 
 <!-- Features -->
-<div class="features-grid">
+<div class="features-grid stagger-children">
   <div class="feature-card">
     <span class="feature-icon">📐</span>
     <h4>Uniform Core Tube</h4>
@@ -3180,13 +3377,13 @@
 
 <!-- === SHOP === -->
 <section class="shop-section">
-  <div class="section-header">
+  <div class="section-header reveal">
     <h2>Shop <span>Modules</span></h2>
     <p>Grab the starter set or build your own — every piece sold individually.</p>
   </div>
 
   <!-- Starter Bundle -->
-  <div class="starter-bundle">
+  <div class="starter-bundle reveal-scale">
     <div class="bundle-badge">SAVE 40%</div>
     <div class="bundle-visual">
       <div class="bv-lid"></div>
@@ -3382,7 +3579,7 @@
 
 <!-- === COMMUNITY BUILDS === -->
 <section class="community-section">
-  <div class="section-header">
+  <div class="section-header reveal">
     <h2>Community <span>Builds</span></h2>
     <p>Check out what other HydraStack users have created and shared.</p>
   </div>
@@ -3393,12 +3590,12 @@
 
 <!-- === FEEDBACK & REVIEWS === -->
 <section class="feedback-section">
-  <div class="section-header">
+  <div class="section-header reveal">
     <h2>Leave <span>Feedback</span></h2>
     <p>Let us know what you think about HydraStack.</p>
   </div>
 
-  <div class="feedback-form" id="feedbackForm">
+  <div class="feedback-form reveal" id="feedbackForm">
     <label>YOUR NAME</label>
     <input type="text" id="reviewName" placeholder="Your name">
 
@@ -3457,6 +3654,9 @@
   const lidNames = { handle: 'Handle Lid', straw: 'Straw Lid', classic: 'Classic Lid' };
   const baseNames = { narrow: 'Narrow 2.5"', standard: 'Standard 3.2"', xl: 'XL Liquid', heated: 'Heated 3.2"' };
 
+  // Track custom colors per section
+  let customColors = { lid: '#8B5CF6', mid: '#8B5CF6', base: '#8B5CF6' };
+
   // Build color swatches for each section
   function buildSwatches() {
     const sections = [
@@ -3477,6 +3677,15 @@
         el.onclick = () => selectSectionColor(sec.stateKey, key);
         row.appendChild(el);
       });
+
+      // Add custom swatch
+      const customEl = document.createElement('div');
+      customEl.className = 'builder-swatch custom-swatch' + (getColorForSection(sec.stateKey) === 'custom' ? ' active' : '');
+      customEl.setAttribute('data-section', sec.stateKey);
+      customEl.setAttribute('data-color', 'custom');
+      customEl.title = 'Custom Color (+$8.99)';
+      customEl.onclick = () => toggleCustomPicker(sec.stateKey);
+      row.appendChild(customEl);
     });
   }
 
@@ -3497,6 +3706,10 @@
       s.classList.toggle('active', s.getAttribute('data-color') === color);
     });
 
+    // Close custom picker when preset color selected
+    const pickerKey = section.charAt(0).toUpperCase() + section.slice(1);
+    document.getElementById('customPicker' + pickerKey).classList.remove('open');
+
     updatePreview();
   }
 
@@ -3514,10 +3727,30 @@
     updatePreview();
   }
 
+  function getColorObj(colorKey, section) {
+    if (colorKey === 'custom') {
+      const hex = customColors[section];
+      // Darken the hex for gradient bottom
+      const darker = shadeColor(hex, -25);
+      return { name: 'Custom', main: [hex, darker], accent: hex, adapter: darker, swatch: hex };
+    }
+    return colorData[colorKey];
+  }
+
+  function shadeColor(color, percent) {
+    let R = parseInt(color.substring(1,3), 16);
+    let G = parseInt(color.substring(3,5), 16);
+    let B = parseInt(color.substring(5,7), 16);
+    R = Math.min(255, Math.max(0, Math.round(R * (100 + percent) / 100)));
+    G = Math.min(255, Math.max(0, Math.round(G * (100 + percent) / 100)));
+    B = Math.min(255, Math.max(0, Math.round(B * (100 + percent) / 100)));
+    return '#' + (R.toString(16).padStart(2,'0')) + (G.toString(16).padStart(2,'0')) + (B.toString(16).padStart(2,'0'));
+  }
+
   function updatePreview() {
-    const lc = colorData[lidColor];
-    const mc = colorData[midColor];
-    const bc = colorData[baseColor];
+    const lc = getColorObj(lidColor, 'lid');
+    const mc = getColorObj(midColor, 'mid');
+    const bc = getColorObj(baseColor, 'base');
 
     const lidGrad = `linear-gradient(180deg, ${lc.main[0]}, ${lc.main[1]})`;
     const midGrad = `linear-gradient(180deg, ${mc.main[0]}, ${mc.main[1]})`;
@@ -4571,6 +4804,74 @@
   function navMenuAction(action) {
     toggleNavMenu();
     if (action === 'signin') openAuthModal();
+  }
+
+  // === CUSTOM COLOR PICKER ===
+
+  function toggleCustomPicker(section) {
+    const pickerKey = section.charAt(0).toUpperCase() + section.slice(1);
+    const picker = document.getElementById('customPicker' + pickerKey);
+    const isOpen = picker.classList.contains('open');
+
+    // Close all pickers
+    document.querySelectorAll('.custom-color-picker').forEach(p => p.classList.remove('open'));
+
+    if (!isOpen) {
+      picker.classList.add('open');
+      // Select custom as the active color
+      applyCustomColor(section, customColors[section]);
+    }
+  }
+
+  function applyCustomColor(section, hex) {
+    customColors[section] = hex;
+
+    if (section === 'lid') lidColor = 'custom';
+    else if (section === 'mid') midColor = 'custom';
+    else baseColor = 'custom';
+
+    // Update active states
+    const rowId = section === 'lid' ? 'lidColorRow' : section === 'mid' ? 'midColorRow' : 'baseColorRow';
+    document.querySelectorAll(`#${rowId} .builder-swatch`).forEach(s => {
+      s.classList.toggle('active', s.getAttribute('data-color') === 'custom');
+    });
+
+    updatePreview();
+  }
+
+  // === PARALLAX SCROLL ANIMATIONS ===
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -40px 0px'
+  });
+
+  // Observe all reveal elements
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-children').forEach(el => {
+    revealObserver.observe(el);
+  });
+
+  // Parallax depth scrolling on hero
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const heroH = hero.offsetHeight;
+      if (scrolled < heroH) {
+        const parallaxEls = hero.querySelectorAll('.brand-tag, h1, .tagline');
+        parallaxEls.forEach((el, i) => {
+          const speed = 0.15 + (i * 0.08);
+          el.style.transform = `translateY(${scrolled * speed}px)`;
+          el.style.opacity = Math.max(0, 1 - scrolled / (heroH * 0.6));
+        });
+      }
+    }, { passive: true });
   }
 
 </script>
