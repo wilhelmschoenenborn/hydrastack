@@ -116,6 +116,17 @@ using (var conn = new NpgsqlConnection(connStr))
         END $$;
     ", conn);
     await alterCmd.ExecuteNonQueryAsync();
+
+    // Add MidType column to SavedBuilds if it doesn't exist (for existing databases)
+    using var alterCmd2 = new NpgsqlCommand(@"
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='savedbuilds' AND column_name='midtype') THEN
+                ALTER TABLE SavedBuilds ADD COLUMN MidType TEXT NOT NULL DEFAULT 'standard';
+            END IF;
+        END $$;
+    ", conn);
+    await alterCmd2.ExecuteNonQueryAsync();
 }
 
 Console.WriteLine("Database tables ready (PostgreSQL)");
@@ -464,6 +475,7 @@ app.MapPost("/api/builds", async (HttpContext ctx) =>
     var userId = body.TryGetProperty("userId", out var uid) ? uid.GetInt32() : 0;
     var buildName = body.TryGetProperty("buildName", out var bn) ? bn.GetString()?.Trim() ?? "My Build" : "My Build";
     var lidType = body.TryGetProperty("lidType", out var lt) ? lt.GetString() ?? "" : "";
+    var midType = body.TryGetProperty("midType", out var mt) ? mt.GetString() ?? "standard" : "standard";
     var baseType = body.TryGetProperty("baseType", out var bt) ? bt.GetString() ?? "" : "";
     var lidColor = body.TryGetProperty("lidColor", out var lc) ? lc.GetString() ?? "" : "";
     var midColor = body.TryGetProperty("midColor", out var mc) ? mc.GetString() ?? "" : "";
@@ -489,12 +501,13 @@ app.MapPost("/api/builds", async (HttpContext ctx) =>
         await conn.OpenAsync();
 
         using var cmd = new NpgsqlCommand(@"
-            INSERT INTO SavedBuilds (UserID, BuildName, LidType, BaseType, LidColor, MidColor, BaseColor)
-            VALUES (@uid, @name, @lid, @base, @lc, @mc, @bc)
+            INSERT INTO SavedBuilds (UserID, BuildName, LidType, MidType, BaseType, LidColor, MidColor, BaseColor)
+            VALUES (@uid, @name, @lid, @mid, @base, @lc, @mc, @bc)
             RETURNING SavedBuildID", conn);
         cmd.Parameters.AddWithValue("@uid", userId);
         cmd.Parameters.AddWithValue("@name", buildName);
         cmd.Parameters.AddWithValue("@lid", lidType);
+        cmd.Parameters.AddWithValue("@mid", midType);
         cmd.Parameters.AddWithValue("@base", baseType);
         cmd.Parameters.AddWithValue("@lc", lidColor);
         cmd.Parameters.AddWithValue("@mc", midColor);
@@ -519,7 +532,7 @@ app.MapGet("/api/builds/{userId:int}", async (int userId) =>
     await conn.OpenAsync();
 
     using var cmd = new NpgsqlCommand(@"
-        SELECT SavedBuildID, BuildName, LidType, BaseType, LidColor, MidColor, BaseColor, IsShared, CreatedAt
+        SELECT SavedBuildID, BuildName, LidType, MidType, BaseType, LidColor, MidColor, BaseColor, IsShared, CreatedAt
         FROM SavedBuilds WHERE UserID = @uid
         ORDER BY CreatedAt DESC", conn);
     cmd.Parameters.AddWithValue("@uid", userId);
@@ -532,12 +545,13 @@ app.MapGet("/api/builds/{userId:int}", async (int userId) =>
             buildId = reader.GetInt32(0),
             buildName = reader.GetString(1),
             lidType = reader.GetString(2),
-            baseType = reader.GetString(3),
-            lidColor = reader.GetString(4),
-            midColor = reader.GetString(5),
-            baseColor = reader.GetString(6),
-            isShared = reader.GetBoolean(7),
-            createdAt = reader.GetDateTime(8).ToString("o"),
+            midType = reader.GetString(3),
+            baseType = reader.GetString(4),
+            lidColor = reader.GetString(5),
+            midColor = reader.GetString(6),
+            baseColor = reader.GetString(7),
+            isShared = reader.GetBoolean(8),
+            createdAt = reader.GetDateTime(9).ToString("o"),
         });
     }
 
@@ -596,7 +610,7 @@ app.MapGet("/api/builds/community", async () =>
     await conn.OpenAsync();
 
     using var cmd = new NpgsqlCommand(@"
-        SELECT sb.SavedBuildID, sb.BuildName, sb.LidType, sb.BaseType, sb.LidColor, sb.MidColor, sb.BaseColor, sb.CreatedAt, u.Username
+        SELECT sb.SavedBuildID, sb.BuildName, sb.LidType, sb.MidType, sb.BaseType, sb.LidColor, sb.MidColor, sb.BaseColor, sb.CreatedAt, u.Username
         FROM SavedBuilds sb
         JOIN Users u ON sb.UserID = u.UserID
         WHERE sb.IsShared = TRUE
@@ -611,12 +625,13 @@ app.MapGet("/api/builds/community", async () =>
             buildId = reader.GetInt32(0),
             buildName = reader.GetString(1),
             lidType = reader.GetString(2),
-            baseType = reader.GetString(3),
-            lidColor = reader.GetString(4),
-            midColor = reader.GetString(5),
-            baseColor = reader.GetString(6),
-            createdAt = reader.GetDateTime(7).ToString("o"),
-            username = reader.GetString(8),
+            midType = reader.GetString(3),
+            baseType = reader.GetString(4),
+            lidColor = reader.GetString(5),
+            midColor = reader.GetString(6),
+            baseColor = reader.GetString(7),
+            createdAt = reader.GetDateTime(8).ToString("o"),
+            username = reader.GetString(9),
         });
     }
 
