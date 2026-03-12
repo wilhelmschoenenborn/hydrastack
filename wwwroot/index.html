@@ -3518,7 +3518,7 @@
         <div class="bundle-color-row" id="bundleColorRow"></div>
         <div class="prod-custom-picker" id="prodPicker-starter-bundle">
           <input type="color" value="#8B5CF6" oninput="applyProductCustomColor('starter-bundle', this.value)">
-          <span class="prod-custom-price-tag">+$8.99</span>
+          <span class="prod-custom-price-tag">+$26.97 (3 pcs)</span>
         </div>
       </div>
       <button class="bundle-atc" id="atc-starter" onclick="addToCart('starter-bundle')">Add Starter Set to Cart</button>
@@ -4021,7 +4021,7 @@
     customEl.style.cssText = 'background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red) !important; position: relative; width: 24px; height: 24px;';
     customEl.setAttribute('data-product', 'starter-bundle');
     customEl.setAttribute('data-color', 'custom');
-    customEl.title = 'Custom Color (+$8.99)';
+    customEl.title = 'Custom Color (+$26.97 for 3 pieces)';
     customEl.onclick = () => toggleProductCustomPicker('starter-bundle');
     row.appendChild(customEl);
   }
@@ -4132,7 +4132,9 @@
     const p = getProduct(cartItem.id);
     if (!p) return 0;
     const base = p.price;
-    const surcharge = isCustomColor(cartItem.color) ? CUSTOM_COLOR_SURCHARGE : 0;
+    // Starter bundle has 3 pieces (lid + mid + base), so surcharge is 3x
+    const multiplier = cartItem.id === 'starter-bundle' ? 3 : 1;
+    const surcharge = isCustomColor(cartItem.color) ? CUSTOM_COLOR_SURCHARGE * multiplier : 0;
     return (base + surcharge) * cartItem.qty;
   }
 
@@ -4163,7 +4165,8 @@
         const colorName = isCustom ? 'Custom' : (colorData[c.color] ? colorData[c.color].name : c.color);
         const itemTotal = getItemPrice(c);
         const escapedKey = c.key.replace(/'/g, "\\'");
-        const surchargeTag = isCustom ? '<div class="ci-color" style="color:var(--accent);">+$8.99 custom</div>' : '';
+        const surchargeAmt = c.id === 'starter-bundle' ? (CUSTOM_COLOR_SURCHARGE * 3).toFixed(2) : CUSTOM_COLOR_SURCHARGE.toFixed(2);
+        const surchargeTag = isCustom ? `<div class="ci-color" style="color:var(--accent);">+$${surchargeAmt} custom</div>` : '';
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
@@ -4242,8 +4245,9 @@
       const isCustom = isCustomColor(c.color);
       const colorName = isCustom ? 'Custom' : (colorData[c.color] ? colorData[c.color].name : '');
       const itemTotal = getItemPrice(c);
+      const surchargeDisplay = isCustom ? ` (+$${(c.id === 'starter-bundle' ? CUSTOM_COLOR_SURCHARGE * 3 : CUSTOM_COLOR_SURCHARGE).toFixed(2)})` : '';
       html += `<div class="co-order-item">
-        <span>${p.icon} ${p.name}${colorName ? ' — ' + colorName : ''}${isCustom ? ' (+$8.99)' : ''}${c.qty > 1 ? ' × ' + c.qty : ''}</span>
+        <span>${p.icon} ${p.name}${colorName ? ' — ' + colorName : ''}${surchargeDisplay}${c.qty > 1 ? ' × ' + c.qty : ''}</span>
         <span class="co-oi-price">$${itemTotal.toFixed(2)}</span>
       </div>`;
     });
