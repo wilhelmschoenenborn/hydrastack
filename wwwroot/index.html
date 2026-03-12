@@ -3901,9 +3901,11 @@
     document.querySelectorAll(`.bundle-swatch[data-product="${productId}"]`).forEach(s => {
       s.classList.toggle('active', s.getAttribute('data-color') === color);
     });
-    // Close custom picker if preset selected
-    const picker = document.getElementById('prodPicker-' + productId);
-    if (picker) picker.classList.remove('open');
+    // Close custom picker if preset selected (not custom)
+    if (color !== 'custom') {
+      const picker = document.getElementById('prodPicker-' + productId);
+      if (picker) picker.classList.remove('open');
+    }
   }
 
   function buildBundleSwatches() {
