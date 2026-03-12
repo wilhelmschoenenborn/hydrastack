@@ -131,6 +131,100 @@ using (var conn = new NpgsqlConnection(connStr))
 
 Console.WriteLine("Database tables ready (PostgreSQL)");
 
+// === PROFANITY FILTER ===
+var bannedWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    // Slurs & hate speech
+    "nigger","nigga","nigg3r","n1gger","n1gga","nigg","nig","negro","negr0",
+    "faggot","fagg0t","f4ggot","fag","f4g","dyke","dyk3",
+    "retard","r3tard","retrd","spic","sp1c","spick","sp1ck",
+    "chink","ch1nk","gook","g00k","wetback","w3tback",
+    "kike","k1ke","beaner","b3aner","coon","c00n","darkie","dark1e",
+    "cracker","honky","h0nky","gringo","gring0",
+    "tranny","tr4nny","shemale","sh3male",
+    "raghead","r4ghead","towelhead","t0welhead","camel jockey",
+    "zipperhead","jigaboo","sambo","pickaninny","uncle tom",
+    "halfbreed","mongrel","mutt",
+
+    // Profanity
+    "fuck","f*ck","fck","fuk","fuq","fuc","f**k","fu*k","f u c k",
+    "shit","sh1t","sh!t","s**t","sht","shyt",
+    "bitch","b1tch","b!tch","b*tch","biatch","bytch",
+    "ass","a$$","@ss","a**","asshole","a$$hole","assh0le",
+    "damn","d4mn","dmn","damnit",
+    "dick","d1ck","d!ck","d*ck","dik",
+    "cock","c0ck","c*ck","cok",
+    "pussy","pu$$y","puss","pus$y","p*ssy",
+    "cunt","c*nt","cnut","cvnt","c**t",
+    "whore","wh0re","wh*re","h0e","hoe",
+    "slut","sl*t","s1ut",
+    "bastard","b4stard","b@stard",
+    "penis","pen1s","pen!s",
+    "vagina","vag1na","vag",
+    "tits","t1ts","titties","t!ts","boobs","b00bs",
+    "cum","c*m","jizz","j1zz",
+    "dildo","d1ldo","dild0",
+    "porn","p0rn","pr0n","porno","p0rno",
+    "anal","an4l","anus","@nus",
+    "blowjob","bl0wjob","bj",
+    "handjob","h4ndjob",
+    "masturbat","masturb8","wank","w4nk",
+    "erection","boner","b0ner",
+    "orgasm","0rgasm",
+    "semen","s3men","sperm","sp3rm",
+    "testicle","test1cle","ballsack","ballsak","nutsack",
+    "butthole","butth0le","buttplug",
+
+    // Offensive / harassment
+    "nazi","n4zi","naz1","hitler","h1tler","heil","h3il",
+    "kkk","klan","ku klux",
+    "rape","r4pe","rap3","rapist","rap1st",
+    "pedo","p3do","ped0","pedophile","paedo",
+    "molest","mol3st","m0lest",
+    "suicide","su1cide","kys","k.y.s","killyourself","killurself",
+    "terrorist","terr0rist",
+    "bomb","b0mb",
+    "shoot","sh00t",
+    "murder","murd3r",
+    "genocide","gen0cide",
+
+    // Drugs
+    "meth","m3th","heroin","her0in","cocaine","cocain3","crack","cr4ck",
+
+    // Common evasions
+    "stfu","gtfo","lmfao","milf","thot","th0t","incel","1ncel",
+    "onlyfans","0nlyfans",
+};
+
+// Check if text contains any banned word (whole word or substring)
+bool ContainsProfanity(string text)
+{
+    if (string.IsNullOrWhiteSpace(text)) return false;
+
+    // Normalize: lowercase, strip common leet substitutions
+    var normalized = text.ToLowerInvariant()
+        .Replace("0", "o").Replace("1", "i").Replace("3", "e")
+        .Replace("4", "a").Replace("5", "s").Replace("7", "t")
+        .Replace("@", "a").Replace("!", "i").Replace("$", "s")
+        .Replace(" ", "").Replace(".", "").Replace("-", "").Replace("_", "");
+
+    var lower = text.ToLowerInvariant();
+
+    foreach (var word in bannedWords)
+    {
+        var w = word.ToLowerInvariant();
+        // Check raw text (with spaces)
+        if (lower.Contains(w)) return true;
+        // Check normalized (leet-speak stripped, no spaces)
+        var normalizedWord = w.Replace(" ", "").Replace(".", "").Replace("-", "").Replace("_", "")
+            .Replace("0", "o").Replace("1", "i").Replace("3", "e")
+            .Replace("4", "a").Replace("5", "s").Replace("7", "t")
+            .Replace("@", "a").Replace("!", "i").Replace("$", "s");
+        if (normalized.Contains(normalizedWord)) return true;
+    }
+    return false;
+}
+
 // POST /api/auth/register
 app.MapPost("/api/auth/register", async (HttpContext ctx) =>
 {
@@ -150,6 +244,13 @@ app.MapPost("/api/auth/register", async (HttpContext ctx) =>
     {
         ctx.Response.StatusCode = 400;
         await ctx.Response.WriteAsJsonAsync(new { error = "Password must be at least 6 characters" });
+        return;
+    }
+
+    if (ContainsProfanity(username))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Username contains inappropriate language. Please choose a different name." });
         return;
     }
 
@@ -495,6 +596,13 @@ app.MapPost("/api/builds", async (HttpContext ctx) =>
         return;
     }
 
+    if (ContainsProfanity(buildName))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Build name contains inappropriate language. Please choose a different name." });
+        return;
+    }
+
     try
     {
         using var conn = new NpgsqlConnection(connStr);
@@ -661,6 +769,13 @@ app.MapPost("/api/reviews", async (HttpContext ctx) =>
     {
         ctx.Response.StatusCode = 400;
         await ctx.Response.WriteAsJsonAsync(new { error = "Rating must be between 1 and 5." });
+        return;
+    }
+
+    if (ContainsProfanity(name) || ContainsProfanity(message))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Your feedback contains inappropriate language. Please revise and try again." });
         return;
     }
 
