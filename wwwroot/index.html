@@ -3455,6 +3455,10 @@
       <div class="bundle-color-section">
         <div class="bundle-color-label">COLOR</div>
         <div class="bundle-color-row" id="bundleColorRow"></div>
+        <div class="prod-custom-picker" id="prodPicker-starter-bundle">
+          <input type="color" value="#8B5CF6" oninput="applyProductCustomColor('starter-bundle', this.value)">
+          <span class="prod-custom-price-tag">+$8.99</span>
+        </div>
       </div>
       <button class="bundle-atc" id="atc-starter" onclick="addToCart('starter-bundle')">Add Starter Set to Cart</button>
     </div>
@@ -4931,11 +4935,7 @@
 
   function toggleProductCustomPicker(productId) {
     const picker = document.getElementById('prodPicker-' + productId);
-    if (!picker) {
-      // For bundle which doesn't have inline picker, just select custom
-      selectProductColor(productId, 'custom');
-      return;
-    }
+    if (!picker) return;
     const isOpen = picker.classList.contains('open');
 
     // Close all product pickers
