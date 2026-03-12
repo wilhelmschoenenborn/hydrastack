@@ -1905,6 +1905,52 @@
     box-shadow: 0 0 8px rgba(62,207,207,0.4);
   }
 
+  .prod-swatch.custom-prod-swatch {
+    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red) !important;
+    position: relative;
+  }
+
+  .prod-swatch.custom-prod-swatch::after {
+    content: '+';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  }
+
+  .prod-custom-picker {
+    display: none;
+    margin-top: 0.4rem;
+    text-align: center;
+  }
+
+  .prod-custom-picker.open { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+
+  .prod-custom-picker input[type="color"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px; height: 30px;
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .prod-custom-picker input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  .prod-custom-picker input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+  .prod-custom-price-tag {
+    font-size: 0.6rem;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+  }
+
   /* Color name tag in cart items */
   .ci-color {
     font-size: 0.65rem;
@@ -3855,6 +3901,9 @@
     document.querySelectorAll(`.bundle-swatch[data-product="${productId}"]`).forEach(s => {
       s.classList.toggle('active', s.getAttribute('data-color') === color);
     });
+    // Close custom picker if preset selected
+    const picker = document.getElementById('prodPicker-' + productId);
+    if (picker) picker.classList.remove('open');
   }
 
   function buildBundleSwatches() {
@@ -3871,7 +3920,20 @@
       el.onclick = () => selectProductColor('starter-bundle', key);
       row.appendChild(el);
     });
+    // Custom swatch for bundle
+    const customEl = document.createElement('div');
+    customEl.className = 'bundle-swatch custom-prod-swatch' + (productColors['starter-bundle'] === 'custom' ? ' active' : '');
+    customEl.style.cssText = 'background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red) !important; position: relative; width: 24px; height: 24px;';
+    customEl.setAttribute('data-product', 'starter-bundle');
+    customEl.setAttribute('data-color', 'custom');
+    customEl.title = 'Custom Color (+$8.99)';
+    customEl.onclick = () => toggleProductCustomPicker('starter-bundle');
+    row.appendChild(customEl);
   }
+
+  // Track custom hex per product
+  const productCustomColors = {};
+  products.forEach(p => { productCustomColors[p.id] = '#8B5CF6'; });
 
   function buildShop() {
     const grid = document.getElementById('shopGrid');
@@ -3887,7 +3949,14 @@
         const isActive = productColors[p.id] === key ? ' active' : '';
         swatchesHtml += `<div class="prod-swatch${isActive}" style="background: ${colorData[key].swatch};" data-product="${p.id}" data-color="${key}" title="${colorData[key].name}" onclick="selectProductColor('${p.id}', '${key}')"></div>`;
       });
+      // Custom color swatch
+      const customActive = productColors[p.id] === 'custom' ? ' active' : '';
+      swatchesHtml += `<div class="prod-swatch custom-prod-swatch${customActive}" data-product="${p.id}" data-color="custom" title="Custom Color (+$8.99)" onclick="toggleProductCustomPicker('${p.id}')"></div>`;
       swatchesHtml += '</div>';
+      swatchesHtml += `<div class="prod-custom-picker" id="prodPicker-${p.id}">
+        <input type="color" value="${productCustomColors[p.id]}" oninput="applyProductCustomColor('${p.id}', this.value)">
+        <span class="prod-custom-price-tag">+$8.99</span>
+      </div>`;
 
       card.innerHTML = `
         <div class="prod-icon" style="background: ${p.bg};">${p.icon}</div>
@@ -3958,11 +4027,22 @@
     return products.find(p => p.id === id);
   }
 
+  const CUSTOM_COLOR_SURCHARGE = 8.99;
+
+  function isCustomColor(color) {
+    return color === 'custom' || (color && color.startsWith('#'));
+  }
+
+  function getItemPrice(cartItem) {
+    const p = getProduct(cartItem.id);
+    if (!p) return 0;
+    const base = p.price;
+    const surcharge = isCustomColor(cartItem.color) ? CUSTOM_COLOR_SURCHARGE : 0;
+    return (base + surcharge) * cartItem.qty;
+  }
+
   function getCartTotal() {
-    return cart.reduce((sum, c) => {
-      const p = getProduct(c.id);
-      return sum + (p ? p.price * c.qty : 0);
-    }, 0);
+    return cart.reduce((sum, c) => sum + getItemPrice(c), 0);
   }
 
   function updateCart() {
@@ -3984,8 +4064,11 @@
       cart.forEach(c => {
         const p = getProduct(c.id);
         if (!p) return;
-        const colorName = colorData[c.color] ? colorData[c.color].name : c.color;
+        const isCustom = isCustomColor(c.color);
+        const colorName = isCustom ? 'Custom' : (colorData[c.color] ? colorData[c.color].name : c.color);
+        const itemTotal = getItemPrice(c);
         const escapedKey = c.key.replace(/'/g, "\\'");
+        const surchargeTag = isCustom ? '<div class="ci-color" style="color:var(--accent);">+$8.99 custom</div>' : '';
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
@@ -3993,13 +4076,14 @@
           <div class="ci-info">
             <div class="ci-name">${p.name}</div>
             <div class="ci-color">${colorName}</div>
+            ${surchargeTag}
             <div class="qty-control">
               <button class="qty-btn" onclick="changeQty('${escapedKey}', -1)">−</button>
               <span class="qty-num">${c.qty}</span>
               <button class="qty-btn" onclick="changeQty('${escapedKey}', 1)">+</button>
             </div>
           </div>
-          <div class="ci-price">$${(p.price * c.qty).toFixed(2)}</div>
+          <div class="ci-price">$${itemTotal.toFixed(2)}</div>
           <button class="ci-remove" onclick="removeFromCart('${escapedKey}')">✕</button>
         `;
         itemsEl.appendChild(div);
@@ -4060,10 +4144,12 @@
     cart.forEach(c => {
       const p = getProduct(c.id);
       if (!p) return;
-      const colorName = colorData[c.color] ? colorData[c.color].name : '';
+      const isCustom = isCustomColor(c.color);
+      const colorName = isCustom ? 'Custom' : (colorData[c.color] ? colorData[c.color].name : '');
+      const itemTotal = getItemPrice(c);
       html += `<div class="co-order-item">
-        <span>${p.icon} ${p.name}${colorName ? ' — ' + colorName : ''}${c.qty > 1 ? ' × ' + c.qty : ''}</span>
-        <span class="co-oi-price">$${(p.price * c.qty).toFixed(2)}</span>
+        <span>${p.icon} ${p.name}${colorName ? ' — ' + colorName : ''}${isCustom ? ' (+$8.99)' : ''}${c.qty > 1 ? ' × ' + c.qty : ''}</span>
+        <span class="co-oi-price">$${itemTotal.toFixed(2)}</span>
       </div>`;
     });
     const shipping = 5.99;
@@ -4837,6 +4923,39 @@
     });
 
     updatePreview();
+  }
+
+  // === SHOP CUSTOM COLOR PICKERS ===
+
+  function toggleProductCustomPicker(productId) {
+    const picker = document.getElementById('prodPicker-' + productId);
+    if (!picker) {
+      // For bundle which doesn't have inline picker, just select custom
+      selectProductColor(productId, 'custom');
+      return;
+    }
+    const isOpen = picker.classList.contains('open');
+
+    // Close all product pickers
+    document.querySelectorAll('.prod-custom-picker').forEach(p => p.classList.remove('open'));
+
+    if (!isOpen) {
+      picker.classList.add('open');
+    }
+    // Select custom color
+    selectProductColor(productId, 'custom');
+  }
+
+  function applyProductCustomColor(productId, hex) {
+    productCustomColors[productId] = hex;
+    productColors[productId] = 'custom';
+    // Update active states
+    document.querySelectorAll(`.prod-swatch[data-product="${productId}"]`).forEach(s => {
+      s.classList.toggle('active', s.getAttribute('data-color') === 'custom');
+    });
+    document.querySelectorAll(`.bundle-swatch[data-product="${productId}"]`).forEach(s => {
+      s.classList.toggle('active', s.getAttribute('data-color') === 'custom');
+    });
   }
 
   // === PARALLAX SCROLL ANIMATIONS ===
