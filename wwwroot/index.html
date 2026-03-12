@@ -1644,6 +1644,35 @@
     margin: 0 auto;
   }
 
+  /* Individual Parts Header */
+  .individual-parts-header {
+    max-width: 1050px;
+    margin: 0 auto 2rem;
+    text-align: center;
+    padding: 1.5rem 0 0.5rem;
+    border-top: 1px solid rgba(62,207,207,0.12);
+  }
+
+  .individual-parts-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.5px;
+  }
+
+  .individual-parts-header h3 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .individual-parts-header p {
+    color: #8899AA;
+    font-size: 0.95rem;
+    font-weight: 300;
+  }
+
   /* Starter Bundle Card */
   .starter-bundle {
     max-width: 1050px;
@@ -3525,6 +3554,10 @@
     </div>
   </div>
 
+  <div class="individual-parts-header reveal">
+    <h3>Individual <span>Parts</span></h3>
+    <p>Swap, upgrade, or expand — every piece sold separately.</p>
+  </div>
   <div class="shop-grid" id="shopGrid"></div>
 </section>
 
