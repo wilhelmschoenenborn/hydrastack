@@ -648,6 +648,127 @@
 
   .cupholder-note strong { color: #E8A0A2; }
 
+  /* === MID MODULES === */
+  .mid-modules {
+    padding: 5rem 2rem;
+    background: linear-gradient(180deg, #151820, #151820);
+    text-align: center;
+  }
+
+  .mid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .mid-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+  }
+
+  .mid-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.14);
+    transform: translateY(-6px);
+  }
+
+  .mid-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 1.2rem;
+  }
+
+  .mid-visual {
+    width: 120px;
+    height: 160px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+
+  .mid-body-standard {
+    width: 74px;
+    height: 120px;
+    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: inset 2px 0 5px rgba(255,255,255,0.1), inset -2px 0 5px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.25);
+  }
+
+  .mid-body-standard .mid-thread-top,
+  .mid-body-handle .mid-thread-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(62,207,207,0.3);
+  }
+
+  .mid-body-standard .mid-thread-bottom,
+  .mid-body-handle .mid-thread-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(62,207,207,0.3);
+  }
+
+  .mid-body-handle {
+    width: 74px;
+    height: 120px;
+    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
+    position: absolute;
+    bottom: 0;
+    left: 46%;
+    transform: translateX(-50%);
+    box-shadow: inset 2px 0 5px rgba(255,255,255,0.1), inset -2px 0 5px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.25);
+  }
+
+  .mid-side-handle {
+    position: absolute;
+    right: -22px;
+    top: 14px;
+    width: 18px;
+    height: 90px;
+    border: 6px solid #7A9AAE;
+    border-left: none;
+    border-radius: 0 30px 30px 0;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.2);
+  }
+
+  .mid-card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .mid-inspired {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 400;
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .mid-card p {
+    font-size: 0.82rem;
+    color: #8899AA;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
   /* === LID MODULES === */
   .lid-modules {
     padding: 5rem 2rem;
@@ -3365,6 +3486,57 @@
   <div class="cupholder-note">
     <div class="icon">🚗</div>
     <p><strong>Tight cupholder?</strong> The narrow base tapers to 2.5" via the adapter ring. The full-size 3.2" mid sits above the rim while the narrow base drops in snugly below.</p>
+  </div>
+</section>
+
+<!-- Mid Modules -->
+<section class="mid-modules">
+  <div class="section-header reveal">
+    <h2>Swap Your <span>Mid</span></h2>
+    <p>The mid chamber is the core of every HydraStack — double-wall vacuum insulated and threaded on both ends. Choose your grip style.</p>
+  </div>
+
+  <div class="mid-grid stagger-children">
+    <div class="mid-card">
+      <span class="mid-badge">MID MODULE 01</span>
+      <div class="mid-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="mid-body-standard">
+            <div class="mid-thread-top"></div>
+            <div class="mid-thread-bottom"></div>
+          </div>
+        </div>
+      </div>
+      <h3>Standard 16oz</h3>
+      <span class="mid-inspired">Clean cylindrical profile</span>
+      <p>Sleek, straight-walled chamber with no external features. Fits every cupholder and bag pocket. The everyday workhorse.</p>
+      <div class="feature-tags">
+        <span class="tag">VACUUM INSULATED</span>
+        <span class="tag">16 OZ CAPACITY</span>
+        <span class="tag">SLIM PROFILE</span>
+      </div>
+    </div>
+
+    <div class="mid-card">
+      <span class="mid-badge">MID MODULE 02</span>
+      <div class="mid-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="mid-body-handle">
+            <div class="mid-thread-top"></div>
+            <div class="mid-thread-bottom"></div>
+            <div class="mid-side-handle"></div>
+          </div>
+        </div>
+      </div>
+      <h3>Handle 16oz</h3>
+      <span class="mid-inspired">Integrated side grip</span>
+      <p>Same insulated chamber with an ergonomic side handle molded in. Perfect for hot drinks — grip without the heat. No sleeve needed.</p>
+      <div class="feature-tags">
+        <span class="tag">VACUUM INSULATED</span>
+        <span class="tag">SIDE GRIP</span>
+        <span class="tag">HEAT-FREE HOLD</span>
+      </div>
+    </div>
   </div>
 </section>
 
