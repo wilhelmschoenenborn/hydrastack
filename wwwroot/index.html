@@ -657,9 +657,9 @@
 
   .mid-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 2rem;
-    max-width: 700px;
+    max-width: 1000px;
     margin: 0 auto;
   }
 
@@ -746,6 +746,24 @@
     border-left: none;
     border-radius: 0 30px 30px 0;
     box-shadow: 2px 0 6px rgba(0,0,0,0.2);
+  }
+
+  .mid-body-xl {
+    width: 74px;
+    height: 150px;
+    background: linear-gradient(180deg, #4A90D9, #2E5FA3);
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: inset 2px 0 5px rgba(255,255,255,0.1), inset -2px 0 5px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.25);
+  }
+
+  .mid-visual-xl {
+    width: 120px;
+    height: 180px;
+    margin: 0 auto 1.5rem;
+    position: relative;
   }
 
   .mid-card h3 {
@@ -3531,6 +3549,26 @@
         <span class="tag">HEAT-FREE HOLD</span>
       </div>
     </div>
+
+    <div class="mid-card">
+      <span class="mid-badge">MID MODULE 03</span>
+      <div class="mid-visual-xl">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="mid-body-xl">
+            <div class="mid-thread-top"></div>
+            <div class="mid-thread-bottom"></div>
+          </div>
+        </div>
+      </div>
+      <h3>XL Mid 24oz</h3>
+      <span class="mid-inspired">Extended capacity chamber</span>
+      <p>Same diameter, taller chamber for all-day hydration. Holds 50% more liquid without changing your lid or base.</p>
+      <div class="feature-tags">
+        <span class="tag">VACUUM INSULATED</span>
+        <span class="tag">24 OZ CAPACITY</span>
+        <span class="tag">SAME THREADS</span>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -3666,6 +3704,9 @@
           </button>
           <button class="option-btn" data-mid="handle" onclick="selectMid('handle')">
             <span class="mini-icon">☕</span> Handle
+          </button>
+          <button class="option-btn" data-mid="xl" onclick="selectMid('xl')">
+            <span class="mini-icon">📏</span> XL 24oz
           </button>
         </div>
       </div>
@@ -3858,6 +3899,12 @@
     <p>Swap, upgrade, or expand — every piece sold separately.</p>
   </div>
   <div class="shop-grid" id="shopGrid"></div>
+
+  <div class="individual-parts-header reveal" style="margin-top: 3rem;">
+    <h3>Accessories</h3>
+    <p>Add-ons and extras that work with any HydraStack setup.</p>
+  </div>
+  <div class="shop-grid" id="accessoryGrid"></div>
 </section>
 
 <!-- Cart FAB -->
@@ -4100,7 +4147,7 @@
   };
 
   const lidNames = { handle: 'Handle Lid', straw: 'Straw Lid', classic: 'Classic Lid' };
-  const midNames = { standard: 'Standard 16oz', handle: 'Handle 16oz' };
+  const midNames = { standard: 'Standard 16oz', handle: 'Handle 16oz', xl: 'XL Mid 24oz' };
   const baseNames = { narrow: 'Narrow 2.5"', standard: 'Standard 3.2"', xl: 'XL Liquid', heated: 'Heated 3.2"' };
 
   // Track custom colors per section
@@ -4246,14 +4293,20 @@
     }
 
     // Mid
-    document.getElementById('pvMid').style.background = midGrad;
+    const pvMid = document.getElementById('pvMid');
+    pvMid.style.background = midGrad;
     const pvMidHandle = document.getElementById('pvMidHandle');
     if (currentMid === 'handle') {
       pvMidHandle.style.display = 'block';
       pvMidHandle.style.borderColor = mc.accent;
       pvMidHandle.style.setProperty('--handle-color', mc.accent);
+      pvMid.style.height = '180px';
+    } else if (currentMid === 'xl') {
+      pvMidHandle.style.display = 'none';
+      pvMid.style.height = '230px';
     } else {
       pvMidHandle.style.display = 'none';
+      pvMid.style.height = '180px';
     }
 
     // Base
@@ -4307,11 +4360,13 @@
     { id: 'lid-classic',  name: 'Classic Lid',       desc: 'Simple wide-mouth flip-top',        price: 7.99, icon: '⬆️', bg: 'rgba(184,196,206,0.12)' },
     { id: 'mid-16',       name: 'Mid Chamber 16oz',  desc: 'Double-wall vacuum insulated',      price: 29.99, icon: '🧊', bg: 'rgba(142,170,184,0.12)' },
     { id: 'mid-handle',   name: 'Handle Mid 16oz',   desc: 'Side-grip handle, vacuum insulated', price: 34.99, icon: '☕', bg: 'rgba(62,207,207,0.12)' },
+    { id: 'mid-xl',       name: 'XL Mid 24oz',       desc: 'Extended chamber, 50% more capacity', price: 34.99, icon: '📏', bg: 'rgba(74,144,217,0.12)' },
     { id: 'base-narrow',  name: 'Narrow Base',       desc: '2.5" diameter + adapter ring',      price: 14.99, icon: '🚗', bg: 'rgba(212,88,92,0.1)' },
     { id: 'base-standard',name: 'Standard Base',     desc: '3.2" diameter sealed storage',      price: 11.99, icon: '📐', bg: 'rgba(62,207,207,0.08)' },
     { id: 'base-xl',      name: 'XL Liquid Base',    desc: '3.2" extra tall for max capacity',  price: 17.99, icon: '💧', bg: 'rgba(76,175,80,0.1)' },
     { id: 'base-heated',  name: 'Heated Base',       desc: 'Rechargeable heating element',      price: 39.99, icon: '🔥', bg: 'rgba(232,138,48,0.1)' },
-    { id: 'acc-infuser',  name: 'Infuser Insert',    desc: 'Mesh tea & fruit infuser',          price: 4.99,  icon: '🍵', bg: 'rgba(200,180,144,0.1)' },
+    { id: 'acc-infuser',  name: 'Infuser Insert',    desc: 'Mesh tea & fruit infuser',          price: 4.99,  icon: '🍵', bg: 'rgba(200,180,144,0.1)', accessory: true },
+    { id: 'acc-bikemount', name: 'Bike Mount',       desc: 'Custom cage for any bike frame',    price: 12.99, icon: '🚲', bg: 'rgba(120,180,120,0.1)', accessory: true },
   ];
 
   let cart = [];
@@ -4366,21 +4421,18 @@
   const productCustomColors = {};
   products.forEach(p => { productCustomColors[p.id] = '#8B5CF6'; });
 
-  function buildShop() {
-    const grid = document.getElementById('shopGrid');
-    grid.innerHTML = '';
-    products.forEach(p => {
-      if (p.bundle) return; // Starter bundle has its own hero card
-      const card = document.createElement('div');
-      card.className = 'product-card';
+  function buildProductCard(p, targetGrid) {
+    const card = document.createElement('div');
+    card.className = 'product-card';
 
-      // Build color swatches HTML
-      let swatchesHtml = '<div class="prod-color-label">COLOR</div><div class="prod-color-row">';
+    // Accessories don't need color swatches
+    let swatchesHtml = '';
+    if (!p.accessory) {
+      swatchesHtml = '<div class="prod-color-label">COLOR</div><div class="prod-color-row">';
       Object.keys(colorData).forEach(key => {
         const isActive = productColors[p.id] === key ? ' active' : '';
         swatchesHtml += `<div class="prod-swatch${isActive}" style="background: ${colorData[key].swatch};" data-product="${p.id}" data-color="${key}" title="${colorData[key].name}" onclick="selectProductColor('${p.id}', '${key}')"></div>`;
       });
-      // Custom color swatch
       const customActive = productColors[p.id] === 'custom' ? ' active' : '';
       swatchesHtml += `<div class="prod-swatch custom-prod-swatch${customActive}" data-product="${p.id}" data-color="custom" title="Custom Color (+$8.99)" onclick="toggleProductCustomPicker('${p.id}')"></div>`;
       swatchesHtml += '</div>';
@@ -4388,16 +4440,31 @@
         <input type="color" value="${productCustomColors[p.id]}" oninput="applyProductCustomColor('${p.id}', this.value)">
         <span class="prod-custom-price-tag">+$8.99</span>
       </div>`;
+    }
 
-      card.innerHTML = `
-        <div class="prod-icon" style="background: ${p.bg};">${p.icon}</div>
-        <h4>${p.name}</h4>
-        <div class="prod-desc">${p.desc}</div>
-        <div class="prod-price">$${p.price.toFixed(2)}</div>
-        ${swatchesHtml}
-        <button class="add-to-cart-btn" id="atc-${p.id}" onclick="addToCart('${p.id}')">Add to Cart</button>
-      `;
-      grid.appendChild(card);
+    card.innerHTML = `
+      <div class="prod-icon" style="background: ${p.bg};">${p.icon}</div>
+      <h4>${p.name}</h4>
+      <div class="prod-desc">${p.desc}</div>
+      <div class="prod-price">$${p.price.toFixed(2)}</div>
+      ${swatchesHtml}
+      <button class="add-to-cart-btn" id="atc-${p.id}" onclick="addToCart('${p.id}')">Add to Cart</button>
+    `;
+    targetGrid.appendChild(card);
+  }
+
+  function buildShop() {
+    const grid = document.getElementById('shopGrid');
+    const accGrid = document.getElementById('accessoryGrid');
+    grid.innerHTML = '';
+    accGrid.innerHTML = '';
+    products.forEach(p => {
+      if (p.bundle) return;
+      if (p.accessory) {
+        buildProductCard(p, accGrid);
+      } else {
+        buildProductCard(p, grid);
+      }
     });
     buildBundleSwatches();
   }
@@ -5044,7 +5111,7 @@
 
   function addBuildToCart() {
     const lidProductId = 'lid-' + currentLid;
-    const midProductId = currentMid === 'handle' ? 'mid-handle' : 'mid-16';
+    const midProductId = currentMid === 'handle' ? 'mid-handle' : currentMid === 'xl' ? 'mid-xl' : 'mid-16';
     const baseProductId = 'base-' + currentBase;
 
     // Set colors for each product before adding
@@ -5150,8 +5217,9 @@
       lidAccessory = `<div class="pv-classic-knob" style="display:block; background:${lcObj.accent};"></div>`;
     }
 
-    // Mid handle
+    // Mid handle & xl
     const midHandle = mt === 'handle' ? `<div class="pv-mid-handle" style="display:block; border-color:${mcObj.accent}; --handle-color:${mcObj.accent};"></div>` : '';
+    const midExtraStyle = mt === 'xl' ? ' height:130px;' : '';
 
     // Base
     let baseStyle = `background: linear-gradient(180deg, ${bcObj.main[0]}, ${bcObj.main[1]});`;
@@ -5173,7 +5241,7 @@
           ${lidAccessory}
         </div>
         <div class="pv-thread"></div>
-        <div class="pv-mid" style="background: linear-gradient(180deg, ${mcObj.main[0]}, ${mcObj.main[1]}); position:relative;">
+        <div class="pv-mid" style="background: linear-gradient(180deg, ${mcObj.main[0]}, ${mcObj.main[1]}); position:relative;${midExtraStyle}">
           <div class="pv-shine"></div>
           ${midHandle}
         </div>
