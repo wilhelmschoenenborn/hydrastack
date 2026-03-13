@@ -648,6 +648,157 @@
 
   .cupholder-note strong { color: #E8A0A2; }
 
+  /* === BASE MODULES (card style) === */
+  .base-modules {
+    padding: 5rem 2rem;
+    background: #151820;
+    text-align: center;
+  }
+
+  .base-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    max-width: 1050px;
+    margin: 0 auto;
+  }
+
+  .base-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+  }
+
+  .base-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.14);
+    transform: translateY(-6px);
+  }
+
+  .base-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 1.2rem;
+  }
+
+  .base-visual {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+
+  .base-body-standard {
+    width: 74px;
+    height: 74px;
+    background: linear-gradient(180deg, var(--bottom-section), #5A7A8E);
+    border-radius: 0 0 8px 8px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  }
+
+  .base-body-narrow-wrap {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .base-body-narrow-adapter {
+    width: 74px;
+    height: 12px;
+    background: linear-gradient(180deg, #556B7A, #4A5E6C);
+    clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+  }
+
+  .base-body-narrow {
+    width: 52px;
+    height: 74px;
+    background: linear-gradient(180deg, #D4585C, #A83235);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  }
+
+  .base-body-xl {
+    width: 74px;
+    height: 100px;
+    background: linear-gradient(180deg, #4CAF50, #2E7D32);
+    border-radius: 0 0 8px 8px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+  }
+
+  .base-body-heated {
+    width: 74px;
+    height: 74px;
+    background: linear-gradient(180deg, #E88A30, #C06820);
+    border-radius: 0 0 8px 8px;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+
+  .base-body-heated::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,100,30,0.4), transparent 70%);
+  }
+
+  .base-thread-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(62,207,207,0.3);
+  }
+
+  .base-card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .base-inspired {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 400;
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .base-card p {
+    font-size: 0.82rem;
+    color: #8899AA;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
   /* === MID MODULES === */
   .mid-modules {
     padding: 5rem 2rem;
@@ -3572,75 +3723,92 @@
   </div>
 </section>
 
-<!-- Base Size Comparison -->
-<section class="size-comparison">
+<!-- Base Modules -->
+<section class="base-modules">
   <div class="section-header reveal">
-    <h2>Swap Your Base</h2>
-    <p>Same mid chamber, same lid — the base module controls the bottom profile. The narrow base uses a tapered adapter ring to step down from 3.2" to a slimmer 2.5" that slides into tight car cupholders.</p>
+    <h2>Swap Your <span>Base</span></h2>
+    <p>Same mid chamber, same lid — the base module controls the bottom profile. Pick the one that fits your life.</p>
   </div>
 
-  <div class="compare-row stagger-children">
-    <div class="compare-item">
-      <div class="compare-bottle">
-        <div class="c-lid"></div>
-        <div class="c-mid"></div>
-        <div class="c-bottom-narrow-wrap">
-          <div class="c-adapter-ring"></div>
-          <div class="c-bottom-narrow"></div>
+  <div class="base-grid stagger-children">
+    <div class="base-card">
+      <span class="base-badge">BASE MODULE 01</span>
+      <div class="base-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="base-body-narrow-wrap">
+            <div class="base-body-narrow-adapter"></div>
+            <div class="base-body-narrow">
+              <div class="base-thread-top"></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div style="margin-top: 1.5rem;">
-        <div class="compare-label">Narrow Base</div>
-        <div class="compare-badge badge-red">2.5" DIAMETER</div>
-        <div class="compare-desc" style="margin-top: 0.5rem;">Tapered adapter steps down to a slimmer cylinder. Fits compact car cupholders.</div>
+      <h3>Narrow Base</h3>
+      <span class="base-inspired">2.5" diameter + adapter ring</span>
+      <p>Tapered adapter steps down to a slimmer cylinder. Fits compact car cupholders that full-size bottles can't.</p>
+      <div class="feature-tags">
+        <span class="tag">2.5" DIAMETER</span>
+        <span class="tag">ADAPTER RING</span>
+        <span class="tag">CAR-FRIENDLY</span>
       </div>
     </div>
 
-    <div class="compare-item">
-      <div class="compare-bottle">
-        <div class="c-lid"></div>
-        <div class="c-mid"></div>
-        <div class="c-bottom-standard"></div>
-      </div>
-      <div style="margin-top: 1.5rem;">
-        <div class="compare-label">Standard Base</div>
-        <div class="compare-badge badge-blue">3.2" DIAMETER</div>
-        <div class="compare-desc" style="margin-top: 0.5rem;">Same width as the mid — seamless tube. Sealed storage for vitamins or keys. Fits most cupholders.</div>
-      </div>
-    </div>
-
-    <div class="compare-item">
-      <div class="compare-bottle">
-        <div class="c-lid"></div>
-        <div class="c-mid"></div>
-        <div class="c-bottom-xl"></div>
-      </div>
-      <div style="margin-top: 1.5rem;">
-        <div class="compare-label">XL Base</div>
-        <div class="compare-badge badge-green">3.2" × TALL</div>
-        <div class="compare-desc" style="margin-top: 0.5rem;">Full diameter, extra tall. Maximum liquid capacity for all-day hydration.</div>
-      </div>
-    </div>
-
-    <div class="compare-item">
-      <div class="compare-bottle">
-        <div class="c-lid"></div>
-        <div class="c-mid"></div>
-        <div class="c-bottom-heated-wrap">
-          <div class="c-bottom-heated"></div>
+    <div class="base-card">
+      <span class="base-badge">BASE MODULE 02</span>
+      <div class="base-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="base-body-standard">
+            <div class="base-thread-top"></div>
+          </div>
         </div>
       </div>
-      <div style="margin-top: 1.5rem;">
-        <div class="compare-label">Heated Base</div>
-        <div class="compare-badge badge-orange">3.2" + HEAT</div>
-        <div class="compare-desc" style="margin-top: 0.5rem;">Built-in rechargeable heating element. Keeps coffee and tea at your ideal drinking temperature for hours.</div>
+      <h3>Standard Base</h3>
+      <span class="base-inspired">3.2" sealed storage</span>
+      <p>Same width as the mid — seamless tube. Sealed storage compartment for vitamins, keys, or cash. Fits most cupholders.</p>
+      <div class="feature-tags">
+        <span class="tag">3.2" DIAMETER</span>
+        <span class="tag">SEALED STORAGE</span>
+        <span class="tag">SEAMLESS FIT</span>
       </div>
     </div>
-  </div>
 
-  <div class="cupholder-note">
-    <div class="icon">🚗</div>
-    <p><strong>Tight cupholder?</strong> The narrow base tapers to 2.5" via the adapter ring. The full-size 3.2" mid sits above the rim while the narrow base drops in snugly below.</p>
+    <div class="base-card">
+      <span class="base-badge">BASE MODULE 03</span>
+      <div class="base-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="base-body-xl">
+            <div class="base-thread-top"></div>
+          </div>
+        </div>
+      </div>
+      <h3>XL Liquid Base</h3>
+      <span class="base-inspired">3.2" extra tall capacity</span>
+      <p>Full diameter, extra tall. Maximum liquid capacity for all-day hydration without changing your lid or mid.</p>
+      <div class="feature-tags">
+        <span class="tag">3.2" DIAMETER</span>
+        <span class="tag">MAX CAPACITY</span>
+        <span class="tag">ALL-DAY</span>
+      </div>
+    </div>
+
+    <div class="base-card">
+      <span class="base-badge">BASE MODULE 04</span>
+      <div class="base-visual">
+        <div style="position:relative;width:100%;height:100%;">
+          <div class="base-body-heated">
+            <div class="base-thread-top"></div>
+          </div>
+        </div>
+      </div>
+      <h3>Heated Base</h3>
+      <span class="base-inspired">Rechargeable heating element</span>
+      <p>Built-in rechargeable heating element keeps coffee and tea at your ideal drinking temperature for hours.</p>
+      <div class="feature-tags">
+        <span class="tag">USB-C CHARGE</span>
+        <span class="tag">TEMP CONTROL</span>
+        <span class="tag">3.2" DIAMETER</span>
+      </div>
+    </div>
   </div>
 </section>
 
