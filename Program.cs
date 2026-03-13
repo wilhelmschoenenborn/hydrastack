@@ -127,6 +127,19 @@ using (var conn = new NpgsqlConnection(connStr))
         END $$;
     ", conn);
     await alterCmd2.ExecuteNonQueryAsync();
+
+    // Create BuildVotes table for upvote/downvote on community builds
+    using var votesCmd = new NpgsqlCommand(@"
+        CREATE TABLE IF NOT EXISTS BuildVotes (
+            VoteID SERIAL PRIMARY KEY,
+            BuildID INTEGER NOT NULL REFERENCES SavedBuilds(SavedBuildID) ON DELETE CASCADE,
+            VoterIP TEXT NOT NULL,
+            Direction TEXT NOT NULL DEFAULT 'up',
+            CreatedAt TIMESTAMP DEFAULT NOW(),
+            UNIQUE(BuildID, VoterIP)
+        );
+    ", conn);
+    await votesCmd.ExecuteNonQueryAsync();
 }
 
 Console.WriteLine("Database tables ready (PostgreSQL)");
@@ -710,7 +723,7 @@ app.MapPut("/api/builds/{buildId:int}/share", async (int buildId) =>
     }
 });
 
-// GET /api/builds/community — Get all shared builds
+// GET /api/builds/community — Get all shared builds with vote counts
 app.MapGet("/api/builds/community", async () =>
 {
     var builds = new List<object>();
@@ -718,10 +731,14 @@ app.MapGet("/api/builds/community", async () =>
     await conn.OpenAsync();
 
     using var cmd = new NpgsqlCommand(@"
-        SELECT sb.SavedBuildID, sb.BuildName, sb.LidType, sb.MidType, sb.BaseType, sb.LidColor, sb.MidColor, sb.BaseColor, sb.CreatedAt, u.Username
+        SELECT sb.SavedBuildID, sb.BuildName, sb.LidType, sb.MidType, sb.BaseType, sb.LidColor, sb.MidColor, sb.BaseColor, sb.CreatedAt, u.Username,
+            COALESCE(SUM(CASE WHEN bv.Direction = 'up' THEN 1 ELSE 0 END), 0) AS Upvotes,
+            COALESCE(SUM(CASE WHEN bv.Direction = 'down' THEN 1 ELSE 0 END), 0) AS Downvotes
         FROM SavedBuilds sb
         JOIN Users u ON sb.UserID = u.UserID
+        LEFT JOIN BuildVotes bv ON sb.SavedBuildID = bv.BuildID
         WHERE sb.IsShared = TRUE
+        GROUP BY sb.SavedBuildID, sb.BuildName, sb.LidType, sb.MidType, sb.BaseType, sb.LidColor, sb.MidColor, sb.BaseColor, sb.CreatedAt, u.Username
         ORDER BY sb.CreatedAt DESC
         LIMIT 50", conn);
 
@@ -740,10 +757,71 @@ app.MapGet("/api/builds/community", async () =>
             baseColor = reader.GetString(7),
             createdAt = reader.GetDateTime(8).ToString("o"),
             username = reader.GetString(9),
+            upvotes = reader.GetInt64(10),
+            downvotes = reader.GetInt64(11),
         });
     }
 
     return Results.Json(builds);
+});
+
+// POST /api/builds/{id}/vote — Upvote or downvote a community build
+app.MapPost("/api/builds/{id}/vote", async (HttpContext ctx, int id) =>
+{
+    var body = await JsonSerializer.DeserializeAsync<JsonElement>(ctx.Request.Body);
+    var direction = body.TryGetProperty("direction", out var d) ? d.GetString() ?? "" : "";
+
+    // Use IP as a simple anonymous voter identifier
+    var voterIP = ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+    // Check for forwarded header
+    if (ctx.Request.Headers.ContainsKey("X-Forwarded-For"))
+    {
+        voterIP = ctx.Request.Headers["X-Forwarded-For"].ToString().Split(',')[0].Trim();
+    }
+
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        if (direction == "none" || string.IsNullOrEmpty(direction))
+        {
+            // Remove vote
+            using var delCmd = new NpgsqlCommand("DELETE FROM BuildVotes WHERE BuildID = @bid AND VoterIP = @ip", conn);
+            delCmd.Parameters.AddWithValue("@bid", id);
+            delCmd.Parameters.AddWithValue("@ip", voterIP);
+            await delCmd.ExecuteNonQueryAsync();
+        }
+        else if (direction == "up" || direction == "down")
+        {
+            // Upsert vote
+            using var upsertCmd = new NpgsqlCommand(@"
+                INSERT INTO BuildVotes (BuildID, VoterIP, Direction)
+                VALUES (@bid, @ip, @dir)
+                ON CONFLICT (BuildID, VoterIP) DO UPDATE SET Direction = @dir", conn);
+            upsertCmd.Parameters.AddWithValue("@bid", id);
+            upsertCmd.Parameters.AddWithValue("@ip", voterIP);
+            upsertCmd.Parameters.AddWithValue("@dir", direction);
+            await upsertCmd.ExecuteNonQueryAsync();
+        }
+
+        // Return updated counts
+        using var countCmd = new NpgsqlCommand(@"
+            SELECT
+                COALESCE(SUM(CASE WHEN Direction = 'up' THEN 1 ELSE 0 END), 0),
+                COALESCE(SUM(CASE WHEN Direction = 'down' THEN 1 ELSE 0 END), 0)
+            FROM BuildVotes WHERE BuildID = @bid", conn);
+        countCmd.Parameters.AddWithValue("@bid", id);
+        using var reader = await countCmd.ExecuteReaderAsync();
+        await reader.ReadAsync();
+
+        return Results.Json(new { success = true, upvotes = reader.GetInt64(0), downvotes = reader.GetInt64(1) });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Vote error: {ex.Message}");
+        return Results.Json(new { error = "Failed to record vote." });
+    }
 });
 
 // === REVIEWS API ===

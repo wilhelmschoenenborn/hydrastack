@@ -1503,6 +1503,79 @@
     grid-column: 1 / -1;
   }
 
+  .community-show-more {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 1.5rem;
+    cursor: pointer;
+    color: var(--accent);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+  }
+
+  .community-show-more:hover { opacity: 1; }
+
+  .community-show-more .show-more-arrow {
+    font-size: 1.4rem;
+    transition: transform 0.3s;
+  }
+
+  .community-show-more.expanded .show-more-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* Vote buttons */
+  .community-vote-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .community-vote-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0.3rem 0.55rem;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: #7788AA;
+    transition: all 0.2s;
+  }
+
+  .community-vote-btn:hover {
+    border-color: rgba(62,207,207,0.3);
+    color: var(--warm);
+  }
+
+  .community-vote-btn.voted-up {
+    border-color: #4CAF50;
+    color: #4CAF50;
+    background: rgba(76,175,80,0.1);
+  }
+
+  .community-vote-btn.voted-down {
+    border-color: #D4585C;
+    color: #D4585C;
+    background: rgba(212,88,92,0.1);
+  }
+
+  .community-vote-btn .vote-icon {
+    font-size: 0.85rem;
+  }
+
   /* === FEEDBACK / REVIEWS SECTION === */
   .feedback-section {
     padding: 5rem 2rem;
@@ -1943,7 +2016,61 @@
     background: rgba(76,175,80,0.15);
     border-color: #4CAF50;
     color: #4CAF50;
-    pointer-events: none;
+  }
+
+  .add-to-cart-btn .atc-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #4CAF50;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+
+  .atc-inline-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .atc-inline-controls .atc-pm-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid #4CAF50;
+    background: rgba(76,175,80,0.1);
+    color: #4CAF50;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .atc-inline-controls .atc-pm-btn:hover {
+    background: #4CAF50;
+    color: #fff;
+  }
+
+  .atc-inline-controls .atc-qty-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4CAF50;
+    min-width: 20px;
+    text-align: center;
   }
 
   /* Per-product color selector */
@@ -3730,6 +3857,10 @@
   <div class="community-grid" id="communityGrid">
     <div class="community-empty">Loading community builds...</div>
   </div>
+  <button class="community-show-more" id="communityShowMore" style="display:none;" onclick="toggleCommunityExpand()">
+    <span>Show More</span>
+    <span class="show-more-arrow">&#9660;</span>
+  </button>
 </section>
 
 <!-- === FEEDBACK & REVIEWS === -->
@@ -4104,6 +4235,51 @@
     return productId + ':' + color;
   }
 
+  function getProductCartQty(productId) {
+    return cart.filter(c => c.id === productId).reduce((s, c) => s + c.qty, 0);
+  }
+
+  function refreshProductBtn(productId) {
+    const btn = document.getElementById('atc-' + productId);
+    if (!btn || btn.classList.contains('bundle-atc')) return;
+    const qty = getProductCartQty(productId);
+    if (qty > 0) {
+      btn.classList.add('added');
+      const color = productColors[productId] || 'stealth';
+      const key = cartKey(productId, color);
+      btn.innerHTML = `<div class="atc-inline-controls">
+        <button class="atc-pm-btn" onclick="event.stopPropagation(); changeProductQty('${productId}', -1)">−</button>
+        <span class="atc-qty-label">${qty}</span>
+        <button class="atc-pm-btn" onclick="event.stopPropagation(); changeProductQty('${productId}', 1)">+</button>
+      </div>`;
+    } else {
+      btn.classList.remove('added');
+      btn.innerHTML = 'Add to Cart';
+    }
+  }
+
+  function refreshAllProductBtns() {
+    products.forEach(p => {
+      if (!p.bundle) refreshProductBtn(p.id);
+    });
+  }
+
+  function changeProductQty(productId, delta) {
+    const color = productColors[productId] || 'stealth';
+    const key = cartKey(productId, color);
+    const item = cart.find(c => c.key === key);
+    if (!item && delta > 0) {
+      cart.push({ id: productId, qty: 1, color: color, key: key });
+    } else if (item) {
+      item.qty += delta;
+      if (item.qty < 1) {
+        cart = cart.filter(c => c.key !== key);
+      }
+    }
+    updateCart();
+    refreshProductBtn(productId);
+  }
+
   function addToCart(productId) {
     const color = productColors[productId] || 'stealth';
     const key = cartKey(productId, color);
@@ -4124,12 +4300,7 @@
           btn.classList.remove('added');
         }, 1500);
       } else {
-        btn.textContent = '✓ Added';
-        btn.classList.add('added');
-        setTimeout(() => {
-          btn.textContent = 'Add to Cart';
-          btn.classList.remove('added');
-        }, 1200);
+        refreshProductBtn(productId);
       }
     }
     updateCart();
@@ -4223,6 +4394,7 @@
 
     document.getElementById('cartTotal').textContent = '$' + getCartTotal().toFixed(2);
     document.getElementById('checkoutBtn').disabled = cart.length === 0;
+    refreshAllProductBtns();
   }
 
   function toggleCart() {
@@ -4953,42 +5125,116 @@
 
   // === COMMUNITY BUILDS ===
 
+  const COMMUNITY_PAGE_SIZE = 12;
+  let communityExpanded = false;
+  let allCommunityBuilds = [];
+  // Track votes per build in localStorage
+  const communityVotes = JSON.parse(localStorage.getItem('hydra_votes') || '{}');
+
+  function saveVotes() {
+    localStorage.setItem('hydra_votes', JSON.stringify(communityVotes));
+  }
+
+  function voteBuild(buildId, direction) {
+    const current = communityVotes[buildId];
+    if (current === direction) {
+      // Un-vote
+      delete communityVotes[buildId];
+    } else {
+      communityVotes[buildId] = direction;
+    }
+    saveVotes();
+
+    // Send vote to server
+    fetch('/api/builds/' + buildId + '/vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ direction: communityVotes[buildId] || 'none' }),
+    }).then(res => res.json()).then(data => {
+      if (data.upvotes !== undefined) {
+        const build = allCommunityBuilds.find(b => b.buildId === buildId);
+        if (build) {
+          build.upvotes = data.upvotes;
+          build.downvotes = data.downvotes;
+        }
+      }
+      renderCommunityBuilds();
+    }).catch(() => renderCommunityBuilds());
+  }
+
+  function renderCommunityBuilds() {
+    const grid = document.getElementById('communityGrid');
+    const showMoreBtn = document.getElementById('communityShowMore');
+    const builds = allCommunityBuilds;
+
+    if (!builds.length) {
+      grid.innerHTML = '<div class="community-empty">No shared builds yet. Be the first to share yours!</div>';
+      showMoreBtn.style.display = 'none';
+      return;
+    }
+
+    const visible = communityExpanded ? builds : builds.slice(0, COMMUNITY_PAGE_SIZE);
+    grid.innerHTML = '';
+
+    visible.forEach(b => {
+      const lc = resolveColor(b.lidColor);
+      const mc = resolveColor(b.midColor);
+      const bc = resolveColor(b.baseColor);
+      const lidLabel = lidNames[b.lidType] || b.lidType;
+      const midLabel = midNames[b.midType] || midNames.standard;
+      const baseLabel = baseNames[b.baseType] || b.baseType;
+      const bMid = b.midType || 'standard';
+
+      const myVote = communityVotes[b.buildId] || '';
+      const upClass = myVote === 'up' ? ' voted-up' : '';
+      const downClass = myVote === 'down' ? ' voted-down' : '';
+      const upCount = b.upvotes || 0;
+      const downCount = b.downvotes || 0;
+
+      const card = document.createElement('div');
+      card.className = 'community-card';
+      card.innerHTML = `
+        <div class="community-card-user">${escapeHtml(b.username)}</div>
+        <div class="community-card-name">${escapeHtml(b.buildName)}</div>
+        ${buildBottlePreviewHtml(b.lidType, bMid, b.baseType, lc, mc, bc)}
+        <div class="build-card-config">${lidLabel} / ${midLabel} / ${baseLabel}</div>
+        <div class="community-vote-row">
+          <button class="community-vote-btn${upClass}" onclick="voteBuild(${b.buildId}, 'up')">
+            <span class="vote-icon">&#9650;</span> <span>${upCount}</span>
+          </button>
+          <button class="community-vote-btn${downClass}" onclick="voteBuild(${b.buildId}, 'down')">
+            <span class="vote-icon">&#9660;</span> <span>${downCount}</span>
+          </button>
+        </div>
+        <div class="community-card-actions">
+          <button class="community-load-btn" onclick="loadBuild('${b.lidType}','${bMid}','${b.baseType}','${b.lidColor}','${b.midColor}','${b.baseColor}')">Load Build</button>
+          <button class="community-cart-btn" onclick="addBuildFromConfig('${b.lidType}','${bMid}','${b.baseType}','${b.lidColor}','${b.midColor}','${b.baseColor}')">Add to Cart</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    // Show/hide expand button
+    if (builds.length > COMMUNITY_PAGE_SIZE) {
+      showMoreBtn.style.display = 'flex';
+      showMoreBtn.querySelector('span:first-child').textContent = communityExpanded ? 'Show Less' : 'Show More';
+      showMoreBtn.classList.toggle('expanded', communityExpanded);
+    } else {
+      showMoreBtn.style.display = 'none';
+    }
+  }
+
+  function toggleCommunityExpand() {
+    communityExpanded = !communityExpanded;
+    renderCommunityBuilds();
+  }
+
   async function loadCommunityBuilds() {
     const grid = document.getElementById('communityGrid');
-
     try {
       const res = await fetch('/api/builds/community');
-      const builds = await res.json();
-
-      if (!builds.length) {
-        grid.innerHTML = '<div class="community-empty">No shared builds yet. Be the first to share yours!</div>';
-        return;
-      }
-
-      grid.innerHTML = '';
-      builds.forEach(b => {
-        const lc = resolveColor(b.lidColor);
-        const mc = resolveColor(b.midColor);
-        const bc = resolveColor(b.baseColor);
-        const lidLabel = lidNames[b.lidType] || b.lidType;
-        const midLabel = midNames[b.midType] || midNames.standard;
-        const baseLabel = baseNames[b.baseType] || b.baseType;
-        const bMid = b.midType || 'standard';
-
-        const card = document.createElement('div');
-        card.className = 'community-card';
-        card.innerHTML = `
-          <div class="community-card-user">${escapeHtml(b.username)}</div>
-          <div class="community-card-name">${escapeHtml(b.buildName)}</div>
-          ${buildBottlePreviewHtml(b.lidType, bMid, b.baseType, lc, mc, bc)}
-          <div class="build-card-config">${lidLabel} / ${midLabel} / ${baseLabel}</div>
-          <div class="community-card-actions">
-            <button class="community-load-btn" onclick="loadBuild('${b.lidType}','${bMid}','${b.baseType}','${b.lidColor}','${b.midColor}','${b.baseColor}')">Load Build</button>
-            <button class="community-cart-btn" onclick="addBuildFromConfig('${b.lidType}','${bMid}','${b.baseType}','${b.lidColor}','${b.midColor}','${b.baseColor}')">Add to Cart</button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
+      allCommunityBuilds = await res.json();
+      renderCommunityBuilds();
     } catch (err) {
       grid.innerHTML = '<div class="community-empty">Could not load community builds.</div>';
     }
