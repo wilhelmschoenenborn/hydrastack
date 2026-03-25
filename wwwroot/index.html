@@ -5103,6 +5103,7 @@
 
   // === AUTH SYSTEM ===
   let currentUser = null;
+  let pendingVerifyUserId = null;
 
   function loadUser() {
     try {
@@ -5301,8 +5302,6 @@
   }
 
   // === EMAIL VERIFICATION ===
-  let pendingVerifyUserId = null;
-
   async function handleVerifyEmail() {
     const code = document.getElementById('verifyCode').value.trim();
     const errorEl = document.getElementById('verifyError');
