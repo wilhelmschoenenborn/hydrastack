@@ -451,6 +451,77 @@
     color: #556677;
     font-family: 'Space Mono', monospace;
   }
+
+  /* === USERS TAB === */
+  .users-list-admin {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .user-admin-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    transition: border-color 0.3s;
+  }
+
+  .user-admin-card:hover { border-color: rgba(62,207,207,0.25); }
+
+  .user-admin-card.no-email { border-color: rgba(212,88,92,0.3); }
+
+  .user-admin-info { flex: 1; min-width: 200px; }
+
+  .user-admin-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--warm);
+  }
+
+  .user-admin-email {
+    font-size: 0.8rem;
+    color: #7788AA;
+    margin-top: 0.2rem;
+  }
+
+  .user-admin-email.missing {
+    color: #D4585C;
+    font-style: italic;
+  }
+
+  .user-admin-date {
+    font-size: 0.65rem;
+    color: #556677;
+    font-family: 'Space Mono', monospace;
+    margin-top: 0.3rem;
+  }
+
+  .user-delete-btn {
+    background: rgba(212,88,92,0.15);
+    border: 1px solid rgba(212,88,92,0.3);
+    color: #D4585C;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .user-delete-btn:hover {
+    background: rgba(212,88,92,0.3);
+  }
 </style>
 </head>
 <body>
@@ -473,6 +544,7 @@
   <button class="tab-btn active" onclick="switchTab('analytics')">Analytics</button>
   <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
   <button class="tab-btn" onclick="switchTab('reviews')">Reviews</button>
+  <button class="tab-btn" onclick="switchTab('users')">Users</button>
 </div>
 
 <!-- Analytics Tab -->
@@ -553,6 +625,17 @@
   <button class="refresh-btn" onclick="loadAdminReviews()">Refresh Reviews</button>
   <div class="reviews-list-admin" id="adminReviewsList">
     <div class="loading">Loading reviews...</div>
+  </div>
+</div>
+
+<!-- Users Tab -->
+<div class="tab-content" id="tab-users">
+  <div style="display:flex; gap:1rem; justify-content:center; margin-bottom:2rem; flex-wrap:wrap;">
+    <button class="refresh-btn" style="margin:0" onclick="loadAdminUsers()">Refresh Users</button>
+    <button class="refresh-btn" style="margin:0; background:linear-gradient(135deg, #D4585C, #E88A30);" onclick="cleanupUsers()">Delete Users Without Email</button>
+  </div>
+  <div class="users-list-admin" id="adminUsersList">
+    <div class="loading">Loading users...</div>
   </div>
 </div>
 
@@ -1121,6 +1204,81 @@
   }
 
   loadAdminReviews();
+
+  // ===========================
+  // USERS MANAGEMENT
+  // ===========================
+
+  async function loadAdminUsers() {
+    const list = document.getElementById('adminUsersList');
+    list.innerHTML = '<div class="loading">Loading users...</div>';
+
+    try {
+      const res = await fetch('/api/admin/users');
+      const users = await res.json();
+
+      if (!users.length) {
+        list.innerHTML = '<div class="empty-msg">No users yet.</div>';
+        return;
+      }
+
+      list.innerHTML = '';
+      users.forEach(u => {
+        const date = new Date(u.createdAt).toLocaleString();
+        const hasEmail = u.email && u.email.trim() !== '';
+        const card = document.createElement('div');
+        card.className = 'user-admin-card' + (hasEmail ? '' : ' no-email');
+        card.id = 'user-card-' + u.userId;
+        card.innerHTML = `
+          <div class="user-admin-info">
+            <div class="user-admin-name">${escapeHtml(u.username)}</div>
+            <div class="user-admin-email ${hasEmail ? '' : 'missing'}">${hasEmail ? escapeHtml(u.email) : 'No email on file'}</div>
+            <div class="user-admin-date">Joined ${date}</div>
+          </div>
+          <button class="user-delete-btn" onclick="deleteUser(${u.userId}, '${escapeHtml(u.username)}')">Delete</button>
+        `;
+        list.appendChild(card);
+      });
+    } catch (err) {
+      list.innerHTML = '<div class="empty-msg">Could not load users.</div>';
+    }
+  }
+
+  async function deleteUser(userId, username) {
+    if (!confirm('Delete user "' + username + '"? This will remove their saved builds and votes. Orders will be kept but unlinked.')) return;
+
+    try {
+      const res = await fetch('/api/admin/users/' + userId, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        const card = document.getElementById('user-card-' + userId);
+        if (card) card.remove();
+      } else {
+        alert(data.error || 'Failed to delete user.');
+      }
+    } catch (err) {
+      alert('Could not connect to server.');
+    }
+  }
+
+  async function cleanupUsers() {
+    if (!confirm('Delete ALL users that do not have an email address? This cannot be undone.')) return;
+
+    try {
+      const res = await fetch('/api/admin/users/cleanup', { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        alert('Deleted ' + data.deleted + ' user(s) without email.');
+        loadAdminUsers();
+      } else {
+        alert(data.error || 'Cleanup failed.');
+      }
+    } catch (err) {
+      alert('Could not connect to server.');
+    }
+  }
+
+  loadAdminUsers();
 </script>
 </body>
 </html>

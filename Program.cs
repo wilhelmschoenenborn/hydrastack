@@ -980,6 +980,106 @@ app.MapGet("/api/reviews/recent", async () =>
     return Results.Json(reviews);
 });
 
+// GET /api/admin/users - List all users
+app.MapGet("/api/admin/users", async () =>
+{
+    var users = new List<object>();
+    using var conn = new NpgsqlConnection(connStr);
+    await conn.OpenAsync();
+
+    using var cmd = new NpgsqlCommand(@"
+        SELECT UserID, Username, COALESCE(Email, '') as Email, CreatedAt FROM Users ORDER BY CreatedAt DESC", conn);
+    using var reader = await cmd.ExecuteReaderAsync();
+    while (await reader.ReadAsync())
+    {
+        users.Add(new
+        {
+            userId = reader.GetInt32(0),
+            username = reader.GetString(1),
+            email = reader.GetString(2),
+            createdAt = reader.GetDateTime(3).ToString("o"),
+        });
+    }
+    return Results.Json(users);
+});
+
+// DELETE /api/admin/users/{userId} - Delete a user and their related data
+app.MapDelete("/api/admin/users/{userId:int}", async (int userId) =>
+{
+    using var conn = new NpgsqlConnection(connStr);
+    await conn.OpenAsync();
+
+    // Delete in order of foreign key dependencies
+    using var deleteVotes = new NpgsqlCommand(@"
+        DELETE FROM BuildVotes WHERE BuildID IN (SELECT SavedBuildID FROM SavedBuilds WHERE UserID = @userId)", conn);
+    deleteVotes.Parameters.AddWithValue("@userId", userId);
+    await deleteVotes.ExecuteNonQueryAsync();
+
+    using var deleteBuilds = new NpgsqlCommand(@"DELETE FROM SavedBuilds WHERE UserID = @userId", conn);
+    deleteBuilds.Parameters.AddWithValue("@userId", userId);
+    await deleteBuilds.ExecuteNonQueryAsync();
+
+    using var deleteTokens = new NpgsqlCommand(@"DELETE FROM PasswordResetTokens WHERE UserID = @userId", conn);
+    deleteTokens.Parameters.AddWithValue("@userId", userId);
+    await deleteTokens.ExecuteNonQueryAsync();
+
+    // Unlink orders (keep order data, just remove user association)
+    using var unlinkOrders = new NpgsqlCommand(@"UPDATE Orders SET UserID = NULL WHERE UserID = @userId", conn);
+    unlinkOrders.Parameters.AddWithValue("@userId", userId);
+    await unlinkOrders.ExecuteNonQueryAsync();
+
+    using var deleteUser = new NpgsqlCommand(@"DELETE FROM Users WHERE UserID = @userId", conn);
+    deleteUser.Parameters.AddWithValue("@userId", userId);
+    var deleted = await deleteUser.ExecuteNonQueryAsync();
+
+    if (deleted == 0) return Results.NotFound(new { error = "User not found" });
+    return Results.Json(new { success = true });
+});
+
+// DELETE /api/admin/users/cleanup - Delete all users without a valid email
+app.MapDelete("/api/admin/users/cleanup", async () =>
+{
+    using var conn = new NpgsqlConnection(connStr);
+    await conn.OpenAsync();
+
+    // Get users with no email
+    var userIds = new List<int>();
+    using (var findCmd = new NpgsqlCommand(@"
+        SELECT UserID FROM Users WHERE Email IS NULL OR TRIM(Email) = ''", conn))
+    using (var reader = await findCmd.ExecuteReaderAsync())
+    {
+        while (await reader.ReadAsync()) userIds.Add(reader.GetInt32(0));
+    }
+
+    if (userIds.Count == 0) return Results.Json(new { success = true, deleted = 0 });
+
+    foreach (var userId in userIds)
+    {
+        using var deleteVotes = new NpgsqlCommand(@"
+            DELETE FROM BuildVotes WHERE BuildID IN (SELECT SavedBuildID FROM SavedBuilds WHERE UserID = @userId)", conn);
+        deleteVotes.Parameters.AddWithValue("@userId", userId);
+        await deleteVotes.ExecuteNonQueryAsync();
+
+        using var deleteBuilds = new NpgsqlCommand(@"DELETE FROM SavedBuilds WHERE UserID = @userId", conn);
+        deleteBuilds.Parameters.AddWithValue("@userId", userId);
+        await deleteBuilds.ExecuteNonQueryAsync();
+
+        using var deleteTokens = new NpgsqlCommand(@"DELETE FROM PasswordResetTokens WHERE UserID = @userId", conn);
+        deleteTokens.Parameters.AddWithValue("@userId", userId);
+        await deleteTokens.ExecuteNonQueryAsync();
+
+        using var unlinkOrders = new NpgsqlCommand(@"UPDATE Orders SET UserID = NULL WHERE UserID = @userId", conn);
+        unlinkOrders.Parameters.AddWithValue("@userId", userId);
+        await unlinkOrders.ExecuteNonQueryAsync();
+
+        using var deleteUser = new NpgsqlCommand(@"DELETE FROM Users WHERE UserID = @userId", conn);
+        deleteUser.Parameters.AddWithValue("@userId", userId);
+        await deleteUser.ExecuteNonQueryAsync();
+    }
+
+    return Results.Json(new { success = true, deleted = userIds.Count });
+});
+
 // POST /api/auth/forgot-password
 app.MapPost("/api/auth/forgot-password", async (HttpContext ctx) =>
 {
