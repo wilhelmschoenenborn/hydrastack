@@ -3534,6 +3534,194 @@
     .builder-preview { position: static; }
     .builder-options { min-width: auto; width: 100%; max-width: 400px; }
   }
+  /* === BUILD ASSISTANT CHAT === */
+  .chat-fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    cursor: pointer;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(62,207,207,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(62,207,207,0.4); }
+  .chat-fab svg { width: 26px; height: 26px; fill: var(--dark); }
+  .chat-fab.has-window { display: none; }
+
+  .chat-window {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 370px;
+    max-height: 520px;
+    background: #1E2128;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    z-index: 3001;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+  .chat-window.open { display: flex; }
+
+  .chat-header {
+    padding: 1rem 1.2rem;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .chat-header-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .chat-header-title span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .chat-close-btn {
+    background: none;
+    border: none;
+    color: #7788AA;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  .chat-close-btn:hover { color: var(--warm); }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-height: 340px;
+  }
+
+  .chat-msg {
+    max-width: 85%;
+    padding: 0.65rem 0.9rem;
+    border-radius: 14px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+  .chat-msg.bot {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.06);
+    color: #D0D8E0;
+    border-bottom-left-radius: 4px;
+  }
+  .chat-msg.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+    font-weight: 600;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+  .chat-option-btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid rgba(62,207,207,0.3);
+    background: rgba(62,207,207,0.08);
+    color: var(--accent);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chat-option-btn:hover {
+    background: rgba(62,207,207,0.2);
+    border-color: var(--accent);
+  }
+
+  .chat-build-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(62,207,207,0.2);
+    border-radius: 12px;
+    padding: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  .chat-build-card .build-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    padding: 0.25rem 0;
+    color: #AAB8CC;
+  }
+  .chat-build-card .build-row span:last-child {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .chat-apply-btn {
+    width: 100%;
+    margin-top: 0.6rem;
+    padding: 0.5rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .chat-apply-btn:hover { opacity: 0.85; }
+
+  .chat-input-area {
+    padding: 0.8rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: none;
+  }
+  .chat-input-area.active { display: flex; gap: 0.5rem; }
+  .chat-input {
+    flex: 1;
+    padding: 0.55rem 0.8rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: var(--warm);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+  }
+  .chat-input:focus { border-color: var(--accent); }
+  .chat-input::placeholder { color: #556677; }
+  .chat-send-btn {
+    padding: 0.55rem 1rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: var(--dark);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 480px) {
+    .chat-window { width: calc(100% - 2rem); right: 1rem; bottom: 1rem; max-height: 70vh; }
+  }
 </style>
 </head>
 <body>
@@ -6155,6 +6343,422 @@
     }, { passive: true });
   }
 
+</script>
+
+<!-- Build Assistant Chat -->
+<button class="chat-fab" id="chatFab" onclick="openChat()">
+  <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/><path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>
+</button>
+
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-header-title">Build <span>Assistant</span></div>
+    <button class="chat-close-btn" onclick="closeChat()">&times;</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-area" id="chatInputArea">
+    <input class="chat-input" id="chatInput" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')sendChatInput()">
+    <button class="chat-send-btn" onclick="sendChatInput()">Send</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  // === BUILD ASSISTANT LOGIC ===
+
+  const BA_COLORS = {
+    stealth:  { name: 'Stealth',  vibe: ['dark','minimal','sleek','black','grey','gray','neutral','professional','office','work','subtle'] },
+    titanium: { name: 'Titanium', vibe: ['silver','light','clean','modern','metallic','bright','white','cool','tech'] },
+    arctic:   { name: 'Arctic',   vibe: ['blue','teal','cyan','ocean','water','fresh','cool','aqua','turquoise','calm','beach','tropical'] },
+    sand:     { name: 'Sand',     vibe: ['tan','beige','brown','earth','warm','natural','desert','cream','khaki','outdoor','hiking','nature','rustic'] },
+    ember:    { name: 'Ember',    vibe: ['red','bold','fire','hot','warm','sport','energy','intense','gym','workout','power','passion'] },
+    alpine:   { name: 'Alpine',   vibe: ['green','forest','nature','outdoor','earth','fresh','camp','hike','mountain','trail','tree','eco'] },
+  };
+
+  const BA_LIDS = {
+    handle:  { name: 'Handle Lid',  desc: 'Carry handle, great for on-the-go', tags: ['carry','travel','commute','walk','hike','outdoor','portable','gym','active'] },
+    straw:   { name: 'Straw Lid',   desc: 'Push-button straw, easy sipping', tags: ['sip','drive','car','desk','office','lazy','easy','convenient','one-hand','workout'] },
+    classic: { name: 'Classic Lid',  desc: 'Wide-mouth flip-top, simple & reliable', tags: ['simple','basic','classic','ice','pour','clean','cheap','budget','affordable'] },
+  };
+
+  const BA_MIDS = {
+    standard: { name: 'Standard 16oz', desc: 'Perfect everyday size', tags: ['normal','everyday','daily','regular','standard','office','desk','commute','moderate'] },
+    handle:   { name: 'Handle 16oz',   desc: 'Side grip, easy to hold', tags: ['grip','hold','carry','hand','secure','easy','comfortable','arthritis'] },
+    xl:       { name: 'XL 24oz',       desc: '50% more capacity for big thirsts', tags: ['big','large','xl','extra','more','lots','thirsty','gym','workout','hike','long','all-day','travel','road trip'] },
+  };
+
+  const BA_BASES = {
+    standard: { name: 'Standard Base', desc: 'Sealed storage compartment', tags: ['normal','everyday','storage','keys','snack','standard','regular','basic'] },
+    narrow:   { name: 'Narrow Base',   desc: 'Fits most cup holders', tags: ['car','cupholder','cup holder','drive','commute','fit','slim','vehicle','travel'] },
+    xl:       { name: 'XL Liquid Base', desc: 'Max liquid capacity', tags: ['big','large','more','extra','liquid','capacity','water','thirsty','long','hydration'] },
+    heated:   { name: 'Heated Base',   desc: 'Keeps drinks warm for hours', tags: ['hot','warm','coffee','tea','heat','heated','winter','cold weather','cozy','morning'] },
+  };
+
+  // Conversation state
+  let chatStep = 'start';
+  let chatData = { use: '', preferences: [], colorHints: [] };
+
+  function openChat() {
+    document.getElementById('chatWindow').classList.add('open');
+    document.getElementById('chatFab').classList.add('has-window');
+    if (chatStep === 'start') startChat();
+  }
+
+  function closeChat() {
+    document.getElementById('chatWindow').classList.remove('open');
+    document.getElementById('chatFab').classList.remove('has-window');
+  }
+
+  function addBotMsg(text, options, buildCard) {
+    const container = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = 'chat-msg bot';
+
+    let html = text;
+
+    if (options && options.length) {
+      html += '<div class="chat-options">';
+      options.forEach(opt => {
+        html += `<button class="chat-option-btn" onclick="window._baSelect('${opt.value}')">${opt.label}</button>`;
+      });
+      html += '</div>';
+    }
+
+    if (buildCard) {
+      html += `<div class="chat-build-card">
+        <div class="build-row"><span>Lid</span><span>${buildCard.lidName} — ${buildCard.lidColorName}</span></div>
+        <div class="build-row"><span>Mid</span><span>${buildCard.midName} — ${buildCard.midColorName}</span></div>
+        <div class="build-row"><span>Base</span><span>${buildCard.baseName} — ${buildCard.baseColorName}</span></div>
+        <button class="chat-apply-btn" onclick="window._baApply()">Load This Build</button>
+      </div>`;
+    }
+
+    msg.innerHTML = html;
+    container.appendChild(msg);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function addUserMsg(text) {
+    const container = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = 'chat-msg user';
+    msg.textContent = text;
+    container.appendChild(msg);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function showInput(show) {
+    document.getElementById('chatInputArea').classList.toggle('active', show);
+  }
+
+  function sendChatInput() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    addUserMsg(text);
+    handleFreeText(text);
+  }
+
+  // === CONVERSATION FLOW ===
+
+  function startChat() {
+    chatStep = 'ask-use';
+    chatData = { use: '', preferences: [], colorHints: [] };
+    addBotMsg("Hey! I'm the HydraStack Build Assistant. Let me help you find the perfect bottle setup. What will you mainly use it for?", [
+      { label: 'Daily commute', value: 'commute' },
+      { label: 'Gym / Workout', value: 'gym' },
+      { label: 'Hiking / Outdoors', value: 'hiking' },
+      { label: 'Office / Desk', value: 'office' },
+      { label: 'Road trips', value: 'roadtrip' },
+      { label: 'Coffee / Hot drinks', value: 'coffee' },
+    ]);
+  }
+
+  window._baSelect = function(value) {
+    // Disable all option buttons to prevent double-clicks
+    document.querySelectorAll('.chat-option-btn').forEach(b => b.disabled = true);
+
+    if (chatStep === 'ask-use') {
+      const labels = { commute:'Daily commute', gym:'Gym / Workout', hiking:'Hiking / Outdoors', office:'Office / Desk', roadtrip:'Road trips', coffee:'Coffee / Hot drinks' };
+      addUserMsg(labels[value] || value);
+      chatData.use = value;
+      chatStep = 'ask-priority';
+      setTimeout(() => {
+        addBotMsg("Nice! What matters most to you?", [
+          { label: 'Fits my cup holder', value: 'cupholder' },
+          { label: 'Maximum capacity', value: 'capacity' },
+          { label: 'Easy to carry', value: 'carry' },
+          { label: 'Keep drinks hot', value: 'hot' },
+          { label: 'Keep it simple', value: 'simple' },
+          { label: 'Extra storage', value: 'storage' },
+        ]);
+      }, 400);
+    }
+    else if (chatStep === 'ask-priority') {
+      const labels = { cupholder:'Fits my cup holder', capacity:'Maximum capacity', carry:'Easy to carry', hot:'Keep drinks hot', simple:'Keep it simple', storage:'Extra storage' };
+      addUserMsg(labels[value] || value);
+      chatData.preferences.push(value);
+      chatStep = 'ask-color';
+      setTimeout(() => {
+        addBotMsg("Last one — what colors or vibe are you into?", [
+          { label: 'Dark & sleek', value: 'dark' },
+          { label: 'Bright & bold', value: 'bold' },
+          { label: 'Nature / Earthy', value: 'earth' },
+          { label: 'Cool / Ocean', value: 'cool' },
+          { label: 'Clean / Minimal', value: 'clean' },
+          { label: 'Warm tones', value: 'warm' },
+        ]);
+      }, 400);
+    }
+    else if (chatStep === 'ask-color') {
+      const labels = { dark:'Dark & sleek', bold:'Bright & bold', earth:'Nature / Earthy', cool:'Cool / Ocean', clean:'Clean / Minimal', warm:'Warm tones' };
+      addUserMsg(labels[value] || value);
+      chatData.colorHints.push(value);
+      chatStep = 'recommend';
+      setTimeout(() => generateRecommendation(), 500);
+    }
+    else if (chatStep === 'done') {
+      if (value === 'restart') {
+        document.getElementById('chatMessages').innerHTML = '';
+        chatStep = 'start';
+        startChat();
+      }
+    }
+  };
+
+  function handleFreeText(text) {
+    const lower = text.toLowerCase();
+    // Extract color hints from free text
+    Object.entries(BA_COLORS).forEach(([key, data]) => {
+      data.vibe.forEach(v => {
+        if (lower.includes(v)) chatData.colorHints.push(key);
+      });
+    });
+
+    // Extract use hints
+    const useMap = {
+      commute: ['commute','commuting','drive','driving','car','bus','train','transit'],
+      gym: ['gym','workout','exercise','lift','fitness','run','running','sport'],
+      hiking: ['hike','hiking','trail','camp','camping','outdoor','mountain','backpack'],
+      office: ['office','desk','work','meeting','computer'],
+      roadtrip: ['road trip','roadtrip','travel','traveling','flight','long drive'],
+      coffee: ['coffee','tea','hot','latte','espresso','warm drink','mocha'],
+    };
+    Object.entries(useMap).forEach(([key, words]) => {
+      words.forEach(w => { if (lower.includes(w)) chatData.use = key; });
+    });
+
+    // Extract priority hints
+    const prioMap = {
+      cupholder: ['cup holder','cupholder','fit','slim','car holder'],
+      capacity: ['big','large','lots','capacity','thirsty','more water','xl'],
+      carry: ['carry','portable','handle','grip','on the go'],
+      hot: ['hot','warm','heated','coffee','tea','winter'],
+      simple: ['simple','basic','easy','minimal','cheap','budget','affordable'],
+      storage: ['storage','store','keys','snacks','compartment'],
+    };
+    Object.entries(prioMap).forEach(([key, words]) => {
+      words.forEach(w => { if (lower.includes(w) && !chatData.preferences.includes(key)) chatData.preferences.push(key); });
+    });
+
+    if (chatStep === 'ask-use') {
+      if (chatData.use) {
+        chatStep = 'ask-priority';
+        setTimeout(() => {
+          addBotMsg("Got it! What matters most to you?", [
+            { label: 'Fits my cup holder', value: 'cupholder' },
+            { label: 'Maximum capacity', value: 'capacity' },
+            { label: 'Easy to carry', value: 'carry' },
+            { label: 'Keep drinks hot', value: 'hot' },
+            { label: 'Keep it simple', value: 'simple' },
+            { label: 'Extra storage', value: 'storage' },
+          ]);
+        }, 400);
+      } else {
+        addBotMsg("I didn't quite catch that. What will you mainly use your bottle for?", [
+          { label: 'Daily commute', value: 'commute' },
+          { label: 'Gym / Workout', value: 'gym' },
+          { label: 'Hiking / Outdoors', value: 'hiking' },
+          { label: 'Office / Desk', value: 'office' },
+          { label: 'Road trips', value: 'roadtrip' },
+          { label: 'Coffee / Hot drinks', value: 'coffee' },
+        ]);
+      }
+    }
+    else if (chatStep === 'ask-priority') {
+      if (chatData.preferences.length) {
+        chatStep = 'ask-color';
+        setTimeout(() => {
+          addBotMsg("Last one — what colors or vibe are you into?", [
+            { label: 'Dark & sleek', value: 'dark' },
+            { label: 'Bright & bold', value: 'bold' },
+            { label: 'Nature / Earthy', value: 'earth' },
+            { label: 'Cool / Ocean', value: 'cool' },
+            { label: 'Clean / Minimal', value: 'clean' },
+            { label: 'Warm tones', value: 'warm' },
+          ]);
+        }, 400);
+      } else {
+        addBotMsg("What's most important to you in a bottle?", [
+          { label: 'Fits my cup holder', value: 'cupholder' },
+          { label: 'Maximum capacity', value: 'capacity' },
+          { label: 'Easy to carry', value: 'carry' },
+          { label: 'Keep drinks hot', value: 'hot' },
+          { label: 'Keep it simple', value: 'simple' },
+          { label: 'Extra storage', value: 'storage' },
+        ]);
+      }
+    }
+    else if (chatStep === 'ask-color') {
+      chatStep = 'recommend';
+      setTimeout(() => generateRecommendation(), 500);
+    }
+  }
+
+  // === RECOMMENDATION ENGINE ===
+
+  function generateRecommendation() {
+    const use = chatData.use || 'commute';
+    const prefs = chatData.preferences;
+    const colorHints = chatData.colorHints;
+
+    // Score each option
+    let lid = scorePick(BA_LIDS, use, prefs);
+    let mid = scorePick(BA_MIDS, use, prefs);
+    let base = scorePick(BA_BASES, use, prefs);
+
+    // Override with strong preference signals
+    if (prefs.includes('cupholder')) base = 'narrow';
+    if (prefs.includes('hot')) base = 'heated';
+    if (prefs.includes('capacity')) { mid = 'xl'; if (base !== 'heated') base = 'xl'; }
+    if (prefs.includes('carry')) lid = 'handle';
+    if (prefs.includes('simple')) { lid = 'classic'; mid = 'standard'; if (!prefs.includes('cupholder') && !prefs.includes('hot')) base = 'standard'; }
+    if (prefs.includes('storage')) { if (!prefs.includes('cupholder') && !prefs.includes('hot')) base = 'standard'; }
+
+    // Use-case specific overrides
+    if (use === 'gym') { if (!prefs.includes('simple')) lid = 'straw'; if (!prefs.includes('capacity')) mid = 'standard'; }
+    if (use === 'hiking') { lid = prefs.includes('simple') ? 'classic' : 'handle'; if (!prefs.includes('capacity')) mid = 'handle'; }
+    if (use === 'office') { lid = prefs.includes('carry') ? 'handle' : 'straw'; }
+    if (use === 'roadtrip') { base = prefs.includes('hot') ? 'heated' : 'narrow'; if (!prefs.includes('capacity')) mid = 'xl'; }
+    if (use === 'coffee') { base = 'heated'; lid = prefs.includes('carry') ? 'handle' : 'classic'; }
+
+    // Pick colors
+    let color = pickColor(colorHints);
+
+    // Build the recommendation reason
+    let reason = buildReason(use, lid, mid, base, color);
+
+    // Store for apply
+    window._baRecommendation = { lid, mid, base, color };
+
+    addBotMsg(reason, null, {
+      lidName: BA_LIDS[lid].name,
+      midName: BA_MIDS[mid].name,
+      baseName: BA_BASES[base].name,
+      lidColorName: BA_COLORS[color].name,
+      midColorName: BA_COLORS[color].name,
+      baseColorName: BA_COLORS[color].name,
+    });
+
+    chatStep = 'done';
+    setTimeout(() => {
+      addBotMsg("Want to start over with different preferences?", [
+        { label: 'Start over', value: 'restart' },
+      ]);
+    }, 600);
+  }
+
+  function scorePick(options, use, prefs) {
+    let best = Object.keys(options)[0];
+    let bestScore = 0;
+    const allTags = [use, ...prefs];
+
+    Object.entries(options).forEach(([key, data]) => {
+      let score = 0;
+      allTags.forEach(tag => {
+        data.tags.forEach(t => {
+          if (t.includes(tag) || tag.includes(t)) score++;
+        });
+      });
+      if (score > bestScore) { bestScore = score; best = key; }
+    });
+    return best;
+  }
+
+  function pickColor(hints) {
+    if (!hints.length) return 'stealth';
+
+    const vibeMap = {
+      dark: ['stealth'],
+      bold: ['ember','arctic'],
+      earth: ['sand','alpine'],
+      cool: ['arctic','titanium'],
+      clean: ['titanium','arctic'],
+      warm: ['sand','ember'],
+    };
+
+    let scores = {};
+    Object.keys(BA_COLORS).forEach(c => scores[c] = 0);
+
+    hints.forEach(hint => {
+      // Check if it's a direct color key
+      if (BA_COLORS[hint]) { scores[hint] += 3; return; }
+      // Check vibe map
+      if (vibeMap[hint]) { vibeMap[hint].forEach(c => scores[c] += 2); return; }
+      // Check color vibe words
+      Object.entries(BA_COLORS).forEach(([key, data]) => {
+        data.vibe.forEach(v => { if (v === hint || hint.includes(v) || v.includes(hint)) scores[key]++; });
+      });
+    });
+
+    let best = 'stealth';
+    let bestScore = 0;
+    Object.entries(scores).forEach(([key, score]) => {
+      if (score > bestScore) { bestScore = score; best = key; }
+    });
+    return best;
+  }
+
+  function buildReason(use, lid, mid, base, color) {
+    const useReasons = {
+      commute: "For your daily commute",
+      gym: "For crushing it at the gym",
+      hiking: "For hitting the trails",
+      office: "For the office grind",
+      roadtrip: "For long road trips",
+      coffee: "For keeping your drinks hot",
+    };
+
+    const lidReasons = {
+      handle: "the <strong>Handle Lid</strong> makes it easy to grab and go",
+      straw: "the <strong>Straw Lid</strong> lets you sip without slowing down",
+      classic: "the <strong>Classic Lid</strong> keeps things simple and clean",
+    };
+
+    const baseReasons = {
+      standard: "The <strong>Standard Base</strong> gives you sealed storage for your essentials.",
+      narrow: "The <strong>Narrow Base</strong> slides right into any cup holder.",
+      xl: "The <strong>XL Base</strong> maximizes your liquid capacity.",
+      heated: "The <strong>Heated Base</strong> keeps your drinks warm for hours.",
+    };
+
+    return `${useReasons[use] || "Based on your preferences"}, here's what I'd recommend: ${lidReasons[lid]}, paired with the <strong>${BA_MIDS[mid].name}</strong>. ${baseReasons[base]} All in <strong>${BA_COLORS[color].name}</strong> to match your style.`;
+  }
+
+  // Apply recommendation to the builder
+  window._baApply = function() {
+    const rec = window._baRecommendation;
+    if (!rec) return;
+    loadBuild(rec.lid, rec.mid, rec.base, rec.color, rec.color, rec.color);
+    closeChat();
+  };
+
+  // Expose to global
+  window.openChat = openChat;
+  window.closeChat = closeChat;
+  window.sendChatInput = sendChatInput;
+})();
 </script>
 
 </body>
