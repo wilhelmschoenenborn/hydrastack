@@ -4282,6 +4282,19 @@
       <button class="auth-submit-btn" onclick="handleRegister()">Create Account</button>
     </div>
 
+    <!-- Email Verification Form -->
+    <div class="auth-form" id="verifyForm">
+      <p class="auth-form-desc">We've sent a 6-digit verification code to your email. Enter it below to activate your account.</p>
+      <div class="auth-field">
+        <label>VERIFICATION CODE</label>
+        <input type="text" placeholder="Enter 6-digit code" id="verifyCode" maxlength="6">
+      </div>
+      <div class="auth-error" id="verifyError"></div>
+      <div class="auth-success" id="verifySuccess"></div>
+      <button class="auth-submit-btn" onclick="handleVerifyEmail()">Verify Email</button>
+      <button class="auth-forgot-btn" onclick="handleResendVerification()">Resend Code</button>
+    </div>
+
     <!-- Forgot Password Form - Step 1: Request Code -->
     <div class="auth-form" id="forgotForm">
       <p class="auth-form-desc">Enter your username and the email you registered with. We'll send a reset code to your inbox.</p>
@@ -5168,6 +5181,7 @@
     document.getElementById('registerForm').classList.toggle('active', tab === 'register');
     document.getElementById('forgotForm').classList.remove('active');
     document.getElementById('resetForm').classList.remove('active');
+    document.getElementById('verifyForm').classList.remove('active');
     document.getElementById('loginError').textContent = '';
     document.getElementById('registerError').textContent = '';
     // Show tabs when switching back
@@ -5198,6 +5212,15 @@
         // Clear form
         document.getElementById('loginUsername').value = '';
         document.getElementById('loginPassword').value = '';
+      } else if (data.needsVerification) {
+        // Show verification form
+        pendingVerifyUserId = data.userId;
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector('.auth-tabs').style.display = 'none';
+        document.getElementById('verifyForm').classList.add('active');
+        document.getElementById('verifyError').textContent = '';
+        document.getElementById('verifySuccess').textContent = 'Please verify your email first. Check your inbox or resend the code.';
       } else {
         errorEl.textContent = data.error || 'Login failed.';
       }
@@ -5246,14 +5269,23 @@
       });
       const data = await res.json();
 
-      if (data.success) {
-        saveUser(data.user);
-        closeAuthModal();
-        // Clear form
+      if (data.success && data.needsVerification) {
+        // Show verification form
+        pendingVerifyUserId = data.userId;
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector('.auth-tabs').style.display = 'none';
+        document.getElementById('verifyForm').classList.add('active');
+        document.getElementById('verifyError').textContent = '';
+        document.getElementById('verifySuccess').textContent = 'Check your email for the verification code.';
+        // Clear register form
         document.getElementById('regUsername').value = '';
         document.getElementById('regEmail').value = '';
         document.getElementById('regPassword').value = '';
         document.getElementById('regConfirmPassword').value = '';
+      } else if (data.success) {
+        saveUser(data.user);
+        closeAuthModal();
       } else {
         errorEl.textContent = data.error || 'Registration failed.';
       }
@@ -5266,6 +5298,72 @@
     clearUser();
     const dd = document.getElementById('userDropdown');
     if (dd) dd.classList.remove('open');
+  }
+
+  // === EMAIL VERIFICATION ===
+  let pendingVerifyUserId = null;
+
+  async function handleVerifyEmail() {
+    const code = document.getElementById('verifyCode').value.trim();
+    const errorEl = document.getElementById('verifyError');
+    const successEl = document.getElementById('verifySuccess');
+
+    errorEl.textContent = '';
+    successEl.textContent = '';
+
+    if (!code) {
+      errorEl.textContent = 'Please enter the verification code.';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: pendingVerifyUserId, code }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        saveUser(data.user);
+        document.getElementById('verifyCode').value = '';
+        closeAuthModal();
+      } else {
+        errorEl.textContent = data.error || 'Verification failed.';
+      }
+    } catch (err) {
+      errorEl.textContent = 'Could not connect to server.';
+    }
+  }
+
+  async function handleResendVerification() {
+    const errorEl = document.getElementById('verifyError');
+    const successEl = document.getElementById('verifySuccess');
+
+    errorEl.textContent = '';
+    successEl.textContent = '';
+
+    if (!pendingVerifyUserId) {
+      errorEl.textContent = 'No pending verification. Please register again.';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: pendingVerifyUserId }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        successEl.textContent = 'New verification code sent! Check your email.';
+      } else {
+        errorEl.textContent = data.error || 'Failed to resend code.';
+      }
+    } catch (err) {
+      errorEl.textContent = 'Could not connect to server.';
+    }
   }
 
   // === FORGOT PASSWORD ===

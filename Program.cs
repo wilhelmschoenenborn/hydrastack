@@ -152,6 +152,30 @@ using (var conn = new NpgsqlConnection(connStr))
     ", conn);
     await votesCmd.ExecuteNonQueryAsync();
 
+    // Add EmailVerified column to Users if it doesn't exist
+    using var alterVerifiedCmd = new NpgsqlCommand(@"
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='emailverified') THEN
+                ALTER TABLE Users ADD COLUMN EmailVerified BOOLEAN DEFAULT FALSE;
+            END IF;
+        END $$;
+    ", conn);
+    await alterVerifiedCmd.ExecuteNonQueryAsync();
+
+    // Create EmailVerificationTokens table
+    using var verifyTokensCmd = new NpgsqlCommand(@"
+        CREATE TABLE IF NOT EXISTS EmailVerificationTokens (
+            TokenID SERIAL PRIMARY KEY,
+            UserID INTEGER NOT NULL REFERENCES Users(UserID),
+            Token TEXT NOT NULL,
+            ExpiresAt TIMESTAMP NOT NULL,
+            Used BOOLEAN DEFAULT FALSE,
+            CreatedAt TIMESTAMP DEFAULT NOW()
+        );
+    ", conn);
+    await verifyTokensCmd.ExecuteNonQueryAsync();
+
     // Add Email column to Users if it doesn't exist
     using var alterEmailCmd = new NpgsqlCommand(@"
         DO $$
@@ -326,7 +350,60 @@ app.MapPost("/api/auth/register", async (HttpContext ctx) =>
         cmd.Parameters.AddWithValue("@email", email.ToLowerInvariant());
 
         var userId = (int)(await cmd.ExecuteScalarAsync())!;
-        await ctx.Response.WriteAsJsonAsync(new { success = true, user = new { userId, username } });
+
+        // Generate verification code and send email
+        var verifyCode = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+
+        using var tokenCmd = new NpgsqlCommand(@"
+            INSERT INTO EmailVerificationTokens (UserID, Token, ExpiresAt)
+            VALUES (@userId, @token, NOW() + INTERVAL '30 minutes')", conn);
+        tokenCmd.Parameters.AddWithValue("@userId", userId);
+        tokenCmd.Parameters.AddWithValue("@token", BCrypt.Net.BCrypt.HashPassword(verifyCode));
+        await tokenCmd.ExecuteNonQueryAsync();
+
+        // Send verification email
+        if (!string.IsNullOrEmpty(resendApiKey))
+        {
+            try
+            {
+                var emailPayload = JsonSerializer.Serialize(new
+                {
+                    from = emailFrom,
+                    to = new[] { email.ToLowerInvariant() },
+                    subject = "Verify Your HydraStack Account",
+                    html = $@"
+                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #1E2128; color: #E8E0D5; border-radius: 16px;"">
+                            <h2 style=""text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
+                            <p style=""text-align: center; color: #7788AA; font-size: 0.9rem;"">Welcome, {username}! Verify your email to get started.</p>
+                            <div style=""background: rgba(255,255,255,0.05); border: 1px solid #00D4AA; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
+                                <div style=""font-size: 0.75rem; color: #7788AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR VERIFICATION CODE</div>
+                                <div style=""font-size: 2rem; font-weight: 700; color: #00D4AA; letter-spacing: 8px;"">{verifyCode}</div>
+                            </div>
+                            <p style=""color: #7788AA; font-size: 0.85rem; text-align: center;"">This code expires in 30 minutes. If you didn't create this account, you can ignore this email.</p>
+                        </div>"
+                });
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails");
+                request.Headers.Add("Authorization", $"Bearer {resendApiKey}");
+                request.Content = new StringContent(emailPayload, System.Text.Encoding.UTF8, "application/json");
+                var emailResponse = await httpClient.SendAsync(request);
+                if (!emailResponse.IsSuccessStatusCode)
+                {
+                    var errorBody = await emailResponse.Content.ReadAsStringAsync();
+                    Console.Error.WriteLine($"Resend verify email error: {emailResponse.StatusCode} - {errorBody}");
+                }
+            }
+            catch (Exception emailEx)
+            {
+                Console.Error.WriteLine($"Failed to send verification email: {emailEx.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[DEV] Verification code for {username}: {verifyCode}");
+        }
+
+        await ctx.Response.WriteAsJsonAsync(new { success = true, needsVerification = true, userId, username });
     }
     catch (PostgresException ex) when (ex.SqlState == "23505") // unique violation
     {
@@ -338,6 +415,183 @@ app.MapPost("/api/auth/register", async (HttpContext ctx) =>
         Console.Error.WriteLine($"Register error: {ex.Message}");
         ctx.Response.StatusCode = 500;
         await ctx.Response.WriteAsJsonAsync(new { error = "Registration failed. Please try again." });
+    }
+});
+
+// POST /api/auth/verify-email
+app.MapPost("/api/auth/verify-email", async (HttpContext ctx) =>
+{
+    var body = await JsonSerializer.DeserializeAsync<JsonElement>(ctx.Request.Body);
+
+    var userId = body.TryGetProperty("userId", out var uid) ? uid.GetInt32() : 0;
+    var code = body.TryGetProperty("code", out var c) ? c.GetString()?.Trim() ?? "" : "";
+
+    if (userId == 0 || string.IsNullOrWhiteSpace(code))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Verification code is required" });
+        return;
+    }
+
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        // Find valid tokens
+        using var tokenCmd = new NpgsqlCommand(@"
+            SELECT TokenID, Token FROM EmailVerificationTokens
+            WHERE UserID = @userId AND Used = FALSE AND ExpiresAt > NOW()
+            ORDER BY CreatedAt DESC LIMIT 5", conn);
+        tokenCmd.Parameters.AddWithValue("@userId", userId);
+
+        var validToken = false;
+        var matchedTokenId = 0;
+
+        using (var reader = await tokenCmd.ExecuteReaderAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                var tokenId = reader.GetInt32(0);
+                var tokenHash = reader.GetString(1);
+                if (BCrypt.Net.BCrypt.Verify(code, tokenHash))
+                {
+                    validToken = true;
+                    matchedTokenId = tokenId;
+                    break;
+                }
+            }
+        }
+
+        if (!validToken)
+        {
+            ctx.Response.StatusCode = 400;
+            await ctx.Response.WriteAsJsonAsync(new { error = "Invalid or expired verification code" });
+            return;
+        }
+
+        // Mark token as used
+        using var markCmd = new NpgsqlCommand(@"UPDATE EmailVerificationTokens SET Used = TRUE WHERE TokenID = @tokenId", conn);
+        markCmd.Parameters.AddWithValue("@tokenId", matchedTokenId);
+        await markCmd.ExecuteNonQueryAsync();
+
+        // Mark user as verified
+        using var verifyCmd = new NpgsqlCommand(@"UPDATE Users SET EmailVerified = TRUE WHERE UserID = @userId", conn);
+        verifyCmd.Parameters.AddWithValue("@userId", userId);
+        await verifyCmd.ExecuteNonQueryAsync();
+
+        // Get username for auto-login
+        using var userCmd = new NpgsqlCommand(@"SELECT Username FROM Users WHERE UserID = @userId", conn);
+        userCmd.Parameters.AddWithValue("@userId", userId);
+        var username = (string)(await userCmd.ExecuteScalarAsync())!;
+
+        await ctx.Response.WriteAsJsonAsync(new { success = true, user = new { userId, username } });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Verify email error: {ex.Message}");
+        ctx.Response.StatusCode = 500;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Verification failed. Please try again." });
+    }
+});
+
+// POST /api/auth/resend-verification
+app.MapPost("/api/auth/resend-verification", async (HttpContext ctx) =>
+{
+    var body = await JsonSerializer.DeserializeAsync<JsonElement>(ctx.Request.Body);
+    var userId = body.TryGetProperty("userId", out var uid) ? uid.GetInt32() : 0;
+
+    if (userId == 0)
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Invalid request" });
+        return;
+    }
+
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        using var userCmd = new NpgsqlCommand(@"SELECT Username, Email, EmailVerified FROM Users WHERE UserID = @userId", conn);
+        userCmd.Parameters.AddWithValue("@userId", userId);
+        using var reader = await userCmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+        {
+            ctx.Response.StatusCode = 404;
+            await ctx.Response.WriteAsJsonAsync(new { error = "User not found" });
+            return;
+        }
+
+        var username = reader.GetString(0);
+        var email = reader.GetString(1);
+        var verified = reader.GetBoolean(2);
+        await reader.CloseAsync();
+
+        if (verified)
+        {
+            await ctx.Response.WriteAsJsonAsync(new { success = true, message = "Email is already verified" });
+            return;
+        }
+
+        // Invalidate old tokens
+        using var invalidateCmd = new NpgsqlCommand(@"UPDATE EmailVerificationTokens SET Used = TRUE WHERE UserID = @userId AND Used = FALSE", conn);
+        invalidateCmd.Parameters.AddWithValue("@userId", userId);
+        await invalidateCmd.ExecuteNonQueryAsync();
+
+        var verifyCode = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+
+        using var tokenCmd = new NpgsqlCommand(@"
+            INSERT INTO EmailVerificationTokens (UserID, Token, ExpiresAt)
+            VALUES (@userId, @token, NOW() + INTERVAL '30 minutes')", conn);
+        tokenCmd.Parameters.AddWithValue("@userId", userId);
+        tokenCmd.Parameters.AddWithValue("@token", BCrypt.Net.BCrypt.HashPassword(verifyCode));
+        await tokenCmd.ExecuteNonQueryAsync();
+
+        if (!string.IsNullOrEmpty(resendApiKey))
+        {
+            try
+            {
+                var emailPayload = JsonSerializer.Serialize(new
+                {
+                    from = emailFrom,
+                    to = new[] { email },
+                    subject = "Verify Your HydraStack Account",
+                    html = $@"
+                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #1E2128; color: #E8E0D5; border-radius: 16px;"">
+                            <h2 style=""text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
+                            <p style=""text-align: center; color: #7788AA; font-size: 0.9rem;"">Welcome, {username}! Verify your email to get started.</p>
+                            <div style=""background: rgba(255,255,255,0.05); border: 1px solid #00D4AA; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
+                                <div style=""font-size: 0.75rem; color: #7788AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR VERIFICATION CODE</div>
+                                <div style=""font-size: 2rem; font-weight: 700; color: #00D4AA; letter-spacing: 8px;"">{verifyCode}</div>
+                            </div>
+                            <p style=""color: #7788AA; font-size: 0.85rem; text-align: center;"">This code expires in 30 minutes.</p>
+                        </div>"
+                });
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails");
+                request.Headers.Add("Authorization", $"Bearer {resendApiKey}");
+                request.Content = new StringContent(emailPayload, System.Text.Encoding.UTF8, "application/json");
+                await httpClient.SendAsync(request);
+            }
+            catch (Exception emailEx)
+            {
+                Console.Error.WriteLine($"Failed to resend verification email: {emailEx.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[DEV] Verification code for {username}: {verifyCode}");
+        }
+
+        await ctx.Response.WriteAsJsonAsync(new { success = true, message = "Verification code sent" });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Resend verification error: {ex.Message}");
+        ctx.Response.StatusCode = 500;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Failed to resend code. Please try again." });
     }
 });
 
@@ -362,7 +616,7 @@ app.MapPost("/api/auth/login", async (HttpContext ctx) =>
         await conn.OpenAsync();
 
         using var cmd = new NpgsqlCommand(@"
-            SELECT UserID, Username, PasswordHash FROM Users WHERE Username = @username", conn);
+            SELECT UserID, Username, PasswordHash, COALESCE(EmailVerified, FALSE) FROM Users WHERE Username = @username", conn);
         cmd.Parameters.AddWithValue("@username", username);
 
         using var reader = await cmd.ExecuteReaderAsync();
@@ -376,11 +630,19 @@ app.MapPost("/api/auth/login", async (HttpContext ctx) =>
         var userId = reader.GetInt32(0);
         var dbUsername = reader.GetString(1);
         var hash = reader.GetString(2);
+        var emailVerified = reader.GetBoolean(3);
 
         if (!BCrypt.Net.BCrypt.Verify(password, hash))
         {
             ctx.Response.StatusCode = 401;
             await ctx.Response.WriteAsJsonAsync(new { error = "Invalid username or password" });
+            return;
+        }
+
+        if (!emailVerified)
+        {
+            ctx.Response.StatusCode = 403;
+            await ctx.Response.WriteAsJsonAsync(new { error = "Please verify your email before signing in", needsVerification = true, userId, username = dbUsername });
             return;
         }
 
@@ -547,6 +809,98 @@ app.MapPost("/api/orders", async (HttpContext ctx) =>
         }
 
         await tx.CommitAsync();
+
+        // Send order receipt email
+        if (!string.IsNullOrEmpty(resendApiKey) && !string.IsNullOrEmpty(email))
+        {
+            try
+            {
+                // Build items HTML for receipt
+                var itemsHtml = new System.Text.StringBuilder();
+                for (int j = 0; j < items.GetArrayLength(); j++)
+                {
+                    var item = items[j];
+                    var itemName = item.TryGetProperty("name", out var n) ? n.GetString() ?? "HydraStack" : "HydraStack";
+                    var itemQty = item.TryGetProperty("quantity", out var q) ? q.GetInt32() : 1;
+                    var itemPrice = item.TryGetProperty("price", out var pr) ? pr.GetDecimal() : 0m;
+                    var lidColor = item.TryGetProperty("lidColor", out var lc2) ? lc2.GetString() ?? "" : "";
+                    var midColor = item.TryGetProperty("midColor", out var mc) ? mc.GetString() ?? "" : "";
+                    var baseColor = item.TryGetProperty("baseColor", out var bc) ? bc.GetString() ?? "" : "";
+                    var colors = new[] { lidColor, midColor, baseColor }.Where(x => !string.IsNullOrEmpty(x));
+                    var colorStr = string.Join(", ", colors);
+
+                    itemsHtml.Append($@"
+                        <tr style=""border-bottom: 1px solid rgba(255,255,255,0.06);"">
+                            <td style=""padding: 0.7rem 0; color: #E8E0D5;"">{itemName}{(string.IsNullOrEmpty(colorStr) ? "" : $"<br><span style=\"font-size: 0.75rem; color: #7788AA;\">{colorStr}</span>")}</td>
+                            <td style=""padding: 0.7rem 0; text-align: center; color: #7788AA;"">{itemQty}</td>
+                            <td style=""padding: 0.7rem 0; text-align: right; color: #E8E0D5;"">${itemPrice:F2}</td>
+                        </tr>");
+                }
+
+                var subtotal = orderTotal / 1.08m - 5.99m / 1.08m; // approximate reverse
+                var receiptHtml = $@"
+                    <div style=""font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 2rem; background: #1E2128; color: #E8E0D5; border-radius: 16px;"">
+                        <h2 style=""text-align: center; margin-bottom: 0.3rem;"">HydraStack</h2>
+                        <p style=""text-align: center; color: #7788AA; font-size: 0.9rem; margin-bottom: 1.5rem;"">Order Confirmation</p>
+
+                        <div style=""background: rgba(255,255,255,0.05); border: 1px solid #00D4AA; border-radius: 12px; padding: 1.2rem; text-align: center; margin-bottom: 1.5rem;"">
+                            <div style=""font-size: 0.75rem; color: #7788AA; letter-spacing: 2px; margin-bottom: 0.3rem;"">ORDER NUMBER</div>
+                            <div style=""font-size: 1.5rem; font-weight: 700; color: #00D4AA; letter-spacing: 3px;"">{orderNumber}</div>
+                        </div>
+
+                        <p style=""color: #E8E0D5; font-size: 0.9rem; margin-bottom: 1rem;"">Hi {firstName}, thanks for your order!</p>
+
+                        <div style=""margin-bottom: 1.5rem;"">
+                            <div style=""font-size: 0.7rem; color: #00D4AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">SHIPPING TO</div>
+                            <div style=""color: #AAB8CC; font-size: 0.85rem; line-height: 1.6;"">
+                                {firstName} {lastName}<br>
+                                {(string.IsNullOrEmpty(address) ? "" : $"{address}<br>")}{(string.IsNullOrEmpty(city) ? "" : $"{city}")}{(string.IsNullOrEmpty(state) ? "" : $", {state}")} {zip}
+                            </div>
+                        </div>
+
+                        <div style=""margin-bottom: 1.5rem;"">
+                            <div style=""font-size: 0.7rem; color: #00D4AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">ITEMS</div>
+                            <table style=""width: 100%; border-collapse: collapse; font-size: 0.85rem;"">
+                                <tr style=""border-bottom: 1px solid rgba(255,255,255,0.1);"">
+                                    <th style=""padding: 0.5rem 0; text-align: left; color: #7788AA; font-size: 0.7rem; letter-spacing: 1px;"">ITEM</th>
+                                    <th style=""padding: 0.5rem 0; text-align: center; color: #7788AA; font-size: 0.7rem; letter-spacing: 1px;"">QTY</th>
+                                    <th style=""padding: 0.5rem 0; text-align: right; color: #7788AA; font-size: 0.7rem; letter-spacing: 1px;"">PRICE</th>
+                                </tr>
+                                {itemsHtml}
+                            </table>
+                        </div>
+
+                        <div style=""border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; text-align: right;"">
+                            <div style=""font-size: 1.1rem; font-weight: 700; color: #E8E0D5;"">Total: <span style=""color: #00D4AA;"">${orderTotal:F2}</span></div>
+                        </div>
+
+                        <p style=""color: #556677; font-size: 0.75rem; text-align: center; margin-top: 1.5rem;"">Thank you for choosing HydraStack!</p>
+                    </div>";
+
+                var emailPayload = JsonSerializer.Serialize(new
+                {
+                    from = emailFrom,
+                    to = new[] { email },
+                    subject = $"HydraStack Order Confirmation — {orderNumber}",
+                    html = receiptHtml
+                });
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails");
+                request.Headers.Add("Authorization", $"Bearer {resendApiKey}");
+                request.Content = new StringContent(emailPayload, System.Text.Encoding.UTF8, "application/json");
+                var emailResponse = await httpClient.SendAsync(request);
+                if (!emailResponse.IsSuccessStatusCode)
+                {
+                    var errorBody = await emailResponse.Content.ReadAsStringAsync();
+                    Console.Error.WriteLine($"Resend receipt email error: {emailResponse.StatusCode} - {errorBody}");
+                }
+            }
+            catch (Exception emailEx)
+            {
+                Console.Error.WriteLine($"Failed to send receipt email: {emailEx.Message}");
+            }
+        }
+
         await ctx.Response.WriteAsJsonAsync(new { success = true, orderNumber, message = "Order placed successfully!" });
     }
     catch (Exception ex)
