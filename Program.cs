@@ -1,4 +1,5 @@
 using Npgsql;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -33,6 +34,16 @@ var connStr = $"Host={dbUri.Host};Port={(dbUri.Port > 0 ? dbUri.Port : 5432)};Da
 
 // Email validation helper
 var emailRegex = new Regex(@"^[^\s@]+@[^\s@]+\.[^\s@]+$", RegexOptions.Compiled);
+
+// Resend email config
+var resendApiKey = Environment.GetEnvironmentVariable("RESEND_API_KEY") ?? "";
+var emailFrom = Environment.GetEnvironmentVariable("EMAIL_FROM") ?? "onboarding@resend.dev";
+var httpClient = new HttpClient();
+
+if (string.IsNullOrEmpty(resendApiKey))
+{
+    Console.WriteLine("WARNING: RESEND_API_KEY not set. Password reset emails will not be sent.");
+}
 
 // Initialize database tables
 using (var conn = new NpgsqlConnection(connStr))
@@ -140,6 +151,30 @@ using (var conn = new NpgsqlConnection(connStr))
         );
     ", conn);
     await votesCmd.ExecuteNonQueryAsync();
+
+    // Add Email column to Users if it doesn't exist
+    using var alterEmailCmd = new NpgsqlCommand(@"
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='email') THEN
+                ALTER TABLE Users ADD COLUMN Email TEXT DEFAULT '';
+            END IF;
+        END $$;
+    ", conn);
+    await alterEmailCmd.ExecuteNonQueryAsync();
+
+    // Create PasswordResetTokens table
+    using var resetTokensCmd = new NpgsqlCommand(@"
+        CREATE TABLE IF NOT EXISTS PasswordResetTokens (
+            TokenID SERIAL PRIMARY KEY,
+            UserID INTEGER NOT NULL REFERENCES Users(UserID),
+            Token TEXT NOT NULL UNIQUE,
+            ExpiresAt TIMESTAMP NOT NULL,
+            Used BOOLEAN DEFAULT FALSE,
+            CreatedAt TIMESTAMP DEFAULT NOW()
+        );
+    ", conn);
+    await resetTokensCmd.ExecuteNonQueryAsync();
 }
 
 Console.WriteLine("Database tables ready (PostgreSQL)");
@@ -245,6 +280,7 @@ app.MapPost("/api/auth/register", async (HttpContext ctx) =>
 
     var username = body.TryGetProperty("username", out var u) ? u.GetString()?.Trim() ?? "" : "";
     var password = body.TryGetProperty("password", out var p) ? p.GetString() ?? "" : "";
+    var email = body.TryGetProperty("email", out var e) ? e.GetString()?.Trim() ?? "" : "";
 
     if (string.IsNullOrWhiteSpace(username) || username.Length < 3)
     {
@@ -257,6 +293,13 @@ app.MapPost("/api/auth/register", async (HttpContext ctx) =>
     {
         ctx.Response.StatusCode = 400;
         await ctx.Response.WriteAsJsonAsync(new { error = "Password must be at least 6 characters" });
+        return;
+    }
+
+    if (string.IsNullOrWhiteSpace(email) || !emailRegex.IsMatch(email))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "A valid email address is required" });
         return;
     }
 
@@ -275,11 +318,12 @@ app.MapPost("/api/auth/register", async (HttpContext ctx) =>
         await conn.OpenAsync();
 
         using var cmd = new NpgsqlCommand(@"
-            INSERT INTO Users (Username, PasswordHash)
-            VALUES (@username, @hash)
+            INSERT INTO Users (Username, PasswordHash, Email)
+            VALUES (@username, @hash, @email)
             RETURNING UserID", conn);
         cmd.Parameters.AddWithValue("@username", username);
         cmd.Parameters.AddWithValue("@hash", passwordHash);
+        cmd.Parameters.AddWithValue("@email", email.ToLowerInvariant());
 
         var userId = (int)(await cmd.ExecuteScalarAsync())!;
         await ctx.Response.WriteAsJsonAsync(new { success = true, user = new { userId, username } });
@@ -934,6 +978,212 @@ app.MapGet("/api/reviews/recent", async () =>
     }
 
     return Results.Json(reviews);
+});
+
+// POST /api/auth/forgot-password
+app.MapPost("/api/auth/forgot-password", async (HttpContext ctx) =>
+{
+    var body = await JsonSerializer.DeserializeAsync<JsonElement>(ctx.Request.Body);
+
+    var username = body.TryGetProperty("username", out var u) ? u.GetString()?.Trim() ?? "" : "";
+    var email = body.TryGetProperty("email", out var e) ? e.GetString()?.Trim().ToLowerInvariant() ?? "" : "";
+
+    if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(email))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Username and email are required" });
+        return;
+    }
+
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        // Verify username + email match
+        using var checkCmd = new NpgsqlCommand(@"
+            SELECT UserID FROM Users WHERE Username = @username AND LOWER(Email) = @email", conn);
+        checkCmd.Parameters.AddWithValue("@username", username);
+        checkCmd.Parameters.AddWithValue("@email", email);
+
+        var result = await checkCmd.ExecuteScalarAsync();
+        if (result == null)
+        {
+            // Return generic message to avoid username/email enumeration
+            await ctx.Response.WriteAsJsonAsync(new { success = true, message = "If an account with that username and email exists, a reset code has been generated." });
+            return;
+        }
+
+        var userId = (int)result;
+
+        // Invalidate any existing tokens for this user
+        using var invalidateCmd = new NpgsqlCommand(@"
+            UPDATE PasswordResetTokens SET Used = TRUE WHERE UserID = @userId AND Used = FALSE", conn);
+        invalidateCmd.Parameters.AddWithValue("@userId", userId);
+        await invalidateCmd.ExecuteNonQueryAsync();
+
+        // Generate a 6-digit reset code
+        var resetCode = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
+
+        // Store token with 15-minute expiry
+        using var tokenCmd = new NpgsqlCommand(@"
+            INSERT INTO PasswordResetTokens (UserID, Token, ExpiresAt)
+            VALUES (@userId, @token, NOW() + INTERVAL '15 minutes')", conn);
+        tokenCmd.Parameters.AddWithValue("@userId", userId);
+        tokenCmd.Parameters.AddWithValue("@token", BCrypt.Net.BCrypt.HashPassword(resetCode));
+        await tokenCmd.ExecuteNonQueryAsync();
+
+        // Send reset code via Resend
+        if (!string.IsNullOrEmpty(resendApiKey))
+        {
+            try
+            {
+                var emailPayload = JsonSerializer.Serialize(new
+                {
+                    from = emailFrom,
+                    to = new[] { email },
+                    subject = "HydraStack Password Reset Code",
+                    html = $@"
+                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #1E2128; color: #E8E0D5; border-radius: 16px;"">
+                            <h2 style=""text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
+                            <p style=""text-align: center; color: #7788AA; font-size: 0.9rem;"">Password Reset Request</p>
+                            <div style=""background: rgba(255,255,255,0.05); border: 1px solid #00D4AA; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
+                                <div style=""font-size: 0.75rem; color: #7788AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR RESET CODE</div>
+                                <div style=""font-size: 2rem; font-weight: 700; color: #00D4AA; letter-spacing: 8px;"">{resetCode}</div>
+                            </div>
+                            <p style=""color: #7788AA; font-size: 0.85rem; text-align: center;"">This code expires in 15 minutes. If you didn't request this, you can ignore this email.</p>
+                        </div>"
+                });
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails");
+                request.Headers.Add("Authorization", $"Bearer {resendApiKey}");
+                request.Content = new StringContent(emailPayload, System.Text.Encoding.UTF8, "application/json");
+
+                var emailResponse = await httpClient.SendAsync(request);
+                if (!emailResponse.IsSuccessStatusCode)
+                {
+                    var errorBody = await emailResponse.Content.ReadAsStringAsync();
+                    Console.Error.WriteLine($"Resend email error: {emailResponse.StatusCode} - {errorBody}");
+                }
+            }
+            catch (Exception emailEx)
+            {
+                Console.Error.WriteLine($"Failed to send reset email: {emailEx.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[DEV] Reset code for {username}: {resetCode}");
+        }
+
+        await ctx.Response.WriteAsJsonAsync(new { success = true, message = "If an account with that username and email exists, a reset code has been sent to your email." });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Forgot password error: {ex.Message}");
+        ctx.Response.StatusCode = 500;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Something went wrong. Please try again." });
+    }
+});
+
+// POST /api/auth/reset-password
+app.MapPost("/api/auth/reset-password", async (HttpContext ctx) =>
+{
+    var body = await JsonSerializer.DeserializeAsync<JsonElement>(ctx.Request.Body);
+
+    var username = body.TryGetProperty("username", out var u) ? u.GetString()?.Trim() ?? "" : "";
+    var code = body.TryGetProperty("code", out var c) ? c.GetString()?.Trim() ?? "" : "";
+    var newPassword = body.TryGetProperty("newPassword", out var p) ? p.GetString() ?? "" : "";
+
+    if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(newPassword))
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "All fields are required" });
+        return;
+    }
+
+    if (newPassword.Length < 6)
+    {
+        ctx.Response.StatusCode = 400;
+        await ctx.Response.WriteAsJsonAsync(new { error = "New password must be at least 6 characters" });
+        return;
+    }
+
+    try
+    {
+        using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync();
+
+        // Get user
+        using var userCmd = new NpgsqlCommand(@"
+            SELECT UserID FROM Users WHERE Username = @username", conn);
+        userCmd.Parameters.AddWithValue("@username", username);
+        var userResult = await userCmd.ExecuteScalarAsync();
+
+        if (userResult == null)
+        {
+            ctx.Response.StatusCode = 400;
+            await ctx.Response.WriteAsJsonAsync(new { error = "Invalid reset code" });
+            return;
+        }
+
+        var userId = (int)userResult;
+
+        // Find valid (unused, non-expired) tokens for this user
+        using var tokenCmd = new NpgsqlCommand(@"
+            SELECT TokenID, Token FROM PasswordResetTokens
+            WHERE UserID = @userId AND Used = FALSE AND ExpiresAt > NOW()
+            ORDER BY CreatedAt DESC LIMIT 5", conn);
+        tokenCmd.Parameters.AddWithValue("@userId", userId);
+
+        var validToken = false;
+        var matchedTokenId = 0;
+
+        using (var reader = await tokenCmd.ExecuteReaderAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                var tokenId = reader.GetInt32(0);
+                var tokenHash = reader.GetString(1);
+
+                if (BCrypt.Net.BCrypt.Verify(code, tokenHash))
+                {
+                    validToken = true;
+                    matchedTokenId = tokenId;
+                    break;
+                }
+            }
+        }
+
+        if (!validToken)
+        {
+            ctx.Response.StatusCode = 400;
+            await ctx.Response.WriteAsJsonAsync(new { error = "Invalid or expired reset code" });
+            return;
+        }
+
+        // Mark token as used
+        using var markUsedCmd = new NpgsqlCommand(@"
+            UPDATE PasswordResetTokens SET Used = TRUE WHERE TokenID = @tokenId", conn);
+        markUsedCmd.Parameters.AddWithValue("@tokenId", matchedTokenId);
+        await markUsedCmd.ExecuteNonQueryAsync();
+
+        // Update password
+        var newHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        using var updateCmd = new NpgsqlCommand(@"
+            UPDATE Users SET PasswordHash = @hash WHERE UserID = @userId", conn);
+        updateCmd.Parameters.AddWithValue("@hash", newHash);
+        updateCmd.Parameters.AddWithValue("@userId", userId);
+        await updateCmd.ExecuteNonQueryAsync();
+
+        await ctx.Response.WriteAsJsonAsync(new { success = true, message = "Password has been reset successfully" });
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Reset password error: {ex.Message}");
+        ctx.Response.StatusCode = 500;
+        await ctx.Response.WriteAsJsonAsync(new { error = "Something went wrong. Please try again." });
+    }
 });
 
 app.Run();

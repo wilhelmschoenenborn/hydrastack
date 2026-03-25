@@ -3178,6 +3178,63 @@
     color: var(--warm);
   }
 
+  .auth-forgot-btn {
+    display: block;
+    width: 100%;
+    margin-top: 0.6rem;
+    padding: 0.4rem;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .auth-forgot-btn:hover {
+    opacity: 0.7;
+  }
+
+  .auth-form-desc {
+    font-size: 0.82rem;
+    color: #7788AA;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
+  }
+
+  .auth-success {
+    color: var(--accent);
+    font-size: 0.78rem;
+    margin-bottom: 0.8rem;
+    min-height: 1.2em;
+  }
+
+  .auth-reset-code-display {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .auth-reset-code-display .code-label {
+    font-size: 0.72rem;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    color: #7788AA;
+    margin-bottom: 0.4rem;
+  }
+
+  .auth-reset-code-display .code-value {
+    font-size: 1.8rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 6px;
+  }
+
   /* === ORDER HISTORY MODAL === */
   .orders-overlay {
     position: fixed;
@@ -4200,6 +4257,7 @@
       </div>
       <div class="auth-error" id="loginError"></div>
       <button class="auth-submit-btn" onclick="handleLogin()">Sign In</button>
+      <button class="auth-forgot-btn" onclick="showForgotPassword()">Forgot Password?</button>
     </div>
 
     <!-- Register Form -->
@@ -4207,6 +4265,10 @@
       <div class="auth-field">
         <label>USERNAME</label>
         <input type="text" placeholder="Choose a username (3+ characters)" id="regUsername">
+      </div>
+      <div class="auth-field">
+        <label>EMAIL</label>
+        <input type="email" placeholder="Enter your email address" id="regEmail">
       </div>
       <div class="auth-field">
         <label>PASSWORD</label>
@@ -4218,6 +4280,44 @@
       </div>
       <div class="auth-error" id="registerError"></div>
       <button class="auth-submit-btn" onclick="handleRegister()">Create Account</button>
+    </div>
+
+    <!-- Forgot Password Form - Step 1: Request Code -->
+    <div class="auth-form" id="forgotForm">
+      <p class="auth-form-desc">Enter your username and the email you registered with. We'll send a reset code to your inbox.</p>
+      <div class="auth-field">
+        <label>USERNAME</label>
+        <input type="text" placeholder="Enter your username" id="forgotUsername">
+      </div>
+      <div class="auth-field">
+        <label>EMAIL</label>
+        <input type="email" placeholder="Enter your email address" id="forgotEmail">
+      </div>
+      <div class="auth-error" id="forgotError"></div>
+      <div class="auth-success" id="forgotSuccess"></div>
+      <button class="auth-submit-btn" onclick="handleForgotPassword()">Send Reset Code</button>
+      <button class="auth-forgot-btn" onclick="showLoginFromForgot()">Back to Sign In</button>
+    </div>
+
+    <!-- Forgot Password Form - Step 2: Enter Code & New Password -->
+    <div class="auth-form" id="resetForm">
+      <p class="auth-form-desc">Enter the 6-digit reset code and your new password.</p>
+      <div class="auth-field">
+        <label>RESET CODE</label>
+        <input type="text" placeholder="Enter 6-digit code" id="resetCode" maxlength="6">
+      </div>
+      <div class="auth-field">
+        <label>NEW PASSWORD</label>
+        <input type="password" placeholder="Enter new password (6+ characters)" id="resetNewPassword">
+      </div>
+      <div class="auth-field">
+        <label>CONFIRM NEW PASSWORD</label>
+        <input type="password" placeholder="Re-enter new password" id="resetConfirmPassword">
+      </div>
+      <div class="auth-error" id="resetError"></div>
+      <div class="auth-success" id="resetSuccess"></div>
+      <button class="auth-submit-btn" onclick="handleResetPassword()">Reset Password</button>
+      <button class="auth-forgot-btn" onclick="showLoginFromForgot()">Back to Sign In</button>
     </div>
 
     <button class="auth-close-btn" onclick="closeAuthModal()">Cancel</button>
@@ -5047,6 +5147,13 @@
     document.getElementById('authOverlay').classList.add('open');
     document.getElementById('loginError').textContent = '';
     document.getElementById('registerError').textContent = '';
+    // Reset to login tab
+    switchAuthTab('login');
+    // Clear forgot password state
+    document.getElementById('forgotError').textContent = '';
+    document.getElementById('forgotSuccess').textContent = '';
+    document.getElementById('resetError').textContent = '';
+    document.getElementById('resetSuccess').textContent = '';
   }
 
   function closeAuthModal() {
@@ -5059,8 +5166,12 @@
     });
     document.getElementById('loginForm').classList.toggle('active', tab === 'login');
     document.getElementById('registerForm').classList.toggle('active', tab === 'register');
+    document.getElementById('forgotForm').classList.remove('active');
+    document.getElementById('resetForm').classList.remove('active');
     document.getElementById('loginError').textContent = '';
     document.getElementById('registerError').textContent = '';
+    // Show tabs when switching back
+    document.querySelector('.auth-tabs').style.display = 'flex';
   }
 
   async function handleLogin() {
@@ -5097,17 +5208,23 @@
 
   async function handleRegister() {
     const username = document.getElementById('regUsername').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
     const confirm = document.getElementById('regConfirmPassword').value;
     const errorEl = document.getElementById('registerError');
 
-    if (!username || !password || !confirm) {
+    if (!username || !email || !password || !confirm) {
       errorEl.textContent = 'Please fill in all fields.';
       return;
     }
 
     if (username.length < 3) {
       errorEl.textContent = 'Username must be at least 3 characters.';
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errorEl.textContent = 'Please enter a valid email address.';
       return;
     }
 
@@ -5125,7 +5242,7 @@
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, email }),
       });
       const data = await res.json();
 
@@ -5134,6 +5251,7 @@
         closeAuthModal();
         // Clear form
         document.getElementById('regUsername').value = '';
+        document.getElementById('regEmail').value = '';
         document.getElementById('regPassword').value = '';
         document.getElementById('regConfirmPassword').value = '';
       } else {
@@ -5148,6 +5266,119 @@
     clearUser();
     const dd = document.getElementById('userDropdown');
     if (dd) dd.classList.remove('open');
+  }
+
+  // === FORGOT PASSWORD ===
+  let forgotPasswordUsername = '';
+
+  function showForgotPassword() {
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.auth-tabs').style.display = 'none';
+    document.getElementById('forgotForm').classList.add('active');
+    document.getElementById('forgotError').textContent = '';
+    document.getElementById('forgotSuccess').textContent = '';
+    // Pre-fill username if they already typed one
+    const loginUsername = document.getElementById('loginUsername').value.trim();
+    if (loginUsername) document.getElementById('forgotUsername').value = loginUsername;
+  }
+
+  function showLoginFromForgot() {
+    switchAuthTab('login');
+  }
+
+  async function handleForgotPassword() {
+    const username = document.getElementById('forgotUsername').value.trim();
+    const email = document.getElementById('forgotEmail').value.trim();
+    const errorEl = document.getElementById('forgotError');
+    const successEl = document.getElementById('forgotSuccess');
+
+    errorEl.textContent = '';
+    successEl.textContent = '';
+
+    if (!username || !email) {
+      errorEl.textContent = 'Please fill in all fields.';
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errorEl.textContent = 'Please enter a valid email address.';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        forgotPasswordUsername = username;
+
+        // Show reset form (step 2)
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+        document.getElementById('resetForm').classList.add('active');
+        document.getElementById('resetError').textContent = '';
+        document.getElementById('resetSuccess').textContent = 'A reset code has been sent to your email. Check your inbox.';
+      } else {
+        errorEl.textContent = data.error || 'Something went wrong.';
+      }
+    } catch (err) {
+      errorEl.textContent = 'Could not connect to server.';
+    }
+  }
+
+  async function handleResetPassword() {
+    const code = document.getElementById('resetCode').value.trim();
+    const newPassword = document.getElementById('resetNewPassword').value;
+    const confirmPassword = document.getElementById('resetConfirmPassword').value;
+    const errorEl = document.getElementById('resetError');
+    const successEl = document.getElementById('resetSuccess');
+
+    errorEl.textContent = '';
+    successEl.textContent = '';
+
+    if (!code || !newPassword || !confirmPassword) {
+      errorEl.textContent = 'Please fill in all fields.';
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      errorEl.textContent = 'Password must be at least 6 characters.';
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      errorEl.textContent = 'Passwords do not match.';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: forgotPasswordUsername, code, newPassword }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        successEl.textContent = 'Password reset successfully! You can now sign in.';
+        // Clear form fields
+        document.getElementById('resetCode').value = '';
+        document.getElementById('resetNewPassword').value = '';
+        document.getElementById('resetConfirmPassword').value = '';
+        // Auto-redirect to login after 2 seconds
+        setTimeout(() => {
+          showLoginFromForgot();
+        }, 2000);
+      } else {
+        errorEl.textContent = data.error || 'Reset failed.';
+      }
+    } catch (err) {
+      errorEl.textContent = 'Could not connect to server.';
+    }
   }
 
   // === ORDER HISTORY ===
