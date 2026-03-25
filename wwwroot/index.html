@@ -3535,41 +3535,25 @@
     .builder-options { min-width: auto; width: 100%; max-width: 400px; }
   }
   /* === BUILD ASSISTANT CHAT === */
-  .chat-fab {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    cursor: pointer;
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 20px rgba(62,207,207,0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
+  .assist-btn {
+    background: rgba(62,207,207,0.1) !important;
+    border: 1px solid rgba(62,207,207,0.3) !important;
+    color: var(--accent) !important;
   }
-  .chat-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(62,207,207,0.4); }
-  .chat-fab svg { width: 26px; height: 26px; fill: var(--dark); }
-  .chat-fab.has-window { display: none; }
+  .assist-btn:hover {
+    background: rgba(62,207,207,0.2) !important;
+  }
 
   .chat-window {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 370px;
-    max-height: 520px;
-    background: #1E2128;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    z-index: 3001;
+    width: 100%;
+    max-height: 500px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(62,207,207,0.15);
+    border-radius: 16px;
+    margin-top: 1.2rem;
     display: none;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
   }
   .chat-window.open { display: flex; }
 
@@ -3720,7 +3704,7 @@
   }
 
   @media (max-width: 480px) {
-    .chat-window { width: calc(100% - 2rem); right: 1rem; bottom: 1rem; max-height: 70vh; }
+    .chat-window { max-height: 400px; }
   }
 </style>
 </head>
@@ -4226,6 +4210,7 @@
       <div class="builder-actions">
         <button class="builder-action-btn save-btn" id="saveBuildBtn" onclick="handleSaveBuild()">Save Build</button>
         <button class="builder-action-btn cart-btn" id="addBuildCartBtn" onclick="addBuildToCart()">Add Build to Cart</button>
+        <button class="builder-action-btn assist-btn" onclick="openChat()">Need Help Picking?</button>
       </div>
 
       <!-- Save Build Name Prompt -->
@@ -4234,6 +4219,19 @@
         <div class="save-name-actions">
           <button class="save-name-confirm" onclick="confirmSaveBuild()">Save</button>
           <button class="save-name-cancel" onclick="cancelSaveBuild()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Build Assistant Chat (inline) -->
+      <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+          <div class="chat-header-title">Build <span>Assistant</span></div>
+          <button class="chat-close-btn" onclick="closeChat()">&times;</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-area" id="chatInputArea">
+          <input class="chat-input" id="chatInput" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')sendChatInput()">
+          <button class="chat-send-btn" onclick="sendChatInput()">Send</button>
         </div>
       </div>
     </div>
@@ -6345,75 +6343,63 @@
 
 </script>
 
-<!-- Build Assistant Chat -->
-<button class="chat-fab" id="chatFab" onclick="openChat()">
-  <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/><path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>
-</button>
-
-<div class="chat-window" id="chatWindow">
-  <div class="chat-header">
-    <div class="chat-header-title">Build <span>Assistant</span></div>
-    <button class="chat-close-btn" onclick="closeChat()">&times;</button>
-  </div>
-  <div class="chat-messages" id="chatMessages"></div>
-  <div class="chat-input-area" id="chatInputArea">
-    <input class="chat-input" id="chatInput" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')sendChatInput()">
-    <button class="chat-send-btn" onclick="sendChatInput()">Send</button>
-  </div>
-</div>
 
 <script>
 (function() {
   // === BUILD ASSISTANT LOGIC ===
 
   const BA_COLORS = {
-    stealth:  { name: 'Stealth',  vibe: ['dark','minimal','sleek','black','grey','gray','neutral','professional','office','work','subtle'] },
-    titanium: { name: 'Titanium', vibe: ['silver','light','clean','modern','metallic','bright','white','cool','tech'] },
-    arctic:   { name: 'Arctic',   vibe: ['blue','teal','cyan','ocean','water','fresh','cool','aqua','turquoise','calm','beach','tropical'] },
-    sand:     { name: 'Sand',     vibe: ['tan','beige','brown','earth','warm','natural','desert','cream','khaki','outdoor','hiking','nature','rustic'] },
-    ember:    { name: 'Ember',    vibe: ['red','bold','fire','hot','warm','sport','energy','intense','gym','workout','power','passion'] },
-    alpine:   { name: 'Alpine',   vibe: ['green','forest','nature','outdoor','earth','fresh','camp','hike','mountain','trail','tree','eco'] },
+    stealth:  { name: 'Stealth',  vibe: ['dark','minimal','sleek','black','grey','gray','neutral','professional','office','work','subtle','matte','stealthy','understated','classy'] },
+    titanium: { name: 'Titanium', vibe: ['silver','light','clean','modern','metallic','bright','white','cool','tech','futuristic','chrome','platinum','shiny','polished'] },
+    arctic:   { name: 'Arctic',   vibe: ['blue','teal','cyan','ocean','water','fresh','cool','aqua','turquoise','calm','beach','tropical','ice','icy','sky','sea','wave'] },
+    sand:     { name: 'Sand',     vibe: ['tan','beige','brown','earth','warm','natural','desert','cream','khaki','outdoor','hiking','nature','rustic','wood','clay','boho','organic','neutral warm'] },
+    ember:    { name: 'Ember',    vibe: ['red','bold','fire','hot','warm','sport','energy','intense','gym','workout','power','passion','crimson','ruby','fierce','loud','sporty','aggressive'] },
+    alpine:   { name: 'Alpine',   vibe: ['green','forest','nature','outdoor','earth','fresh','camp','hike','mountain','trail','tree','eco','moss','olive','sage','pine','jungle','camo'] },
   };
 
   const BA_LIDS = {
-    handle:  { name: 'Handle Lid',  desc: 'Carry handle, great for on-the-go', tags: ['carry','travel','commute','walk','hike','outdoor','portable','gym','active'] },
-    straw:   { name: 'Straw Lid',   desc: 'Push-button straw, easy sipping', tags: ['sip','drive','car','desk','office','lazy','easy','convenient','one-hand','workout'] },
-    classic: { name: 'Classic Lid',  desc: 'Wide-mouth flip-top, simple & reliable', tags: ['simple','basic','classic','ice','pour','clean','cheap','budget','affordable'] },
+    handle:  { name: 'Handle Lid',  price: 13.99, desc: 'Arch carry handle for easy transport' },
+    straw:   { name: 'Straw Lid',   price: 11.99, desc: 'Push-button straw for one-handed sipping' },
+    classic: { name: 'Classic Lid',  price: 7.99,  desc: 'Wide-mouth flip-top, simple and affordable' },
   };
 
   const BA_MIDS = {
-    standard: { name: 'Standard 16oz', desc: 'Perfect everyday size', tags: ['normal','everyday','daily','regular','standard','office','desk','commute','moderate'] },
-    handle:   { name: 'Handle 16oz',   desc: 'Side grip, easy to hold', tags: ['grip','hold','carry','hand','secure','easy','comfortable','arthritis'] },
-    xl:       { name: 'XL 24oz',       desc: '50% more capacity for big thirsts', tags: ['big','large','xl','extra','more','lots','thirsty','gym','workout','hike','long','all-day','travel','road trip'] },
+    standard: { name: 'Standard 16oz', price: 29.99, desc: 'Double-wall vacuum insulated, perfect everyday size' },
+    handle:   { name: 'Handle 16oz',   price: 34.99, desc: 'Side-grip handle for a secure comfortable hold' },
+    xl:       { name: 'XL 24oz',       price: 34.99, desc: '50% more capacity — great for long days' },
   };
 
   const BA_BASES = {
-    standard: { name: 'Standard Base', desc: 'Sealed storage compartment', tags: ['normal','everyday','storage','keys','snack','standard','regular','basic'] },
-    narrow:   { name: 'Narrow Base',   desc: 'Fits most cup holders', tags: ['car','cupholder','cup holder','drive','commute','fit','slim','vehicle','travel'] },
-    xl:       { name: 'XL Liquid Base', desc: 'Max liquid capacity', tags: ['big','large','more','extra','liquid','capacity','water','thirsty','long','hydration'] },
-    heated:   { name: 'Heated Base',   desc: 'Keeps drinks warm for hours', tags: ['hot','warm','coffee','tea','heat','heated','winter','cold weather','cozy','morning'] },
+    standard: { name: 'Standard Base', price: 11.99, desc: 'Sealed storage compartment for keys, snacks, vitamins' },
+    narrow:   { name: 'Narrow Base',   price: 14.99, desc: '2.5" diameter — fits any standard cup holder' },
+    xl:       { name: 'XL Liquid Base', price: 17.99, desc: 'Extra tall for maximum liquid capacity' },
+    heated:   { name: 'Heated Base',   price: 39.99, desc: 'Rechargeable heating element — keeps drinks warm for hours' },
   };
 
-  // Conversation state
   let chatStep = 'start';
-  let chatData = { use: '', preferences: [], colorHints: [] };
+  let chatData = {};
+
+  function resetChat() {
+    chatData = { use: '', drinks: '', priorities: [], size: '', color: '', lid: null, mid: null, base: null, colorKey: null };
+  }
 
   function openChat() {
-    document.getElementById('chatWindow').classList.add('open');
-    document.getElementById('chatFab').classList.add('has-window');
-    if (chatStep === 'start') startChat();
+    const win = document.getElementById('chatWindow');
+    win.classList.add('open');
+    win.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (chatStep === 'start') { resetChat(); startChat(); }
   }
 
   function closeChat() {
     document.getElementById('chatWindow').classList.remove('open');
-    document.getElementById('chatFab').classList.remove('has-window');
+    chatStep = 'start';
+    document.getElementById('chatMessages').innerHTML = '';
   }
 
   function addBotMsg(text, options, buildCard) {
     const container = document.getElementById('chatMessages');
     const msg = document.createElement('div');
     msg.className = 'chat-msg bot';
-
     let html = text;
 
     if (options && options.length) {
@@ -6425,10 +6411,15 @@
     }
 
     if (buildCard) {
+      const total = (buildCard.lidPrice + buildCard.midPrice + buildCard.basePrice).toFixed(2);
       html += `<div class="chat-build-card">
         <div class="build-row"><span>Lid</span><span>${buildCard.lidName} — ${buildCard.lidColorName}</span></div>
+        <div class="build-row"><span></span><span style="color:#556677;font-size:0.72rem;">${buildCard.lidDesc}</span></div>
         <div class="build-row"><span>Mid</span><span>${buildCard.midName} — ${buildCard.midColorName}</span></div>
+        <div class="build-row"><span></span><span style="color:#556677;font-size:0.72rem;">${buildCard.midDesc}</span></div>
         <div class="build-row"><span>Base</span><span>${buildCard.baseName} — ${buildCard.baseColorName}</span></div>
+        <div class="build-row"><span></span><span style="color:#556677;font-size:0.72rem;">${buildCard.baseDesc}</span></div>
+        <div class="build-row" style="border-top:1px solid rgba(255,255,255,0.08);padding-top:0.5rem;margin-top:0.3rem;"><span style="font-weight:700;">Total</span><span style="font-weight:700;">$${total}</span></div>
         <button class="chat-apply-btn" onclick="window._baApply()">Load This Build</button>
       </div>`;
     }
@@ -6447,8 +6438,8 @@
     container.scrollTop = container.scrollHeight;
   }
 
-  function showInput(show) {
-    document.getElementById('chatInputArea').classList.toggle('active', show);
+  function disableOptions() {
+    document.querySelectorAll('#chatMessages .chat-option-btn').forEach(b => b.disabled = true);
   }
 
   function sendChatInput() {
@@ -6460,290 +6451,417 @@
     handleFreeText(text);
   }
 
+  function showInput(show) {
+    document.getElementById('chatInputArea').classList.toggle('active', show);
+  }
+
   // === CONVERSATION FLOW ===
 
   function startChat() {
     chatStep = 'ask-use';
-    chatData = { use: '', preferences: [], colorHints: [] };
-    addBotMsg("Hey! I'm the HydraStack Build Assistant. Let me help you find the perfect bottle setup. What will you mainly use it for?", [
+    showInput(true);
+    addBotMsg("Hey! I'll help you build the perfect HydraStack. Let's start — what will you mainly use your bottle for?", [
       { label: 'Daily commute', value: 'commute' },
       { label: 'Gym / Workout', value: 'gym' },
       { label: 'Hiking / Outdoors', value: 'hiking' },
       { label: 'Office / Desk', value: 'office' },
-      { label: 'Road trips', value: 'roadtrip' },
+      { label: 'Road trips / Car', value: 'roadtrip' },
       { label: 'Coffee / Hot drinks', value: 'coffee' },
+      { label: 'A bit of everything', value: 'allround' },
     ]);
   }
 
   window._baSelect = function(value) {
-    // Disable all option buttons to prevent double-clicks
-    document.querySelectorAll('.chat-option-btn').forEach(b => b.disabled = true);
+    disableOptions();
 
     if (chatStep === 'ask-use') {
-      const labels = { commute:'Daily commute', gym:'Gym / Workout', hiking:'Hiking / Outdoors', office:'Office / Desk', roadtrip:'Road trips', coffee:'Coffee / Hot drinks' };
+      const labels = { commute:'Daily commute', gym:'Gym / Workout', hiking:'Hiking / Outdoors', office:'Office / Desk', roadtrip:'Road trips / Car', coffee:'Coffee / Hot drinks', allround:'A bit of everything' };
       addUserMsg(labels[value] || value);
       chatData.use = value;
-      chatStep = 'ask-priority';
+      chatStep = 'ask-drinks';
       setTimeout(() => {
-        addBotMsg("Nice! What matters most to you?", [
-          { label: 'Fits my cup holder', value: 'cupholder' },
-          { label: 'Maximum capacity', value: 'capacity' },
-          { label: 'Easy to carry', value: 'carry' },
-          { label: 'Keep drinks hot', value: 'hot' },
-          { label: 'Keep it simple', value: 'simple' },
-          { label: 'Extra storage', value: 'storage' },
+        addBotMsg("What do you drink most?", [
+          { label: 'Just water', value: 'water' },
+          { label: 'Coffee / Tea', value: 'hot' },
+          { label: 'Smoothies / Protein shakes', value: 'thick' },
+          { label: 'Mix of everything', value: 'mix' },
         ]);
       }, 400);
     }
-    else if (chatStep === 'ask-priority') {
-      const labels = { cupholder:'Fits my cup holder', capacity:'Maximum capacity', carry:'Easy to carry', hot:'Keep drinks hot', simple:'Keep it simple', storage:'Extra storage' };
+    else if (chatStep === 'ask-drinks') {
+      const labels = { water:'Just water', hot:'Coffee / Tea', thick:'Smoothies / Protein shakes', mix:'Mix of everything' };
       addUserMsg(labels[value] || value);
-      chatData.preferences.push(value);
+      chatData.drinks = value;
+      chatStep = 'ask-priority';
+      setTimeout(() => {
+        // Tailor priority options based on what we already know
+        let opts = [
+          { label: 'Fits in my cup holder', value: 'cupholder' },
+          { label: 'Biggest capacity possible', value: 'capacity' },
+          { label: 'Easy to carry around', value: 'carry' },
+          { label: 'Storage for keys / snacks', value: 'storage' },
+          { label: 'Keep it budget-friendly', value: 'budget' },
+        ];
+        if (chatData.drinks === 'hot' || chatData.use === 'coffee') {
+          opts.unshift({ label: 'Keep drinks hot for hours', value: 'hot' });
+        }
+        addBotMsg("What's most important to you? Pick your top priority.", opts);
+      }, 400);
+    }
+    else if (chatStep === 'ask-priority') {
+      const labels = { cupholder:'Fits in my cup holder', capacity:'Biggest capacity possible', carry:'Easy to carry around', storage:'Storage for keys / snacks', budget:'Keep it budget-friendly', hot:'Keep drinks hot for hours' };
+      addUserMsg(labels[value] || value);
+      chatData.priorities.push(value);
+      chatStep = 'ask-priority2';
+      setTimeout(() => {
+        let opts = [
+          { label: 'Fits in my cup holder', value: 'cupholder' },
+          { label: 'Biggest capacity possible', value: 'capacity' },
+          { label: 'Easy to carry around', value: 'carry' },
+          { label: 'Storage for keys / snacks', value: 'storage' },
+          { label: 'Keep it budget-friendly', value: 'budget' },
+          { label: 'Keep drinks hot for hours', value: 'hot' },
+        ].filter(o => o.value !== value);
+        opts.push({ label: "That's all, let's pick colors", value: 'skip' });
+        addBotMsg("Anything else that's important?", opts);
+      }, 400);
+    }
+    else if (chatStep === 'ask-priority2') {
+      if (value !== 'skip') {
+        const labels = { cupholder:'Fits in my cup holder', capacity:'Biggest capacity possible', carry:'Easy to carry around', storage:'Storage for keys / snacks', budget:'Keep it budget-friendly', hot:'Keep drinks hot for hours' };
+        addUserMsg(labels[value] || value);
+        chatData.priorities.push(value);
+      } else {
+        addUserMsg("Let's pick colors");
+      }
+      chatStep = 'ask-size';
+      setTimeout(() => {
+        addBotMsg("How much liquid do you want to carry?", [
+          { label: 'Standard (16oz) — everyday carry', value: 'standard' },
+          { label: 'Large (24oz) — all-day hydration', value: 'large' },
+          { label: 'You pick for me', value: 'auto' },
+        ]);
+      }, 400);
+    }
+    else if (chatStep === 'ask-size') {
+      const labels = { standard:'Standard (16oz)', large:'Large (24oz)', auto:'You pick for me' };
+      addUserMsg(labels[value] || value);
+      chatData.size = value;
       chatStep = 'ask-color';
       setTimeout(() => {
-        addBotMsg("Last one — what colors or vibe are you into?", [
-          { label: 'Dark & sleek', value: 'dark' },
-          { label: 'Bright & bold', value: 'bold' },
-          { label: 'Nature / Earthy', value: 'earth' },
-          { label: 'Cool / Ocean', value: 'cool' },
-          { label: 'Clean / Minimal', value: 'clean' },
-          { label: 'Warm tones', value: 'warm' },
+        addBotMsg("Almost done! What's your color style?", [
+          { label: 'Stealth (dark matte)', value: 'stealth' },
+          { label: 'Titanium (silver/clean)', value: 'titanium' },
+          { label: 'Arctic (teal/ocean)', value: 'arctic' },
+          { label: 'Sand (warm/earthy)', value: 'sand' },
+          { label: 'Ember (bold red)', value: 'ember' },
+          { label: 'Alpine (forest green)', value: 'alpine' },
         ]);
       }, 400);
     }
     else if (chatStep === 'ask-color') {
-      const labels = { dark:'Dark & sleek', bold:'Bright & bold', earth:'Nature / Earthy', cool:'Cool / Ocean', clean:'Clean / Minimal', warm:'Warm tones' };
-      addUserMsg(labels[value] || value);
-      chatData.colorHints.push(value);
+      addUserMsg(BA_COLORS[value] ? BA_COLORS[value].name : value);
+      chatData.color = value;
       chatStep = 'recommend';
       setTimeout(() => generateRecommendation(), 500);
     }
     else if (chatStep === 'done') {
       if (value === 'restart') {
         document.getElementById('chatMessages').innerHTML = '';
+        resetChat();
         chatStep = 'start';
         startChat();
+      } else if (value === 'tweak-lid') {
+        chatStep = 'tweak-lid';
+        setTimeout(() => {
+          addBotMsg("Which lid would you prefer?", [
+            { label: `Handle Lid — ${BA_LIDS.handle.desc}`, value: 'handle' },
+            { label: `Straw Lid — ${BA_LIDS.straw.desc}`, value: 'straw' },
+            { label: `Classic Lid — ${BA_LIDS.classic.desc}`, value: 'classic' },
+          ]);
+        }, 300);
+      } else if (value === 'tweak-mid') {
+        chatStep = 'tweak-mid';
+        setTimeout(() => {
+          addBotMsg("Which mid chamber size?", [
+            { label: `Standard 16oz — ${BA_MIDS.standard.desc}`, value: 'standard' },
+            { label: `Handle 16oz — ${BA_MIDS.handle.desc}`, value: 'handle' },
+            { label: `XL 24oz — ${BA_MIDS.xl.desc}`, value: 'xl' },
+          ]);
+        }, 300);
+      } else if (value === 'tweak-base') {
+        chatStep = 'tweak-base';
+        setTimeout(() => {
+          addBotMsg("Which base module?", [
+            { label: `Standard — ${BA_BASES.standard.desc}`, value: 'standard' },
+            { label: `Narrow — ${BA_BASES.narrow.desc}`, value: 'narrow' },
+            { label: `XL Liquid — ${BA_BASES.xl.desc}`, value: 'xl' },
+            { label: `Heated — ${BA_BASES.heated.desc}`, value: 'heated' },
+          ]);
+        }, 300);
+      } else if (value === 'tweak-color') {
+        chatStep = 'ask-color';
+        setTimeout(() => {
+          addBotMsg("Pick a different color:", [
+            { label: 'Stealth (dark matte)', value: 'stealth' },
+            { label: 'Titanium (silver/clean)', value: 'titanium' },
+            { label: 'Arctic (teal/ocean)', value: 'arctic' },
+            { label: 'Sand (warm/earthy)', value: 'sand' },
+            { label: 'Ember (bold red)', value: 'ember' },
+            { label: 'Alpine (forest green)', value: 'alpine' },
+          ]);
+        }, 300);
       }
+    }
+    else if (chatStep === 'tweak-lid') {
+      addUserMsg(BA_LIDS[value].name);
+      chatData.lid = value;
+      chatStep = 'recommend';
+      setTimeout(() => generateRecommendation(), 400);
+    }
+    else if (chatStep === 'tweak-mid') {
+      addUserMsg(BA_MIDS[value].name);
+      chatData.mid = value;
+      chatStep = 'recommend';
+      setTimeout(() => generateRecommendation(), 400);
+    }
+    else if (chatStep === 'tweak-base') {
+      addUserMsg(BA_BASES[value].name);
+      chatData.base = value;
+      chatStep = 'recommend';
+      setTimeout(() => generateRecommendation(), 400);
     }
   };
 
   function handleFreeText(text) {
     const lower = text.toLowerCase();
-    // Extract color hints from free text
+
+    // Parse colors
     Object.entries(BA_COLORS).forEach(([key, data]) => {
-      data.vibe.forEach(v => {
-        if (lower.includes(v)) chatData.colorHints.push(key);
-      });
+      if (lower.includes(key)) { chatData.color = key; return; }
+      data.vibe.forEach(v => { if (lower.includes(v)) chatData.color = key; });
     });
 
-    // Extract use hints
+    // Parse use cases
     const useMap = {
-      commute: ['commute','commuting','drive','driving','car','bus','train','transit'],
-      gym: ['gym','workout','exercise','lift','fitness','run','running','sport'],
-      hiking: ['hike','hiking','trail','camp','camping','outdoor','mountain','backpack'],
-      office: ['office','desk','work','meeting','computer'],
-      roadtrip: ['road trip','roadtrip','travel','traveling','flight','long drive'],
-      coffee: ['coffee','tea','hot','latte','espresso','warm drink','mocha'],
+      commute: ['commute','commuting','drive','driving','car','bus','train','transit','subway'],
+      gym: ['gym','workout','exercise','lift','fitness','run','running','sport','crossfit','yoga'],
+      hiking: ['hike','hiking','trail','camp','camping','outdoor','mountain','backpack','trek'],
+      office: ['office','desk','work','meeting','computer','cubicle'],
+      roadtrip: ['road trip','roadtrip','travel','traveling','flight','long drive','vacation'],
+      coffee: ['coffee','tea','hot','latte','espresso','warm drink','mocha','cocoa','chai'],
+      allround: ['everything','all around','general','versatile','bit of everything','multi'],
     };
     Object.entries(useMap).forEach(([key, words]) => {
       words.forEach(w => { if (lower.includes(w)) chatData.use = key; });
     });
 
-    // Extract priority hints
+    // Parse priorities
     const prioMap = {
-      cupholder: ['cup holder','cupholder','fit','slim','car holder'],
-      capacity: ['big','large','lots','capacity','thirsty','more water','xl'],
-      carry: ['carry','portable','handle','grip','on the go'],
-      hot: ['hot','warm','heated','coffee','tea','winter'],
-      simple: ['simple','basic','easy','minimal','cheap','budget','affordable'],
-      storage: ['storage','store','keys','snacks','compartment'],
+      cupholder: ['cup holder','cupholder','car holder','holder','fits in car'],
+      capacity: ['big','large','lots','capacity','thirsty','more water','xl','huge','maximum'],
+      carry: ['carry','portable','handle','grip','on the go','grab','travel with'],
+      storage: ['storage','store','keys','snacks','compartment','pocket','vitamins','pills','stash'],
+      budget: ['cheap','budget','affordable','inexpensive','save money','low cost','value'],
+      hot: ['hot','warm','heated','heat','keep warm','temperature','insulate'],
     };
     Object.entries(prioMap).forEach(([key, words]) => {
-      words.forEach(w => { if (lower.includes(w) && !chatData.preferences.includes(key)) chatData.preferences.push(key); });
+      words.forEach(w => { if (lower.includes(w) && !chatData.priorities.includes(key)) chatData.priorities.push(key); });
     });
 
+    // Parse size
+    if (lower.includes('big') || lower.includes('large') || lower.includes('24') || lower.includes('xl')) chatData.size = 'large';
+    if (lower.includes('small') || lower.includes('standard') || lower.includes('16') || lower.includes('normal')) chatData.size = 'standard';
+
+    // Advance conversation based on current step
     if (chatStep === 'ask-use') {
       if (chatData.use) {
-        chatStep = 'ask-priority';
+        chatStep = 'ask-drinks';
         setTimeout(() => {
-          addBotMsg("Got it! What matters most to you?", [
-            { label: 'Fits my cup holder', value: 'cupholder' },
-            { label: 'Maximum capacity', value: 'capacity' },
-            { label: 'Easy to carry', value: 'carry' },
-            { label: 'Keep drinks hot', value: 'hot' },
-            { label: 'Keep it simple', value: 'simple' },
-            { label: 'Extra storage', value: 'storage' },
+          addBotMsg("Got it! What do you drink most?", [
+            { label: 'Just water', value: 'water' },
+            { label: 'Coffee / Tea', value: 'hot' },
+            { label: 'Smoothies / Protein shakes', value: 'thick' },
+            { label: 'Mix of everything', value: 'mix' },
           ]);
         }, 400);
       } else {
-        addBotMsg("I didn't quite catch that. What will you mainly use your bottle for?", [
+        addBotMsg("Hmm, I didn't quite catch that. Try picking one of these:", [
           { label: 'Daily commute', value: 'commute' },
           { label: 'Gym / Workout', value: 'gym' },
           { label: 'Hiking / Outdoors', value: 'hiking' },
           { label: 'Office / Desk', value: 'office' },
-          { label: 'Road trips', value: 'roadtrip' },
+          { label: 'Road trips / Car', value: 'roadtrip' },
           { label: 'Coffee / Hot drinks', value: 'coffee' },
+          { label: 'A bit of everything', value: 'allround' },
         ]);
       }
-    }
-    else if (chatStep === 'ask-priority') {
-      if (chatData.preferences.length) {
-        chatStep = 'ask-color';
-        setTimeout(() => {
-          addBotMsg("Last one — what colors or vibe are you into?", [
-            { label: 'Dark & sleek', value: 'dark' },
-            { label: 'Bright & bold', value: 'bold' },
-            { label: 'Nature / Earthy', value: 'earth' },
-            { label: 'Cool / Ocean', value: 'cool' },
-            { label: 'Clean / Minimal', value: 'clean' },
-            { label: 'Warm tones', value: 'warm' },
-          ]);
-        }, 400);
-      } else {
-        addBotMsg("What's most important to you in a bottle?", [
-          { label: 'Fits my cup holder', value: 'cupholder' },
-          { label: 'Maximum capacity', value: 'capacity' },
-          { label: 'Easy to carry', value: 'carry' },
-          { label: 'Keep drinks hot', value: 'hot' },
-          { label: 'Keep it simple', value: 'simple' },
-          { label: 'Extra storage', value: 'storage' },
+    } else if (chatStep === 'ask-drinks') {
+      if (lower.includes('water')) chatData.drinks = 'water';
+      else if (lower.includes('coffee') || lower.includes('tea') || lower.includes('hot')) chatData.drinks = 'hot';
+      else if (lower.includes('smooth') || lower.includes('protein') || lower.includes('shake')) chatData.drinks = 'thick';
+      else chatData.drinks = 'mix';
+      chatStep = 'ask-priority';
+      window._baSelect.__skip = true;
+      setTimeout(() => {
+        let opts = [
+          { label: 'Fits in my cup holder', value: 'cupholder' },
+          { label: 'Biggest capacity possible', value: 'capacity' },
+          { label: 'Easy to carry around', value: 'carry' },
+          { label: 'Storage for keys / snacks', value: 'storage' },
+          { label: 'Keep it budget-friendly', value: 'budget' },
+        ];
+        if (chatData.drinks === 'hot' || chatData.use === 'coffee') {
+          opts.unshift({ label: 'Keep drinks hot for hours', value: 'hot' });
+        }
+        addBotMsg("What's your top priority?", opts);
+      }, 400);
+    } else if (chatStep === 'ask-priority' || chatStep === 'ask-priority2') {
+      chatStep = 'ask-size';
+      setTimeout(() => {
+        addBotMsg("How much liquid do you want to carry?", [
+          { label: 'Standard (16oz)', value: 'standard' },
+          { label: 'Large (24oz)', value: 'large' },
+          { label: 'You pick for me', value: 'auto' },
         ]);
-      }
-    }
-    else if (chatStep === 'ask-color') {
+      }, 400);
+    } else if (chatStep === 'ask-size') {
+      if (!chatData.size) chatData.size = 'auto';
+      chatStep = 'ask-color';
+      setTimeout(() => {
+        addBotMsg("What's your color style?", [
+          { label: 'Stealth', value: 'stealth' },
+          { label: 'Titanium', value: 'titanium' },
+          { label: 'Arctic', value: 'arctic' },
+          { label: 'Sand', value: 'sand' },
+          { label: 'Ember', value: 'ember' },
+          { label: 'Alpine', value: 'alpine' },
+        ]);
+      }, 400);
+    } else if (chatStep === 'ask-color') {
+      if (!chatData.color) chatData.color = 'stealth';
       chatStep = 'recommend';
       setTimeout(() => generateRecommendation(), 500);
     }
   }
 
-  // === RECOMMENDATION ENGINE ===
+  // === SMART RECOMMENDATION ENGINE ===
 
   function generateRecommendation() {
-    const use = chatData.use || 'commute';
-    const prefs = chatData.preferences;
-    const colorHints = chatData.colorHints;
+    const { use, drinks, priorities, size, color } = chatData;
 
-    // Score each option
-    let lid = scorePick(BA_LIDS, use, prefs);
-    let mid = scorePick(BA_MIDS, use, prefs);
-    let base = scorePick(BA_BASES, use, prefs);
+    // Start with defaults, then override based on answers
+    let lid = chatData.lid || 'handle';
+    let mid = chatData.mid || 'standard';
+    let base = chatData.base || 'standard';
+    let colorKey = chatData.colorKey || color || 'stealth';
 
-    // Override with strong preference signals
-    if (prefs.includes('cupholder')) base = 'narrow';
-    if (prefs.includes('hot')) base = 'heated';
-    if (prefs.includes('capacity')) { mid = 'xl'; if (base !== 'heated') base = 'xl'; }
-    if (prefs.includes('carry')) lid = 'handle';
-    if (prefs.includes('simple')) { lid = 'classic'; mid = 'standard'; if (!prefs.includes('cupholder') && !prefs.includes('hot')) base = 'standard'; }
-    if (prefs.includes('storage')) { if (!prefs.includes('cupholder') && !prefs.includes('hot')) base = 'standard'; }
+    // Only auto-pick if user hasn't manually tweaked
+    if (!chatData.lid) {
+      // Lid selection logic
+      if (use === 'gym' || drinks === 'thick') lid = 'straw';
+      else if (use === 'office') lid = 'straw';
+      else if (use === 'hiking' || use === 'commute' || priorities.includes('carry')) lid = 'handle';
+      else if (use === 'coffee') lid = 'classic';
+      else if (use === 'roadtrip') lid = 'straw';
+      else if (use === 'allround') lid = 'handle';
+      if (priorities.includes('budget') && lid !== 'straw') lid = 'classic';
+      // Straw lid is best for one-hand use (driving, desk, gym)
+      if (use === 'roadtrip' || use === 'office') lid = 'straw';
+      // Thick drinks need wide mouth
+      if (drinks === 'thick') lid = 'classic';
+      // Carry priority always gets handle
+      if (priorities.includes('carry')) lid = 'handle';
+    }
 
-    // Use-case specific overrides
-    if (use === 'gym') { if (!prefs.includes('simple')) lid = 'straw'; if (!prefs.includes('capacity')) mid = 'standard'; }
-    if (use === 'hiking') { lid = prefs.includes('simple') ? 'classic' : 'handle'; if (!prefs.includes('capacity')) mid = 'handle'; }
-    if (use === 'office') { lid = prefs.includes('carry') ? 'handle' : 'straw'; }
-    if (use === 'roadtrip') { base = prefs.includes('hot') ? 'heated' : 'narrow'; if (!prefs.includes('capacity')) mid = 'xl'; }
-    if (use === 'coffee') { base = 'heated'; lid = prefs.includes('carry') ? 'handle' : 'classic'; }
+    if (!chatData.mid) {
+      // Mid selection logic
+      if (size === 'large' || priorities.includes('capacity')) mid = 'xl';
+      else if (size === 'standard') mid = 'standard';
+      else {
+        // Auto-pick based on use
+        if (use === 'hiking' || use === 'gym' || use === 'roadtrip') mid = 'xl';
+        else if (use === 'office' || use === 'commute') mid = 'standard';
+        else if (use === 'coffee') mid = 'standard';
+        else mid = 'standard';
+      }
+      // Handle mid for hiking/outdoor grip
+      if (use === 'hiking' && !priorities.includes('capacity') && size !== 'large') mid = 'handle';
+      // Budget picks standard
+      if (priorities.includes('budget') && mid === 'xl') mid = 'standard';
+    }
 
-    // Pick colors
-    let color = pickColor(colorHints);
+    if (!chatData.base) {
+      // Base selection logic — this is the key fix
+      if (priorities.includes('hot') || drinks === 'hot' || use === 'coffee') base = 'heated';
+      else if (priorities.includes('cupholder') || use === 'roadtrip' || use === 'commute') base = 'narrow';
+      else if (priorities.includes('capacity') || size === 'large') base = 'xl';
+      else if (priorities.includes('storage')) base = 'standard';
+      else if (use === 'gym') base = 'standard'; // storage for keys/lock
+      else if (use === 'hiking') base = 'xl'; // more water on trails
+      else if (use === 'office') base = 'standard'; // storage for snacks
+      else if (use === 'allround') base = 'standard';
+      // Budget override — heated is expensive
+      if (priorities.includes('budget') && base === 'heated') base = 'standard';
+      // If they want both cupholder AND hot, heated wins
+      if (priorities.includes('hot') && priorities.includes('cupholder')) base = 'heated';
+    }
 
-    // Build the recommendation reason
-    let reason = buildReason(use, lid, mid, base, color);
+    // Store final picks
+    chatData.lid = lid;
+    chatData.mid = mid;
+    chatData.base = base;
+    chatData.colorKey = colorKey;
 
-    // Store for apply
-    window._baRecommendation = { lid, mid, base, color };
+    window._baRecommendation = { lid, mid, base, color: colorKey };
 
-    addBotMsg(reason, null, {
+    // Build detailed explanation
+    let reasons = [];
+
+    // Lid reason
+    if (lid === 'handle') reasons.push("I picked the <strong>Handle Lid</strong> so you can easily grab and carry it" + (use === 'hiking' ? " on the trail" : use === 'commute' ? " on your commute" : "") + ".");
+    else if (lid === 'straw') reasons.push("The <strong>Straw Lid</strong> is perfect for sipping" + (use === 'roadtrip' ? " while driving" : use === 'office' ? " at your desk" : use === 'gym' ? " between sets" : " one-handed") + " — just push the button and drink.");
+    else if (lid === 'classic') reasons.push("The <strong>Classic Lid</strong> gives you a wide mouth" + (drinks === 'thick' ? " which is great for thick drinks like smoothies and shakes" : priorities.includes('budget') ? " at the best price point" : " for easy pouring and cleaning") + ".");
+
+    // Mid reason
+    if (mid === 'xl') reasons.push("I went with the <strong>XL 24oz</strong> mid because " + (priorities.includes('capacity') ? "you wanted maximum capacity" : use === 'gym' ? "you'll want plenty of water for your workout" : use === 'hiking' ? "you need more water on the trails" : use === 'roadtrip' ? "road trips call for extra hydration" : "bigger is better for staying hydrated") + ".");
+    else if (mid === 'handle') reasons.push("The <strong>Handle Mid</strong> gives you a side grip that's really secure" + (use === 'hiking' ? " when you're on uneven terrain" : "") + ".");
+    else if (mid === 'standard') reasons.push("The <strong>Standard 16oz</strong> is the ideal everyday size — not too bulky, easy to carry" + (priorities.includes('budget') ? ", and great value" : "") + ".");
+
+    // Base reason
+    if (base === 'heated') reasons.push("The <strong>Heated Base</strong> is a must since " + (drinks === 'hot' ? "you're drinking coffee and tea — it'll keep your drinks warm for hours" : priorities.includes('hot') ? "keeping your drinks warm was a top priority" : "you love hot drinks") + ".");
+    else if (base === 'narrow') reasons.push("The <strong>Narrow Base</strong> will slide right into your cup holder" + (use === 'roadtrip' ? " — essential for road trips" : use === 'commute' ? " for your commute" : "") + ".");
+    else if (base === 'xl') reasons.push("The <strong>XL Liquid Base</strong> adds extra capacity" + (use === 'hiking' ? " which you'll appreciate on long hikes" : priorities.includes('capacity') ? " to maximize your hydration" : "") + ".");
+    else if (base === 'standard') reasons.push("The <strong>Standard Base</strong> has a sealed storage compartment — " + (priorities.includes('storage') ? "perfect for stashing your keys, vitamins, or snacks like you wanted" : use === 'gym' ? "great for storing your locker key or supplements" : "handy for keys, vitamins, or small essentials") + ".");
+
+    // Color reason
+    reasons.push("All in <strong>" + BA_COLORS[colorKey].name + "</strong> to match your style.");
+
+    addBotMsg(reasons.join(' '), null, {
       lidName: BA_LIDS[lid].name,
+      lidPrice: BA_LIDS[lid].price,
+      lidDesc: BA_LIDS[lid].desc,
       midName: BA_MIDS[mid].name,
+      midPrice: BA_MIDS[mid].price,
+      midDesc: BA_MIDS[mid].desc,
       baseName: BA_BASES[base].name,
-      lidColorName: BA_COLORS[color].name,
-      midColorName: BA_COLORS[color].name,
-      baseColorName: BA_COLORS[color].name,
+      basePrice: BA_BASES[base].price,
+      baseDesc: BA_BASES[base].desc,
+      lidColorName: BA_COLORS[colorKey].name,
+      midColorName: BA_COLORS[colorKey].name,
+      baseColorName: BA_COLORS[colorKey].name,
     });
 
     chatStep = 'done';
     setTimeout(() => {
-      addBotMsg("Want to start over with different preferences?", [
+      addBotMsg("Want to tweak anything, or start fresh?", [
+        { label: 'Change lid', value: 'tweak-lid' },
+        { label: 'Change mid', value: 'tweak-mid' },
+        { label: 'Change base', value: 'tweak-base' },
+        { label: 'Change color', value: 'tweak-color' },
         { label: 'Start over', value: 'restart' },
       ]);
     }, 600);
-  }
-
-  function scorePick(options, use, prefs) {
-    let best = Object.keys(options)[0];
-    let bestScore = 0;
-    const allTags = [use, ...prefs];
-
-    Object.entries(options).forEach(([key, data]) => {
-      let score = 0;
-      allTags.forEach(tag => {
-        data.tags.forEach(t => {
-          if (t.includes(tag) || tag.includes(t)) score++;
-        });
-      });
-      if (score > bestScore) { bestScore = score; best = key; }
-    });
-    return best;
-  }
-
-  function pickColor(hints) {
-    if (!hints.length) return 'stealth';
-
-    const vibeMap = {
-      dark: ['stealth'],
-      bold: ['ember','arctic'],
-      earth: ['sand','alpine'],
-      cool: ['arctic','titanium'],
-      clean: ['titanium','arctic'],
-      warm: ['sand','ember'],
-    };
-
-    let scores = {};
-    Object.keys(BA_COLORS).forEach(c => scores[c] = 0);
-
-    hints.forEach(hint => {
-      // Check if it's a direct color key
-      if (BA_COLORS[hint]) { scores[hint] += 3; return; }
-      // Check vibe map
-      if (vibeMap[hint]) { vibeMap[hint].forEach(c => scores[c] += 2); return; }
-      // Check color vibe words
-      Object.entries(BA_COLORS).forEach(([key, data]) => {
-        data.vibe.forEach(v => { if (v === hint || hint.includes(v) || v.includes(hint)) scores[key]++; });
-      });
-    });
-
-    let best = 'stealth';
-    let bestScore = 0;
-    Object.entries(scores).forEach(([key, score]) => {
-      if (score > bestScore) { bestScore = score; best = key; }
-    });
-    return best;
-  }
-
-  function buildReason(use, lid, mid, base, color) {
-    const useReasons = {
-      commute: "For your daily commute",
-      gym: "For crushing it at the gym",
-      hiking: "For hitting the trails",
-      office: "For the office grind",
-      roadtrip: "For long road trips",
-      coffee: "For keeping your drinks hot",
-    };
-
-    const lidReasons = {
-      handle: "the <strong>Handle Lid</strong> makes it easy to grab and go",
-      straw: "the <strong>Straw Lid</strong> lets you sip without slowing down",
-      classic: "the <strong>Classic Lid</strong> keeps things simple and clean",
-    };
-
-    const baseReasons = {
-      standard: "The <strong>Standard Base</strong> gives you sealed storage for your essentials.",
-      narrow: "The <strong>Narrow Base</strong> slides right into any cup holder.",
-      xl: "The <strong>XL Base</strong> maximizes your liquid capacity.",
-      heated: "The <strong>Heated Base</strong> keeps your drinks warm for hours.",
-    };
-
-    return `${useReasons[use] || "Based on your preferences"}, here's what I'd recommend: ${lidReasons[lid]}, paired with the <strong>${BA_MIDS[mid].name}</strong>. ${baseReasons[base]} All in <strong>${BA_COLORS[color].name}</strong> to match your style.`;
   }
 
   // Apply recommendation to the builder
