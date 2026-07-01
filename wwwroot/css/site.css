@@ -1,0 +1,293 @@
+/* ==========================================================================
+   HydraStack — "Trailhead Editorial" design system
+   Warm paper, deep pine, burnt clay. Fraunces / Instrument Sans / IBM Plex Mono.
+   Shared by index.html, admin.html, and all content pages.
+   ========================================================================== */
+
+:root {
+  /* Palette */
+  --paper: #FAF6EF;
+  --paper-2: #F1EAE0;
+  --ink: #211E1A;
+  --ink-soft: #4A443C;
+  --pine: #1F3D33;
+  --pine-deep: #163028;
+  --pine-soft: #3E5F52;
+  --clay: #C8552F;
+  --clay-deep: #A84424;
+  --clay-soft: #F2DACC;
+  --moss: #7C9885;
+  --sand-line: #E3D9C9;
+  --glass: rgba(250, 246, 239, 0.72);
+  --glass-border: rgba(33, 30, 26, 0.08);
+  --error: #B3402A;
+  --success: #5F7F6A;
+  --on-pine: #F3EEE4;
+  --on-pine-dim: rgba(243, 238, 228, 0.62);
+
+  /* Type */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+
+  /* Radii + shadows */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --shadow-card: 0 2px 6px rgba(33, 30, 26, 0.05), 0 12px 32px rgba(33, 30, 26, 0.07);
+  --shadow-lift: 0 6px 16px rgba(33, 30, 26, 0.08), 0 24px 56px rgba(33, 30, 26, 0.13);
+  --shadow-drawer: -12px 0 48px rgba(33, 30, 26, 0.18);
+
+  /* Z scale */
+  --z-nav: 1000;
+  --z-drawer: 1100;
+  --z-modal: 1200;
+  --z-toast: 1300;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 180ms;
+  --dur-med: 320ms;
+  --dur-slow: 600ms;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+.ts-reset *, .ts-reset *::before, .ts-reset *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body.ts-body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--clay-soft); color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   Typography
+   -------------------------------------------------------------------------- */
+
+.ts-display, .ts-h1, .ts-h2, .ts-h3 {
+  font-family: var(--font-display);
+  font-weight: 560;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  margin: 0;
+  color: inherit;
+}
+
+.ts-display { font-size: clamp(3rem, 7.4vw, 5.6rem); font-variation-settings: 'opsz' 90, 'SOFT' 40; }
+.ts-h1 { font-size: clamp(2.3rem, 5vw, 3.6rem); font-variation-settings: 'opsz' 72, 'SOFT' 30; }
+.ts-h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); line-height: 1.12; }
+.ts-h3 { font-size: clamp(1.2rem, 2.2vw, 1.5rem); line-height: 1.22; }
+
+.ts-lead { font-size: clamp(1.05rem, 1.7vw, 1.3rem); line-height: 1.55; color: var(--ink-soft); }
+.ts-muted { color: var(--ink-soft); }
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pine-soft);
+}
+.mono-label.on-dark { color: var(--moss); }
+.mono-label.clay { color: var(--clay); }
+
+.ts-price {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: 'opsz' 40;
+  color: var(--clay);
+}
+
+a.ts-link { color: var(--clay); text-decoration: none; border-bottom: 1px solid var(--clay-soft); transition: border-color var(--dur-fast); }
+a.ts-link:hover { border-color: var(--clay); }
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+
+.container { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
+.container-wide { max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
+
+.section { padding: clamp(4rem, 9vw, 7.5rem) 0; }
+.section-tight { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
+
+.band-paper2 { background: var(--paper-2); }
+.band-pine { background: var(--pine); color: var(--on-pine); }
+.band-pine .ts-lead, .band-pine .ts-muted { color: var(--on-pine-dim); }
+
+.hairline { border: none; border-top: 1px solid var(--sand-line); margin: 0; }
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 600;
+  padding: 0.85rem 1.9rem;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1.2;
+  transition: transform var(--dur-fast) var(--ease-out),
+              box-shadow var(--dur-fast) var(--ease-out),
+              background var(--dur-fast),
+              color var(--dur-fast),
+              border-color var(--dur-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary { background: var(--clay); color: #FFF7F0; box-shadow: 0 2px 10px rgba(200, 85, 47, 0.28); }
+.btn-primary:hover { background: var(--clay-deep); box-shadow: 0 6px 20px rgba(200, 85, 47, 0.34); transform: translateY(-1px); }
+
+.btn-ghost { background: transparent; color: var(--pine); border-color: var(--pine-soft); }
+.btn-ghost:hover { background: var(--pine); color: var(--on-pine); border-color: var(--pine); }
+
+.band-pine .btn-ghost, .btn-ghost.on-dark { color: var(--on-pine); border-color: rgba(243, 238, 228, 0.4); }
+.band-pine .btn-ghost:hover, .btn-ghost.on-dark:hover { background: var(--on-pine); color: var(--pine); border-color: var(--on-pine); }
+
+.btn-quiet { background: transparent; color: var(--ink-soft); padding: 0.6rem 1rem; }
+.btn-quiet:hover { color: var(--clay); }
+
+.btn-sm { font-size: 0.88rem; padding: 0.55rem 1.25rem; }
+.btn[disabled], .btn.disabled { opacity: 0.5; pointer-events: none; }
+
+/* --------------------------------------------------------------------------
+   Forms
+   -------------------------------------------------------------------------- */
+
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field label { font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); }
+
+.ts-input, .ts-select, .ts-textarea {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: #FFFFFF;
+  border: 1.5px solid var(--sand-line);
+  border-radius: var(--r-sm);
+  padding: 0.75rem 1rem;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.ts-input:focus, .ts-select:focus, .ts-textarea:focus {
+  border-color: var(--pine-soft);
+  box-shadow: 0 0 0 3px rgba(62, 95, 82, 0.14);
+}
+.ts-input.invalid { border-color: var(--error); }
+.form-error { color: var(--error); font-size: 0.85rem; }
+.form-success { color: var(--success); font-size: 0.9rem; }
+
+/* --------------------------------------------------------------------------
+   Surfaces
+   -------------------------------------------------------------------------- */
+
+.card {
+  background: #FFFFFF;
+  border: 1px solid var(--sand-line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.card-hover {
+  transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out);
+}
+.card-hover:hover { transform: translateY(-6px); box-shadow: var(--shadow-lift); }
+
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--clay-deep);
+  background: var(--clay-soft);
+  border-radius: 999px;
+  padding: 0.32rem 0.85rem;
+}
+
+/* --------------------------------------------------------------------------
+   Bottle hover tilt (product cards)
+   -------------------------------------------------------------------------- */
+
+.bottle-tilt { transition: transform var(--dur-med) var(--ease-out); transform-origin: 50% 88%; }
+.card-hover:hover .bottle-tilt, .bottle-tilt:hover { transform: rotate(-2.5deg) translateY(-4px); }
+
+/* --------------------------------------------------------------------------
+   Scroll reveal
+   -------------------------------------------------------------------------- */
+
+.reveal, .reveal-left, .reveal-right, .reveal-scale {
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  will-change: opacity, transform;
+}
+.reveal { transform: translateY(28px); }
+.reveal-left { transform: translateX(-36px); }
+.reveal-right { transform: translateX(36px); }
+.reveal-scale { transform: scale(0.94); }
+
+.reveal.visible, .reveal-left.visible, .reveal-right.visible, .reveal-scale.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.stagger-children > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+.stagger-children.visible > * { opacity: 1; transform: none; }
+.stagger-children.visible > *:nth-child(2) { transition-delay: 90ms; }
+.stagger-children.visible > *:nth-child(3) { transition-delay: 180ms; }
+.stagger-children.visible > *:nth-child(4) { transition-delay: 270ms; }
+.stagger-children.visible > *:nth-child(5) { transition-delay: 360ms; }
+.stagger-children.visible > *:nth-child(6) { transition-delay: 450ms; }
+
+/* --------------------------------------------------------------------------
+   Accessibility + motion guards
+   -------------------------------------------------------------------------- */
+
+:focus-visible { outline: 2.5px solid var(--clay); outline-offset: 2px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal, .reveal-left, .reveal-right, .reveal-scale,
+  .stagger-children > * { opacity: 1; transform: none; }
+}
