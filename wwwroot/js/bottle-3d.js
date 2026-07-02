@@ -25,6 +25,7 @@ let lastTypes = { lid: null, mid: null, base: null };
 let lastConfig = null;
 let idleAt = 0, dragging = false, spinVel = 0;
 let containerEl = null;
+let lastTotal = 3.4;
 
 /* ---------- materials ---------- */
 
@@ -229,9 +230,17 @@ function restack(config) {
   [baseGroup, midGroup, lidGroup, ...threadGroups].forEach((g) => { g.position.y -= total / 2; });
   shadowMesh.position.y = -total / 2 - 0.005;
 
-  /* fit: whole stack (plus arch headroom) inside the vertical fov */
-  const dist = Math.max((total + 0.55) * 2.15, 3.4);
-  camera.position.set(0, total * 0.06, dist);
+  lastTotal = total;
+  fitCamera();
+}
+
+/* fit the whole stack (plus arch headroom / handle width) in BOTH fov axes */
+function fitCamera() {
+  const halfH = (lastTotal + 0.6) / 2;
+  const halfW = 0.78; // body + side handle/button + margin
+  const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const dist = Math.max(halfH / t, halfW / (t * camera.aspect), 3.2) * 1.1;
+  camera.position.set(0, lastTotal * 0.06, dist);
   camera.lookAt(0, 0, 0);
 }
 
@@ -340,6 +349,7 @@ export function init(container) {
       renderer.setSize(containerEl.clientWidth, containerEl.clientHeight);
       camera.aspect = containerEl.clientWidth / containerEl.clientHeight;
       camera.updateProjectionMatrix();
+      fitCamera();
     }).observe(container);
 
     idleAt = performance.now();

@@ -378,14 +378,14 @@ app.MapPost("/api/auth/register", async (HttpContext ctx) =>
                     to = new[] { email.ToLowerInvariant() },
                     subject = "Verify Your HydraStack Account",
                     html = $@"
-                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #1E2128; color: #E8E0D5; border-radius: 16px;"">
-                            <h2 style=""text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
-                            <p style=""text-align: center; color: #7788AA; font-size: 0.9rem;"">Welcome, {username}! Verify your email to get started.</p>
-                            <div style=""background: rgba(255,255,255,0.05); border: 1px solid #00D4AA; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
-                                <div style=""font-size: 0.75rem; color: #7788AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR VERIFICATION CODE</div>
-                                <div style=""font-size: 2rem; font-weight: 700; color: #00D4AA; letter-spacing: 8px;"">{verifyCode}</div>
+                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #FAF6EF; color: #211E1A; border: 1px solid #E3D9C9; border-radius: 16px;"">
+                            <h2 style=""color: #1F3D33; font-family: Georgia, 'Times New Roman', serif; text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
+                            <p style=""text-align: center; color: #4A443C; font-size: 0.9rem;"">Welcome, {username}! Verify your email to get started.</p>
+                            <div style=""background: #FFFFFF; border: 1px solid #C8552F; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
+                                <div style=""font-size: 0.75rem; color: #4A443C; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR VERIFICATION CODE</div>
+                                <div style=""font-size: 2rem; font-weight: 700; color: #C8552F; letter-spacing: 8px;"">{verifyCode}</div>
                             </div>
-                            <p style=""color: #7788AA; font-size: 0.85rem; text-align: center;"">This code expires in 30 minutes. If you didn't create this account, you can ignore this email.</p>
+                            <p style=""color: #4A443C; font-size: 0.85rem; text-align: center;"">This code expires in 30 minutes. If you didn't create this account, you can ignore this email.</p>
                         </div>"
                 });
 
@@ -565,14 +565,14 @@ app.MapPost("/api/auth/resend-verification", async (HttpContext ctx) =>
                     to = new[] { email },
                     subject = "Verify Your HydraStack Account",
                     html = $@"
-                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #1E2128; color: #E8E0D5; border-radius: 16px;"">
-                            <h2 style=""text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
-                            <p style=""text-align: center; color: #7788AA; font-size: 0.9rem;"">Welcome, {username}! Verify your email to get started.</p>
-                            <div style=""background: rgba(255,255,255,0.05); border: 1px solid #00D4AA; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
-                                <div style=""font-size: 0.75rem; color: #7788AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR VERIFICATION CODE</div>
-                                <div style=""font-size: 2rem; font-weight: 700; color: #00D4AA; letter-spacing: 8px;"">{verifyCode}</div>
+                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #FAF6EF; color: #211E1A; border: 1px solid #E3D9C9; border-radius: 16px;"">
+                            <h2 style=""color: #1F3D33; font-family: Georgia, 'Times New Roman', serif; text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
+                            <p style=""text-align: center; color: #4A443C; font-size: 0.9rem;"">Welcome, {username}! Verify your email to get started.</p>
+                            <div style=""background: #FFFFFF; border: 1px solid #C8552F; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
+                                <div style=""font-size: 0.75rem; color: #4A443C; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR VERIFICATION CODE</div>
+                                <div style=""font-size: 2rem; font-weight: 700; color: #C8552F; letter-spacing: 8px;"">{verifyCode}</div>
                             </div>
-                            <p style=""color: #7788AA; font-size: 0.85rem; text-align: center;"">This code expires in 30 minutes.</p>
+                            <p style=""color: #4A443C; font-size: 0.85rem; text-align: center;"">This code expires in 30 minutes.</p>
                         </div>"
                 });
 
@@ -836,28 +836,28 @@ app.MapPost("/api/orders", async (HttpContext ctx) =>
                     var colorStr = string.Join(", ", colors);
 
                     itemsHtml.Append($@"
-                        <tr style=""border-bottom: 1px solid rgba(255,255,255,0.06);"">
-                            <td style=""padding: 0.7rem 0; color: #E8E0D5;"">{itemName}{(string.IsNullOrEmpty(colorStr) ? "" : $"<br><span style=\"font-size: 0.75rem; color: #7788AA;\">{colorStr}</span>")}</td>
-                            <td style=""padding: 0.7rem 0; text-align: center; color: #7788AA;"">{itemQty}</td>
-                            <td style=""padding: 0.7rem 0; text-align: right; color: #E8E0D5;"">${itemPrice:F2}</td>
+                        <tr style=""border-bottom: 1px solid #E3D9C9;"">
+                            <td style=""padding: 0.7rem 0; color: #211E1A;"">{itemName}{(string.IsNullOrEmpty(colorStr) ? "" : $"<br><span style=\"font-size: 0.75rem; color: #4A443C;\">{colorStr}</span>")}</td>
+                            <td style=""padding: 0.7rem 0; text-align: center; color: #4A443C;"">{itemQty}</td>
+                            <td style=""padding: 0.7rem 0; text-align: right; color: #211E1A;"">${itemPrice:F2}</td>
                         </tr>");
                 }
 
                 var subtotal = orderTotal / 1.08m - 5.99m / 1.08m; // approximate reverse
                 var receiptHtml = $@"
-                    <div style=""font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 2rem; background: #1E2128; color: #E8E0D5; border-radius: 16px;"">
-                        <h2 style=""text-align: center; margin-bottom: 0.3rem;"">HydraStack</h2>
-                        <p style=""text-align: center; color: #7788AA; font-size: 0.9rem; margin-bottom: 1.5rem;"">Order Confirmation</p>
+                    <div style=""font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 2rem; background: #FAF6EF; color: #211E1A; border: 1px solid #E3D9C9; border-radius: 16px;"">
+                        <h2 style=""color: #1F3D33; font-family: Georgia, 'Times New Roman', serif; text-align: center; margin-bottom: 0.3rem;"">HydraStack</h2>
+                        <p style=""text-align: center; color: #4A443C; font-size: 0.9rem; margin-bottom: 1.5rem;"">Order Confirmation</p>
 
-                        <div style=""background: rgba(255,255,255,0.05); border: 1px solid #00D4AA; border-radius: 12px; padding: 1.2rem; text-align: center; margin-bottom: 1.5rem;"">
-                            <div style=""font-size: 0.75rem; color: #7788AA; letter-spacing: 2px; margin-bottom: 0.3rem;"">ORDER NUMBER</div>
-                            <div style=""font-size: 1.5rem; font-weight: 700; color: #00D4AA; letter-spacing: 3px;"">{orderNumber}</div>
+                        <div style=""background: #FFFFFF; border: 1px solid #C8552F; border-radius: 12px; padding: 1.2rem; text-align: center; margin-bottom: 1.5rem;"">
+                            <div style=""font-size: 0.75rem; color: #4A443C; letter-spacing: 2px; margin-bottom: 0.3rem;"">ORDER NUMBER</div>
+                            <div style=""font-size: 1.5rem; font-weight: 700; color: #C8552F; letter-spacing: 3px;"">{orderNumber}</div>
                         </div>
 
-                        <p style=""color: #E8E0D5; font-size: 0.9rem; margin-bottom: 1rem;"">Hi {firstName}, thanks for your order!</p>
+                        <p style=""color: #211E1A; font-size: 0.9rem; margin-bottom: 1rem;"">Hi {firstName}, thanks for your order!</p>
 
                         <div style=""margin-bottom: 1.5rem;"">
-                            <div style=""font-size: 0.7rem; color: #00D4AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">SHIPPING TO</div>
+                            <div style=""font-size: 0.7rem; color: #C8552F; letter-spacing: 2px; margin-bottom: 0.5rem;"">SHIPPING TO</div>
                             <div style=""color: #AAB8CC; font-size: 0.85rem; line-height: 1.6;"">
                                 {firstName} {lastName}<br>
                                 {(string.IsNullOrEmpty(address) ? "" : $"{address}<br>")}{(string.IsNullOrEmpty(city) ? "" : $"{city}")}{(string.IsNullOrEmpty(state) ? "" : $", {state}")} {zip}
@@ -865,19 +865,19 @@ app.MapPost("/api/orders", async (HttpContext ctx) =>
                         </div>
 
                         <div style=""margin-bottom: 1.5rem;"">
-                            <div style=""font-size: 0.7rem; color: #00D4AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">ITEMS</div>
+                            <div style=""font-size: 0.7rem; color: #C8552F; letter-spacing: 2px; margin-bottom: 0.5rem;"">ITEMS</div>
                             <table style=""width: 100%; border-collapse: collapse; font-size: 0.85rem;"">
-                                <tr style=""border-bottom: 1px solid rgba(255,255,255,0.1);"">
-                                    <th style=""padding: 0.5rem 0; text-align: left; color: #7788AA; font-size: 0.7rem; letter-spacing: 1px;"">ITEM</th>
-                                    <th style=""padding: 0.5rem 0; text-align: center; color: #7788AA; font-size: 0.7rem; letter-spacing: 1px;"">QTY</th>
-                                    <th style=""padding: 0.5rem 0; text-align: right; color: #7788AA; font-size: 0.7rem; letter-spacing: 1px;"">PRICE</th>
+                                <tr style=""border-bottom: 1px solid #E3D9C9;"">
+                                    <th style=""padding: 0.5rem 0; text-align: left; color: #4A443C; font-size: 0.7rem; letter-spacing: 1px;"">ITEM</th>
+                                    <th style=""padding: 0.5rem 0; text-align: center; color: #4A443C; font-size: 0.7rem; letter-spacing: 1px;"">QTY</th>
+                                    <th style=""padding: 0.5rem 0; text-align: right; color: #4A443C; font-size: 0.7rem; letter-spacing: 1px;"">PRICE</th>
                                 </tr>
                                 {itemsHtml}
                             </table>
                         </div>
 
-                        <div style=""border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; text-align: right;"">
-                            <div style=""font-size: 1.1rem; font-weight: 700; color: #E8E0D5;"">Total: <span style=""color: #00D4AA;"">${orderTotal:F2}</span></div>
+                        <div style=""border-top: 1px solid #E3D9C9; padding-top: 1rem; text-align: right;"">
+                            <div style=""font-size: 1.1rem; font-weight: 700; color: #211E1A;"">Total: <span style=""color: #C8552F;"">${orderTotal:F2}</span></div>
                         </div>
 
                         <p style=""color: #556677; font-size: 0.75rem; text-align: center; margin-top: 1.5rem;"">Thank you for choosing HydraStack!</p>
@@ -1504,14 +1504,14 @@ app.MapPost("/api/auth/forgot-password", async (HttpContext ctx) =>
                     to = new[] { email },
                     subject = "HydraStack Password Reset Code",
                     html = $@"
-                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #1E2128; color: #E8E0D5; border-radius: 16px;"">
-                            <h2 style=""text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
-                            <p style=""text-align: center; color: #7788AA; font-size: 0.9rem;"">Password Reset Request</p>
-                            <div style=""background: rgba(255,255,255,0.05); border: 1px solid #00D4AA; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
-                                <div style=""font-size: 0.75rem; color: #7788AA; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR RESET CODE</div>
-                                <div style=""font-size: 2rem; font-weight: 700; color: #00D4AA; letter-spacing: 8px;"">{resetCode}</div>
+                        <div style=""font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 2rem; background: #FAF6EF; color: #211E1A; border: 1px solid #E3D9C9; border-radius: 16px;"">
+                            <h2 style=""color: #1F3D33; font-family: Georgia, 'Times New Roman', serif; text-align: center; margin-bottom: 0.5rem;"">HydraStack</h2>
+                            <p style=""text-align: center; color: #4A443C; font-size: 0.9rem;"">Password Reset Request</p>
+                            <div style=""background: #FFFFFF; border: 1px solid #C8552F; border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0;"">
+                                <div style=""font-size: 0.75rem; color: #4A443C; letter-spacing: 2px; margin-bottom: 0.5rem;"">YOUR RESET CODE</div>
+                                <div style=""font-size: 2rem; font-weight: 700; color: #C8552F; letter-spacing: 8px;"">{resetCode}</div>
                             </div>
-                            <p style=""color: #7788AA; font-size: 0.85rem; text-align: center;"">This code expires in 15 minutes. If you didn't request this, you can ignore this email.</p>
+                            <p style=""color: #4A443C; font-size: 0.85rem; text-align: center;"">This code expires in 15 minutes. If you didn't request this, you can ignore this email.</p>
                         </div>"
                 });
 

@@ -747,7 +747,7 @@ a.ts-link:hover { border-color: var(--clay); }
 }
 @media (max-width: 880px) {
   .builder-layout { grid-template-columns: 1fr; }
-  .builder-preview { position: static !important; }
+  .builder-preview { position: relative !important; top: auto !important; }
 }
 
 .builder-preview {
