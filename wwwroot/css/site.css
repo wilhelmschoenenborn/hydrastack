@@ -780,6 +780,19 @@ a.ts-link:hover { border-color: var(--clay); }
 
 .preview-3d-hint { opacity: 0.7; }
 
+/* 3D canvas overlays the SVG; crossfades in once the first frame renders */
+.preview-3d {
+  position: absolute;
+  inset: 3.4rem 0 2.6rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s var(--ease-out);
+}
+.preview-3d canvas { width: 100% !important; height: 100% !important; display: block; cursor: grab; }
+.preview-3d canvas:active { cursor: grabbing; }
+.builder-preview.mode-3d .preview-3d { opacity: 1; pointer-events: auto; }
+.builder-preview.mode-3d #previewBottle { opacity: 0; transition: opacity 0.5s; }
+
 .builder-options { display: flex; flex-direction: column; gap: 1.5rem; }
 
 .option-group { display: flex; flex-direction: column; gap: 0.7rem; }

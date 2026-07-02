@@ -314,6 +314,7 @@
     <div class="builder-preview card">
       <span class="mono-label">Live preview</span>
       <div class="preview-bottle" id="previewBottle"></div>
+      <div class="preview-3d" id="preview3d" aria-hidden="true"></div>
       <div class="preview-3d-hint mono-label" id="preview3dHint" hidden>Drag to rotate</div>
     </div>
 
@@ -3181,6 +3182,30 @@
   /* Footer year */
   var yearEl = document.getElementById('footerYear');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  /* Lazy 3D preview: load Three.js module once the builder approaches the
+     viewport; the SVG stays as placeholder and permanent fallback. */
+  var builderSection = document.querySelector('.builder-section');
+  if (builderSection && 'IntersectionObserver' in window) {
+    var loaded3d = false;
+    var lazy3d = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting || loaded3d) return;
+      loaded3d = true;
+      lazy3d.disconnect();
+      import('/js/bottle-3d.js').then(function (mod) {
+        var host = document.getElementById('preview3d');
+        if (!host || !mod.init(host)) return;
+        if (typeof window.updatePreview === 'function') updatePreview(); // push current config to 3D
+        var card = document.querySelector('.builder-preview');
+        if (card) card.classList.add('mode-3d');
+        var hint = document.getElementById('preview3dHint');
+        if (hint) hint.hidden = false;
+      }).catch(function (err) {
+        console.warn('3D preview unavailable:', err);
+      });
+    }, { rootMargin: '800px' });
+    lazy3d.observe(builderSection);
+  }
 
   /* Gallery deep link: /?cfg=<preset-key>#builder preconfigures the builder */
   var cfgMatch = window.location.search.match(/[?&]cfg=([a-z0-9-]+)/);
