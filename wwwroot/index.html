@@ -27,295 +27,7 @@
     color: var(--warm);
     font-family: 'Outfit', sans-serif;
     overflow-x: hidden;
-    padding-top: 56px;
-  }
-
-  /* === TOP BAR === */
-  .top-bar {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 56px;
-    background: rgba(26, 29, 35, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    z-index: 1000;
-  }
-
-  .top-bar-left {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  /* === HAMBURGER MENU === */
-  .hamburger-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 5px;
-    width: 28px;
-    height: 28px;
-    padding: 2px;
-  }
-
-  .hamburger-btn span {
-    display: block;
-    width: 100%;
-    height: 2px;
-    background: var(--warm);
-    border-radius: 2px;
-    transition: all 0.3s ease;
-  }
-
-  .hamburger-btn.open span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  .hamburger-btn.open span:nth-child(2) {
-    opacity: 0;
-  }
-
-  .hamburger-btn.open span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
-  .nav-menu-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 998;
-    display: none;
-  }
-
-  .nav-menu-overlay.open { display: block; }
-
-  .nav-menu {
-    position: fixed;
-    top: 56px;
-    left: 0;
-    width: 280px;
-    height: calc(100vh - 56px);
-    background: rgba(26, 29, 35, 0.97);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    z-index: 999;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    padding: 1.5rem 0;
-    overflow-y: auto;
-  }
-
-  .nav-menu.open {
-    transform: translateX(0);
-  }
-
-  .nav-menu-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 3px;
-    color: #556677;
-    text-transform: uppercase;
-    padding: 0.6rem 1.5rem 0.4rem;
-  }
-
-  .nav-menu a {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    color: var(--warm);
-    text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 500;
-    transition: all 0.15s ease;
-    border-left: 3px solid transparent;
-  }
-
-  .nav-menu a:hover {
-    background: rgba(255,255,255,0.05);
-    border-left-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .nav-menu a .nav-icon {
-    font-size: 1rem;
-    width: 24px;
-    text-align: center;
-  }
-
-  .nav-menu-divider {
-    height: 1px;
-    background: rgba(255,255,255,0.06);
-    margin: 0.8rem 1.5rem;
-  }
-
-  .top-bar-brand {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: var(--warm);
-  }
-
-  .top-bar-brand span {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .top-bar-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .top-bar-btn {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: var(--warm);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 0.4rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .top-bar-btn:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.18);
-  }
-
-  .top-bar-btn.accent {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    color: var(--dark);
-    font-weight: 700;
-  }
-
-  .top-bar-btn.accent:hover {
-    opacity: 0.9;
-  }
-
-  .top-bar-user {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .top-bar-user-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--accent);
-    cursor: pointer;
-  }
-
-  .top-bar-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    background: #22262E;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 0.4rem 0;
-    min-width: 160px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    display: none;
-    z-index: 1001;
-  }
-
-  .top-bar-dropdown.open {
-    display: block;
-  }
-
-  .top-bar-dropdown button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    color: var(--warm);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.8rem;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .top-bar-dropdown button:hover {
-    background: rgba(255,255,255,0.06);
-  }
-
-  /* Hero */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    padding: 2rem;
-    background: radial-gradient(ellipse at 50% 30%, #2a3040 0%, var(--dark) 70%);
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    opacity: 0.5;
-  }
-
-  .brand-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1rem;
-    opacity: 0;
-    animation: fadeUp 0.8s ease forwards 0.3s;
-  }
-
-  .hero h1 {
-    font-size: clamp(3rem, 8vw, 7rem);
-    font-weight: 800;
-    letter-spacing: -2px;
-    line-height: 1;
-    text-align: center;
-    margin-bottom: 0.5rem;
-    opacity: 0;
-    animation: fadeUp 0.8s ease forwards 0.5s;
-  }
-
-  .hero h1 span {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .tagline {
-    font-size: 1.15rem;
-    font-weight: 300;
-    color: #8899AA;
-    text-align: center;
-    max-width: 560px;
-    line-height: 1.6;
-    opacity: 0;
-    animation: fadeUp 0.8s ease forwards 0.7s;
+    padding-top: 64px;
   }
 
   /* Section headers */
@@ -343,754 +55,6 @@
     max-width: 580px;
     margin: 0 auto;
     line-height: 1.6;
-  }
-
-  /* === TUBE CONCEPT === */
-  .tube-concept {
-    padding: 5rem 2rem;
-    text-align: center;
-    background: linear-gradient(180deg, var(--dark), #151820);
-  }
-
-  .tube-diagram {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 8rem;
-    flex-wrap: wrap;
-    max-width: 950px;
-    margin: 0 auto;
-  }
-
-  .tube-bottle {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  .tube-lid {
-    width: 90px;
-    height: 50px;
-    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
-    border-radius: 14px 14px 0 0;
-    position: relative;
-    box-shadow: inset 0 2px 8px rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.2);
-  }
-
-  .tube-lid::before {
-    content: '';
-    width: 36px; height: 16px;
-    background: linear-gradient(180deg, #E8EEF2, #B0BEC5);
-    border-radius: 9px 9px 3px 3px;
-    position: absolute;
-    top: -12px; left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
-  }
-
-  .tube-mid {
-    width: 90px;
-    height: 180px;
-    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
-    position: relative;
-    box-shadow: inset 2px 0 6px rgba(255,255,255,0.12), inset -2px 0 6px rgba(0,0,0,0.12);
-  }
-
-  .tube-mid .shine {
-    position: absolute;
-    top: 10px; bottom: 10px; left: 7px;
-    width: 3px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px;
-  }
-
-  .tube-bottom {
-    width: 90px;
-    height: 100px;
-    background: linear-gradient(180deg, var(--bottom-section), #5A7A8E);
-    border-radius: 0 0 10px 10px;
-    position: relative;
-    box-shadow: inset 2px 0 6px rgba(255,255,255,0.08), inset -2px 0 6px rgba(0,0,0,0.15), 0 6px 16px rgba(0,0,0,0.3);
-  }
-
-  .tube-bottom .base-grip {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 10px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 0 0 10px 10px;
-  }
-
-  .thread-gap {
-    height: 3px;
-    background: rgba(62,207,207,0.3);
-    width: 60%;
-  }
-
-  /* Labels positioned far outside to avoid overlap */
-  .tube-label {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 1px;
-    color: var(--accent);
-    white-space: nowrap;
-    pointer-events: none;
-  }
-
-  .tube-label.left {
-    right: calc(100% + 20px);
-    flex-direction: row-reverse;
-  }
-
-  .tube-label.right {
-    left: calc(100% + 20px);
-  }
-
-  .label-line {
-    width: 24px; height: 1px;
-    background: var(--accent);
-    opacity: 0.4;
-    flex-shrink: 0;
-  }
-
-  .dot {
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .info-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    text-align: left;
-    max-width: 360px;
-    flex-shrink: 0;
-  }
-
-  .info-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 1.2rem 1.5rem;
-    border-left: 4px solid var(--accent);
-  }
-
-  .info-card .card-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    margin-bottom: 0.4rem;
-    display: block;
-  }
-
-  .info-card p {
-    font-size: 0.85rem;
-    color: #AAB8CC;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-  /* === BASE SIZE COMPARISON === */
-  .size-comparison {
-    padding: 5rem 2rem;
-    text-align: center;
-    background: #151820;
-  }
-
-  .compare-row {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 2.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 3rem;
-  }
-
-  .compare-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .compare-bottle {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .c-lid {
-    width: 74px; height: 36px;
-    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
-    border-radius: 11px 11px 0 0;
-    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25);
-  }
-
-  .c-mid {
-    width: 74px; height: 120px;
-    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
-    box-shadow: inset 2px 0 5px rgba(255,255,255,0.1), inset -2px 0 5px rgba(0,0,0,0.1);
-  }
-
-  .c-bottom-standard {
-    width: 74px; height: 74px;
-    background: linear-gradient(180deg, var(--bottom-section), #5A7A8E);
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-  }
-
-  .c-bottom-narrow-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .c-adapter-ring {
-    width: 74px; height: 12px;
-    background: linear-gradient(180deg, #556B7A, #4A5E6C);
-    clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%);
-  }
-
-  .c-bottom-narrow {
-    width: 52px; height: 74px;
-    background: linear-gradient(180deg, #D4585C, #A83235);
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-  }
-
-  .c-bottom-xl {
-    width: 74px; height: 100px;
-    background: linear-gradient(180deg, #4CAF50, #2E7D32);
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-  }
-
-  /* Heated base */
-  .c-bottom-heated-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .c-bottom-heated {
-    width: 74px; height: 74px;
-    background: linear-gradient(180deg, #E88A30, #C06820);
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .c-bottom-heated::after {
-    content: '';
-    position: absolute;
-    bottom: 8px; left: 50%;
-    transform: translateX(-50%);
-    width: 30px; height: 30px;
-    border: 2px solid rgba(255,255,255,0.25);
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,100,30,0.4), transparent 70%);
-  }
-
-  .compare-label {
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .compare-desc {
-    font-size: 0.75rem;
-    color: #8899AA;
-    font-weight: 300;
-    max-width: 160px;
-    line-height: 1.5;
-  }
-
-  .compare-badge {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.5rem;
-    letter-spacing: 2px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    display: inline-block;
-    margin-top: 0.3rem;
-  }
-
-  .badge-red { color: #D4585C; background: rgba(212,88,92,0.15); border: 1px solid rgba(212,88,92,0.3); }
-  .badge-blue { color: var(--accent); background: rgba(62,207,207,0.1); border: 1px solid rgba(62,207,207,0.25); }
-  .badge-green { color: #4CAF50; background: rgba(76,175,80,0.12); border: 1px solid rgba(76,175,80,0.3); }
-  .badge-orange { color: #E88A30; background: rgba(232,138,48,0.12); border: 1px solid rgba(232,138,48,0.3); }
-
-  .cupholder-note {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(212, 88, 92, 0.1);
-    border: 1px solid rgba(212, 88, 92, 0.25);
-    border-radius: 12px;
-    padding: 1rem 1.8rem;
-    margin-top: 1rem;
-    max-width: 600px;
-  }
-
-  .cupholder-note .icon { font-size: 1.5rem; flex-shrink: 0; }
-
-  .cupholder-note p {
-    font-size: 0.85rem;
-    color: #D4585C;
-    text-align: left;
-    line-height: 1.5;
-  }
-
-  .cupholder-note strong { color: #E8A0A2; }
-
-  /* === BASE MODULES (card style) === */
-  .base-modules {
-    padding: 5rem 2rem;
-    background: #151820;
-    text-align: center;
-  }
-
-  .base-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2rem;
-    max-width: 1050px;
-    margin: 0 auto;
-  }
-
-  .base-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 20px;
-    padding: 2.5rem 2rem 2rem;
-    text-align: center;
-    transition: all 0.4s ease;
-  }
-
-  .base-card:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.14);
-    transform: translateY(-6px);
-  }
-
-  .base-badge {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 3px;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 1.2rem;
-  }
-
-  .base-visual {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 1.5rem;
-    position: relative;
-  }
-
-  .base-body-standard {
-    width: 74px;
-    height: 74px;
-    background: linear-gradient(180deg, var(--bottom-section), #5A7A8E);
-    border-radius: 0 0 8px 8px;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-  }
-
-  .base-body-narrow-wrap {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .base-body-narrow-adapter {
-    width: 74px;
-    height: 12px;
-    background: linear-gradient(180deg, #556B7A, #4A5E6C);
-    clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%);
-  }
-
-  .base-body-narrow {
-    width: 52px;
-    height: 74px;
-    background: linear-gradient(180deg, #D4585C, #A83235);
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-  }
-
-  .base-body-xl {
-    width: 74px;
-    height: 100px;
-    background: linear-gradient(180deg, #4CAF50, #2E7D32);
-    border-radius: 0 0 8px 8px;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-  }
-
-  .base-body-heated {
-    width: 74px;
-    height: 74px;
-    background: linear-gradient(180deg, #E88A30, #C06820);
-    border-radius: 0 0 8px 8px;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-    overflow: hidden;
-  }
-
-  .base-body-heated::after {
-    content: '';
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 30px;
-    height: 30px;
-    border: 2px solid rgba(255,255,255,0.25);
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,100,30,0.4), transparent 70%);
-  }
-
-  .base-thread-top {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: rgba(62,207,207,0.3);
-  }
-
-  .base-card h3 {
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-
-  .base-inspired {
-    font-size: 0.72rem;
-    color: var(--accent);
-    font-weight: 400;
-    margin-bottom: 0.8rem;
-    display: block;
-  }
-
-  .base-card p {
-    font-size: 0.82rem;
-    color: #8899AA;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-  /* === MID MODULES === */
-  .mid-modules {
-    padding: 5rem 2rem;
-    background: linear-gradient(180deg, #151820, #151820);
-    text-align: center;
-  }
-
-  .mid-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .mid-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 20px;
-    padding: 2.5rem 2rem 2rem;
-    text-align: center;
-    transition: all 0.4s ease;
-  }
-
-  .mid-card:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.14);
-    transform: translateY(-6px);
-  }
-
-  .mid-badge {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 3px;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 1.2rem;
-  }
-
-  .mid-visual {
-    width: 120px;
-    height: 160px;
-    margin: 0 auto 1.5rem;
-    position: relative;
-  }
-
-  .mid-body-standard {
-    width: 74px;
-    height: 120px;
-    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: inset 2px 0 5px rgba(255,255,255,0.1), inset -2px 0 5px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.25);
-  }
-
-  .mid-body-standard .mid-thread-top,
-  .mid-body-handle .mid-thread-top {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: rgba(62,207,207,0.3);
-  }
-
-  .mid-body-standard .mid-thread-bottom,
-  .mid-body-handle .mid-thread-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: rgba(62,207,207,0.3);
-  }
-
-  .mid-body-handle {
-    width: 74px;
-    height: 120px;
-    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
-    position: absolute;
-    bottom: 0;
-    left: 46%;
-    transform: translateX(-50%);
-    box-shadow: inset 2px 0 5px rgba(255,255,255,0.1), inset -2px 0 5px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.25);
-  }
-
-  .mid-side-handle {
-    position: absolute;
-    right: -22px;
-    top: 14px;
-    width: 18px;
-    height: 90px;
-    border: 6px solid #7A9AAE;
-    border-left: none;
-    border-radius: 0 30px 30px 0;
-    box-shadow: 2px 0 6px rgba(0,0,0,0.2);
-  }
-
-  .mid-body-xl {
-    width: 74px;
-    height: 150px;
-    background: linear-gradient(180deg, #4A90D9, #2E5FA3);
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: inset 2px 0 5px rgba(255,255,255,0.1), inset -2px 0 5px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.25);
-  }
-
-  .mid-visual-xl {
-    width: 120px;
-    height: 180px;
-    margin: 0 auto 1.5rem;
-    position: relative;
-  }
-
-  .mid-card h3 {
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-
-  .mid-inspired {
-    font-size: 0.72rem;
-    color: var(--accent);
-    font-weight: 400;
-    margin-bottom: 0.8rem;
-    display: block;
-  }
-
-  .mid-card p {
-    font-size: 0.82rem;
-    color: #8899AA;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-  /* === LID MODULES === */
-  .lid-modules {
-    padding: 5rem 2rem;
-    background: linear-gradient(180deg, #151820, var(--dark));
-    text-align: center;
-  }
-
-  .lid-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .lid-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 20px;
-    padding: 2.5rem 2rem 2rem;
-    text-align: center;
-    transition: all 0.4s ease;
-  }
-
-  .lid-card:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.14);
-    transform: translateY(-6px);
-  }
-
-  .lid-badge {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 3px;
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-    display: block;
-  }
-
-  .lid-visual {
-    width: 120px; height: 100px;
-    margin: 0 auto 1.5rem;
-    position: relative;
-  }
-
-  .handle-lid-body {
-    width: 90px; height: 50px;
-    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
-    border-radius: 14px 14px 4px 4px;
-    position: absolute; bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25), 0 3px 10px rgba(0,0,0,0.2);
-  }
-
-  .handle-arch {
-    width: 70px; height: 40px;
-    border: 6px solid #A0B0BC;
-    border-bottom: none;
-    border-radius: 35px 35px 0 0;
-    position: absolute; top: 2px; left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
-  }
-
-  .handle-arch::before, .handle-arch::after {
-    content: '';
-    width: 10px; height: 10px;
-    background: #8A9AA8;
-    border-radius: 50%;
-    position: absolute; bottom: -5px;
-  }
-
-  .handle-arch::before { left: -8px; }
-  .handle-arch::after { right: -8px; }
-
-  .straw-lid-body {
-    width: 90px; height: 50px;
-    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
-    border-radius: 14px 14px 4px 4px;
-    position: absolute; bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25), 0 3px 10px rgba(0,0,0,0.2);
-  }
-
-  .straw-flip-cover {
-    width: 44px; height: 30px;
-    background: linear-gradient(180deg, var(--accent), var(--accent2));
-    border-radius: 12px 12px 4px 4px;
-    position: absolute; top: 14px; left: 28px;
-    box-shadow: 0 -2px 8px rgba(62,207,207,0.3);
-  }
-
-  .straw-flip-cover::before {
-    content: '';
-    width: 8px; height: 8px;
-    background: rgba(255,255,255,0.35);
-    border-radius: 50%;
-    position: absolute; top: 6px; left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .straw-tube {
-    width: 5px; height: 22px;
-    background: rgba(255,255,255,0.4);
-    border-radius: 3px;
-    position: absolute; top: 8px; left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .standard-lid-body {
-    width: 90px; height: 50px;
-    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
-    border-radius: 14px 14px 4px 4px;
-    position: absolute; bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    box-shadow: inset 0 2px 6px rgba(255,255,255,0.25), 0 3px 10px rgba(0,0,0,0.2);
-  }
-
-  .standard-flip {
-    width: 34px; height: 16px;
-    background: linear-gradient(180deg, #E0E8EE, #B0BEC5);
-    border-radius: 9px 9px 3px 3px;
-    position: absolute; top: 28px; left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.12);
-  }
-
-  .lid-card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.5rem; }
-
-  .lid-inspired {
-    font-size: 0.72rem;
-    color: var(--accent);
-    font-weight: 400;
-    margin-bottom: 0.8rem;
-    display: block;
-  }
-
-  .lid-card p { font-size: 0.82rem; color: #8899AA; line-height: 1.6; font-weight: 300; }
-
-  .feature-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 1rem; }
-
-  .tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 1px;
-    color: var(--warm);
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    padding: 4px 10px;
   }
 
   /* === BOTTLE BUILDER === */
@@ -1443,15 +407,6 @@
   .feature-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
   .feature-card p { font-size: 0.78rem; color: #7788AA; line-height: 1.5; font-weight: 300; }
 
-  .footer {
-    text-align: center;
-    padding: 3rem 2rem;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: #556677;
-    letter-spacing: 2px;
-    background: #0F1115;
-  }
 
   /* === BUILDER ACTION BUTTONS === */
   .builder-actions {
@@ -2491,47 +1446,6 @@
   }
 
   /* Floating cart button */
-  .cart-fab {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 60px; height: 60px;
-    background: var(--accent);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(62,207,207,0.4);
-    z-index: 1000;
-    transition: all 0.3s ease;
-    border: none;
-    color: var(--dark);
-  }
-
-  .cart-fab:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 28px rgba(62,207,207,0.5);
-  }
-
-  .cart-fab .cart-count {
-    position: absolute;
-    top: -4px; right: -4px;
-    width: 22px; height: 22px;
-    background: #D4585C;
-    border-radius: 50%;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-  }
-
-  .cart-fab .cart-count.empty { display: none; }
 
   /* Cart Drawer */
   .cart-overlay {
@@ -3530,9 +2444,6 @@
   }
 
   @media (max-width: 768px) {
-    .tube-diagram, .compare-row { flex-direction: column; align-items: center; }
-    .lid-grid { grid-template-columns: 1fr; }
-    .tube-label { display: none; }
     .builder-layout { flex-direction: column; align-items: center; }
     .builder-preview { position: static; }
     .builder-options { min-width: auto; width: 100%; max-width: 400px; }
@@ -3713,22 +2624,38 @@
 </head>
 <body>
 
-<!-- Top Bar -->
-<nav class="top-bar">
-  <div class="top-bar-left">
-    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleNavMenu()">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    <div class="top-bar-brand">HYDRA<span>STACK</span></div>
-  </div>
-  <div class="top-bar-actions">
-    <div id="authArea">
-      <button class="top-bar-btn accent" id="authBtn" onclick="openAuthModal()">Sign In</button>
+<!-- Site Header -->
+<header class="site-header glass">
+  <div class="site-header-inner">
+    <div class="site-header-left">
+      <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleNavMenu()" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a class="wordmark" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">HydraStack<span class="wordmark-dot">.</span></a>
+    </div>
+    <nav class="site-header-links" aria-label="Primary">
+      <a href="#" onclick="navGo('.builder-section'); return false;">Builder</a>
+      <a href="#" onclick="navGo('.shop-section'); return false;">Shop</a>
+      <a href="/gallery.html">Lookbook</a>
+      <a href="/about.html">Story</a>
+      <a href="/faq.html">FAQ</a>
+    </nav>
+    <div class="site-header-actions">
+      <div id="authArea">
+        <button class="btn btn-ghost btn-sm" id="authBtn" onclick="openAuthModal()">Sign In</button>
+      </div>
+      <button class="cart-btn" onclick="toggleCart()" aria-label="Open cart">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 7h12l1.2 13.2a1 1 0 0 1-1 1.1H5.8a1 1 0 0 1-1-1.1L6 7z"/>
+          <path d="M9 10V6a3 3 0 0 1 6 0v4"/>
+        </svg>
+        <span class="cart-count empty" id="cartCount">0</span>
+      </button>
     </div>
   </div>
-</nav>
+</header>
 
 <!-- Nav Menu Overlay -->
 <div class="nav-menu-overlay" id="navMenuOverlay" onclick="toggleNavMenu()"></div>
@@ -3736,310 +2663,252 @@
 <!-- Nav Slide Menu -->
 <div class="nav-menu" id="navMenu">
   <div class="nav-menu-label">Navigate</div>
-  <a href="#" onclick="navTo('.hero'); return false;">
-    <span class="nav-icon">&#127968;</span> Home
-  </a>
-  <a href="#" onclick="navTo('.builder-section'); return false;">
-    <span class="nav-icon">&#128295;</span> Build Your Bottle
-  </a>
-  <a href="#" onclick="navTo('.shop-section'); return false;">
-    <span class="nav-icon">&#128722;</span> Shop Modules
-  </a>
-  <a href="#" onclick="navTo('.community-section'); return false;">
-    <span class="nav-icon">&#127760;</span> Community Builds
-  </a>
-  <a href="#" onclick="navTo('.feedback-section'); return false;">
-    <span class="nav-icon">&#9997;</span> Leave Feedback
-  </a>
+  <a href="#" onclick="navTo('.hero'); return false;">Home</a>
+  <a href="#" onclick="navTo('.builder-section'); return false;">Build Your Bottle</a>
+  <a href="#" onclick="navTo('.shop-section'); return false;">Shop Modules</a>
+  <a href="#" onclick="navTo('.community-section'); return false;">Community Builds</a>
+  <a href="#" onclick="navTo('.feedback-section'); return false;">Leave Feedback</a>
+  <div class="nav-menu-divider"></div>
+  <div class="nav-menu-label">Explore</div>
+  <a href="/gallery.html">Lookbook</a>
+  <a href="/about.html">Our Story</a>
+  <a href="/faq.html">FAQ</a>
+  <a href="/support.html">Support</a>
+  <a href="/shipping.html">Shipping &amp; Returns</a>
   <div class="nav-menu-divider"></div>
   <div class="nav-menu-label">Account</div>
-  <a href="#" onclick="navMenuAction('signin'); return false;" id="navSignIn">
-    <span class="nav-icon">&#128100;</span> Sign In
-  </a>
+  <a href="#" onclick="navMenuAction('signin'); return false;" id="navSignIn">Sign In</a>
 </div>
 
 <!-- Hero -->
-<section class="hero">
-  <div class="brand-tag">Modular Tube System</div>
-  <h1>HYDRA<span>STACK</span></h1>
-  <p class="tagline">One universal tube. Swap your lid. Size your base. Build the exact bottle you need — every time.</p>
+<section class="hero ts-reset">
+  <div class="hero-wash" aria-hidden="true"></div>
+  <div class="hero-inner container-wide">
+    <div class="hero-copy">
+      <span class="mono-label on-dark hero-kicker" data-parallax="0.12">Modular Tube System</span>
+      <h1 class="ts-display hero-title" data-parallax="0.2">One bottle.<br>Every version<br>of your day.</h1>
+      <p class="ts-lead hero-tagline" data-parallax="0.28">One universal tube. Swap your lid. Size your base. Build the exact bottle you need &mdash; every time.</p>
+      <div class="hero-ctas" data-parallax="0.34">
+        <a href="#" class="btn btn-primary" onclick="navGo('.builder-section'); return false;">Build yours</a>
+        <a href="#" class="btn btn-ghost on-dark" onclick="navGo('.tube-concept'); return false;">How it works</a>
+      </div>
+    </div>
+    <div class="hero-bottle" id="heroBottle" aria-hidden="true"></div>
+  </div>
 </section>
 
 <!-- Tube Concept -->
-<section class="tube-concept">
-  <div class="section-header reveal">
-    <h2>The <span>Tube</span> Principle</h2>
-    <p>Every section shares the same thread pitch. The lid screws onto the mid, the mid screws onto the base. Swap any piece, anytime.</p>
-  </div>
-
-  <div class="tube-diagram reveal-scale">
-    <div class="tube-bottle">
-      <div class="tube-lid" style="position:relative;">
-        <div class="tube-label left" style="top: 15px;">
-          <span>LID MODULE</span>
-          <div class="label-line"></div>
-          <div class="dot"></div>
-        </div>
-      </div>
-      <div class="thread-gap"></div>
-      <div class="tube-mid" style="position:relative;">
-        <div class="shine"></div>
-        <div class="tube-label left" style="top: 75px;">
-          <span>MID CHAMBER</span>
-          <div class="label-line"></div>
-          <div class="dot"></div>
-        </div>
-      </div>
-      <div class="thread-gap"></div>
-      <div class="tube-bottom" style="position:relative;">
-        <div class="base-grip"></div>
-        <div class="tube-label left" style="top: 40px;">
-          <span>BASE MODULE</span>
-          <div class="label-line"></div>
-          <div class="dot"></div>
-        </div>
-      </div>
+<section class="tube-concept ts-reset section">
+  <div class="container">
+    <div class="ts-section-header reveal">
+      <span class="mono-label clay">How it works</span>
+      <h2 class="ts-h1">The Tube Principle</h2>
+      <p class="ts-lead">Every section shares the same thread pitch. The lid screws onto the mid, the mid screws onto the base. Swap any piece, anytime.</p>
     </div>
 
-    <div class="info-cards stagger-children">
-      <div class="info-card" style="border-left-color: var(--accent);">
-        <span class="card-tag" style="color: var(--accent);">UNIVERSAL THREADING</span>
-        <p>Every connection uses the same thread pitch. The lid screws onto the mid, the mid screws onto the base. You can even stack two mids together for double capacity.</p>
+    <div class="tube-explainer">
+      <div class="tube-exploded reveal-scale" id="tubeExploded" aria-hidden="true">
+        <div class="tube-exploded-part">
+          <div class="tube-exploded-svg" data-module="lid"></div>
+          <span class="mono-label">Lid module</span>
+        </div>
+        <div class="tube-exploded-thread" aria-hidden="true"></div>
+        <div class="tube-exploded-part">
+          <div class="tube-exploded-svg" data-module="mid"></div>
+          <span class="mono-label">Mid chamber</span>
+        </div>
+        <div class="tube-exploded-thread" aria-hidden="true"></div>
+        <div class="tube-exploded-part">
+          <div class="tube-exploded-svg" data-module="base"></div>
+          <span class="mono-label">Base module</span>
+        </div>
       </div>
-      <div class="info-card" style="border-left-color: var(--mid-section);">
-        <span class="card-tag" style="color: var(--mid-section);">STANDARD DIAMETER 3.2"</span>
-        <p>The lid and mid chamber share a 3.2" outer diameter — a clean straight cylinder. This is your core tube that holds your drink.</p>
-      </div>
-      <div class="info-card" style="border-left-color: #D4585C;">
-        <span class="card-tag" style="color: #D4585C;">ADAPTIVE BASE WIDTH</span>
-        <p>The base module comes in standard (3.2") or narrow (2.5") diameter. A tapered adapter ring connects the narrow base to the mid — perfect for tight cupholders.</p>
+
+      <div class="tube-info-cards stagger-children">
+        <div class="tube-info-card card">
+          <span class="mono-label clay">Universal threading</span>
+          <p>Every connection uses the same thread pitch. The lid screws onto the mid, the mid screws onto the base. You can even stack two mids together for double capacity.</p>
+        </div>
+        <div class="tube-info-card card">
+          <span class="mono-label">Standard diameter 3.2&quot;</span>
+          <p>The lid and mid chamber share a 3.2&quot; outer diameter &mdash; a clean straight cylinder. This is your core tube that holds your drink.</p>
+        </div>
+        <div class="tube-info-card card">
+          <span class="mono-label" style="color: var(--moss);">Adaptive base width</span>
+          <p>The base module comes in standard (3.2&quot;) or narrow (2.5&quot;) diameter. A tapered adapter ring connects the narrow base to the mid &mdash; perfect for tight cupholders.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Lid Modules -->
-<section class="lid-modules">
-  <div class="section-header reveal">
-    <h2>Swap Your <span>Lid</span></h2>
-    <p>The lid threads on with the same universal connection. Choose the drinking style that fits your day — and swap it whenever you want.</p>
-  </div>
-
-  <div class="lid-grid stagger-children">
-    <div class="lid-card">
-      <span class="lid-badge">LID MODULE 01</span>
-      <div class="lid-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="handle-arch"></div>
-          <div class="handle-lid-body"></div>
-        </div>
-      </div>
-      <h3>Handle Lid</h3>
-      <span class="lid-inspired">Stanley-style carry handle</span>
-      <p>Built-in arch handle for one-handed carry and clipping to bags. Flip-top spout underneath. Grab it and go.</p>
-      <div class="feature-tags">
-        <span class="tag">ONE-HAND CARRY</span>
-        <span class="tag">FLIP SPOUT</span>
-        <span class="tag">CARABINER LOOP</span>
-      </div>
+<section class="m-section ts-reset section band-paper2">
+  <div class="container">
+    <div class="ts-section-header reveal">
+      <span class="mono-label clay">Lid modules</span>
+      <h2 class="ts-h1">Swap your lid</h2>
+      <p class="ts-lead">The lid threads on with the same universal connection. Choose the drinking style that fits your day &mdash; and swap it whenever you want.</p>
     </div>
 
-    <div class="lid-card">
-      <span class="lid-badge">LID MODULE 02</span>
-      <div class="lid-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="straw-lid-body">
-            <div class="straw-tube"></div>
-          </div>
-          <div class="straw-flip-cover"></div>
+    <div class="m-grid m-grid-3 stagger-children">
+      <div class="m-card card card-hover">
+        <span class="chip">Lid module 01</span>
+        <div class="m-visual bottle-tilt" data-bottle-lid="handle" aria-hidden="true"></div>
+        <h3 class="ts-h3">Handle Lid</h3>
+        <span class="m-inspired">Stanley-style carry handle</span>
+        <p>Built-in arch handle for one-handed carry and clipping to bags. Flip-top spout underneath. Grab it and go.</p>
+        <div class="m-tags">
+          <span class="m-tag">One-hand carry</span>
+          <span class="m-tag">Flip spout</span>
+          <span class="m-tag">Carabiner loop</span>
         </div>
       </div>
-      <h3>Straw Lid</h3>
-      <span class="lid-inspired">Owala-style push-button straw</span>
-      <p>Push-button flip reveals a built-in straw for sipping without tilting. Lock it closed for leak-proof transport.</p>
-      <div class="feature-tags">
-        <span class="tag">PUSH-BUTTON FLIP</span>
-        <span class="tag">BUILT-IN STRAW</span>
-        <span class="tag">LEAK-PROOF LOCK</span>
-      </div>
-    </div>
 
-    <div class="lid-card">
-      <span class="lid-badge">LID MODULE 03</span>
-      <div class="lid-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="standard-lid-body"></div>
-          <div class="standard-flip"></div>
+      <div class="m-card card card-hover">
+        <span class="chip">Lid module 02</span>
+        <div class="m-visual bottle-tilt" data-bottle-lid="straw" aria-hidden="true"></div>
+        <h3 class="ts-h3">Straw Lid</h3>
+        <span class="m-inspired">Owala-style push-button straw</span>
+        <p>Push-button flip reveals a built-in straw for sipping without tilting. Lock it closed for leak-proof transport.</p>
+        <div class="m-tags">
+          <span class="m-tag">Push-button flip</span>
+          <span class="m-tag">Built-in straw</span>
+          <span class="m-tag">Leak-proof lock</span>
         </div>
       </div>
-      <h3>Classic Lid</h3>
-      <span class="lid-inspired">Simple flip-top spout</span>
-      <p>No frills. Clean flip-top with wide mouth for easy filling and ice. Lightest, most durable lid option.</p>
-      <div class="feature-tags">
-        <span class="tag">WIDE MOUTH</span>
-        <span class="tag">LIGHTWEIGHT</span>
-        <span class="tag">ICE-FRIENDLY</span>
+
+      <div class="m-card card card-hover">
+        <span class="chip">Lid module 03</span>
+        <div class="m-visual bottle-tilt" data-bottle-lid="classic" aria-hidden="true"></div>
+        <h3 class="ts-h3">Classic Lid</h3>
+        <span class="m-inspired">Simple flip-top spout</span>
+        <p>No frills. Clean flip-top with wide mouth for easy filling and ice. Lightest, most durable lid option.</p>
+        <div class="m-tags">
+          <span class="m-tag">Wide mouth</span>
+          <span class="m-tag">Lightweight</span>
+          <span class="m-tag">Ice-friendly</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Mid Modules -->
-<section class="mid-modules">
-  <div class="section-header reveal">
-    <h2>Swap Your <span>Mid</span></h2>
-    <p>The mid chamber is the core of every HydraStack — double-wall vacuum insulated and threaded on both ends. Choose your grip style.</p>
-  </div>
-
-  <div class="mid-grid stagger-children">
-    <div class="mid-card">
-      <span class="mid-badge">MID MODULE 01</span>
-      <div class="mid-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="mid-body-standard">
-            <div class="mid-thread-top"></div>
-            <div class="mid-thread-bottom"></div>
-          </div>
-        </div>
-      </div>
-      <h3>Standard 16oz</h3>
-      <span class="mid-inspired">Clean cylindrical profile</span>
-      <p>Sleek, straight-walled chamber with no external features. Fits every cupholder and bag pocket. The everyday workhorse.</p>
-      <div class="feature-tags">
-        <span class="tag">VACUUM INSULATED</span>
-        <span class="tag">16 OZ CAPACITY</span>
-        <span class="tag">SLIM PROFILE</span>
-      </div>
+<section class="m-section ts-reset section">
+  <div class="container">
+    <div class="ts-section-header reveal">
+      <span class="mono-label clay">Mid modules</span>
+      <h2 class="ts-h1">Swap your mid</h2>
+      <p class="ts-lead">The mid chamber is the core of every HydraStack &mdash; double-wall vacuum insulated and threaded on both ends. Choose your grip style.</p>
     </div>
 
-    <div class="mid-card">
-      <span class="mid-badge">MID MODULE 02</span>
-      <div class="mid-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="mid-body-handle">
-            <div class="mid-thread-top"></div>
-            <div class="mid-thread-bottom"></div>
-            <div class="mid-side-handle"></div>
-          </div>
+    <div class="m-grid m-grid-3 stagger-children">
+      <div class="m-card card card-hover">
+        <span class="chip">Mid module 01</span>
+        <div class="m-visual bottle-tilt" data-bottle-mid="standard" aria-hidden="true"></div>
+        <h3 class="ts-h3">Standard 16oz</h3>
+        <span class="m-inspired">Clean cylindrical profile</span>
+        <p>Sleek, straight-walled chamber with no external features. Fits every cupholder and bag pocket. The everyday workhorse.</p>
+        <div class="m-tags">
+          <span class="m-tag">Vacuum insulated</span>
+          <span class="m-tag">16 oz capacity</span>
+          <span class="m-tag">Slim profile</span>
         </div>
       </div>
-      <h3>Handle 16oz</h3>
-      <span class="mid-inspired">Integrated side grip</span>
-      <p>Same insulated chamber with an ergonomic side handle molded in. Perfect for hot drinks — grip without the heat. No sleeve needed.</p>
-      <div class="feature-tags">
-        <span class="tag">VACUUM INSULATED</span>
-        <span class="tag">SIDE GRIP</span>
-        <span class="tag">HEAT-FREE HOLD</span>
-      </div>
-    </div>
 
-    <div class="mid-card">
-      <span class="mid-badge">MID MODULE 03</span>
-      <div class="mid-visual-xl">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="mid-body-xl">
-            <div class="mid-thread-top"></div>
-            <div class="mid-thread-bottom"></div>
-          </div>
+      <div class="m-card card card-hover">
+        <span class="chip">Mid module 02</span>
+        <div class="m-visual bottle-tilt" data-bottle-mid="handle" aria-hidden="true"></div>
+        <h3 class="ts-h3">Handle 16oz</h3>
+        <span class="m-inspired">Integrated side grip</span>
+        <p>Same insulated chamber with an ergonomic side handle molded in. Perfect for hot drinks &mdash; grip without the heat. No sleeve needed.</p>
+        <div class="m-tags">
+          <span class="m-tag">Vacuum insulated</span>
+          <span class="m-tag">Side grip</span>
+          <span class="m-tag">Heat-free hold</span>
         </div>
       </div>
-      <h3>XL Mid 24oz</h3>
-      <span class="mid-inspired">Extended capacity chamber</span>
-      <p>Same diameter, taller chamber for all-day hydration. Holds 50% more liquid without changing your lid or base.</p>
-      <div class="feature-tags">
-        <span class="tag">VACUUM INSULATED</span>
-        <span class="tag">24 OZ CAPACITY</span>
-        <span class="tag">SAME THREADS</span>
+
+      <div class="m-card card card-hover">
+        <span class="chip">Mid module 03</span>
+        <div class="m-visual bottle-tilt" data-bottle-mid="xl" aria-hidden="true"></div>
+        <h3 class="ts-h3">XL Mid 24oz</h3>
+        <span class="m-inspired">Extended capacity chamber</span>
+        <p>Same diameter, taller chamber for all-day hydration. Holds 50% more liquid without changing your lid or base.</p>
+        <div class="m-tags">
+          <span class="m-tag">Vacuum insulated</span>
+          <span class="m-tag">24 oz capacity</span>
+          <span class="m-tag">Same threads</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Base Modules -->
-<section class="base-modules">
-  <div class="section-header reveal">
-    <h2>Swap Your <span>Base</span></h2>
-    <p>Same mid chamber, same lid — the base module controls the bottom profile. Pick the one that fits your life.</p>
-  </div>
+<section class="m-section ts-reset section band-paper2">
+  <div class="container">
+    <div class="ts-section-header reveal">
+      <span class="mono-label clay">Base modules</span>
+      <h2 class="ts-h1">Swap your base</h2>
+      <p class="ts-lead">Same mid chamber, same lid &mdash; the base module controls the bottom profile. Pick the one that fits your life.</p>
+    </div>
 
-  <div class="base-grid stagger-children">
-    <div class="base-card">
-      <span class="base-badge">BASE MODULE 01</span>
-      <div class="base-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="base-body-narrow-wrap">
-            <div class="base-body-narrow-adapter"></div>
-            <div class="base-body-narrow">
-              <div class="base-thread-top"></div>
-            </div>
-          </div>
+    <div class="m-grid m-grid-3 stagger-children">
+      <div class="m-card card card-hover">
+        <span class="chip">Base module 01</span>
+        <div class="m-visual bottle-tilt" data-bottle-base="narrow" aria-hidden="true"></div>
+        <h3 class="ts-h3">Narrow Base</h3>
+        <span class="m-inspired">2.5&quot; diameter + adapter ring</span>
+        <p>Tapered adapter steps down to a slimmer cylinder. Fits compact car cupholders that full-size bottles can't.</p>
+        <div class="m-tags">
+          <span class="m-tag">2.5&quot; diameter</span>
+          <span class="m-tag">Adapter ring</span>
+          <span class="m-tag">Car-friendly</span>
         </div>
       </div>
-      <h3>Narrow Base</h3>
-      <span class="base-inspired">2.5" diameter + adapter ring</span>
-      <p>Tapered adapter steps down to a slimmer cylinder. Fits compact car cupholders that full-size bottles can't.</p>
-      <div class="feature-tags">
-        <span class="tag">2.5" DIAMETER</span>
-        <span class="tag">ADAPTER RING</span>
-        <span class="tag">CAR-FRIENDLY</span>
+
+      <div class="m-card card card-hover">
+        <span class="chip">Base module 02</span>
+        <div class="m-visual bottle-tilt" data-bottle-base="standard" aria-hidden="true"></div>
+        <h3 class="ts-h3">Standard Base</h3>
+        <span class="m-inspired">3.2&quot; sealed storage</span>
+        <p>Same width as the mid &mdash; seamless tube. Sealed storage compartment for vitamins, keys, or cash. Fits most cupholders.</p>
+        <div class="m-tags">
+          <span class="m-tag">3.2&quot; diameter</span>
+          <span class="m-tag">Sealed storage</span>
+          <span class="m-tag">Seamless fit</span>
+        </div>
+      </div>
+
+      <div class="m-card card card-hover">
+        <span class="chip">Base module 03</span>
+        <div class="m-visual bottle-tilt" data-bottle-base="xl" aria-hidden="true"></div>
+        <h3 class="ts-h3">XL Liquid Base</h3>
+        <span class="m-inspired">3.2&quot; extra tall capacity</span>
+        <p>Full diameter, extra tall. Maximum liquid capacity for all-day hydration without changing your lid or mid.</p>
+        <div class="m-tags">
+          <span class="m-tag">3.2&quot; diameter</span>
+          <span class="m-tag">Max capacity</span>
+          <span class="m-tag">All-day</span>
+        </div>
       </div>
     </div>
 
-    <div class="base-card">
-      <span class="base-badge">BASE MODULE 02</span>
-      <div class="base-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="base-body-standard">
-            <div class="base-thread-top"></div>
-          </div>
+    <div class="heated-feature band-pine reveal">
+      <div class="heated-feature-copy">
+        <span class="chip">Base module 04</span>
+        <h3 class="ts-h2">Heated Base</h3>
+        <span class="m-inspired on-dark">Rechargeable heating element</span>
+        <p>Built-in rechargeable heating element keeps coffee and tea at your ideal drinking temperature for hours. USB-C charged, temperature controlled, and threaded like everything else &mdash; it clicks onto any mid you own.</p>
+        <div class="m-tags on-dark">
+          <span class="m-tag">USB-C charge</span>
+          <span class="m-tag">Temp control</span>
+          <span class="m-tag">3.2&quot; diameter</span>
         </div>
       </div>
-      <h3>Standard Base</h3>
-      <span class="base-inspired">3.2" sealed storage</span>
-      <p>Same width as the mid — seamless tube. Sealed storage compartment for vitamins, keys, or cash. Fits most cupholders.</p>
-      <div class="feature-tags">
-        <span class="tag">3.2" DIAMETER</span>
-        <span class="tag">SEALED STORAGE</span>
-        <span class="tag">SEAMLESS FIT</span>
-      </div>
-    </div>
-
-    <div class="base-card">
-      <span class="base-badge">BASE MODULE 03</span>
-      <div class="base-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="base-body-xl">
-            <div class="base-thread-top"></div>
-          </div>
-        </div>
-      </div>
-      <h3>XL Liquid Base</h3>
-      <span class="base-inspired">3.2" extra tall capacity</span>
-      <p>Full diameter, extra tall. Maximum liquid capacity for all-day hydration without changing your lid or mid.</p>
-      <div class="feature-tags">
-        <span class="tag">3.2" DIAMETER</span>
-        <span class="tag">MAX CAPACITY</span>
-        <span class="tag">ALL-DAY</span>
-      </div>
-    </div>
-
-    <div class="base-card">
-      <span class="base-badge">BASE MODULE 04</span>
-      <div class="base-visual">
-        <div style="position:relative;width:100%;height:100%;">
-          <div class="base-body-heated">
-            <div class="base-thread-top"></div>
-          </div>
-        </div>
-      </div>
-      <h3>Heated Base</h3>
-      <span class="base-inspired">Rechargeable heating element</span>
-      <p>Built-in rechargeable heating element keeps coffee and tea at your ideal drinking temperature for hours.</p>
-      <div class="feature-tags">
-        <span class="tag">USB-C CHARGE</span>
-        <span class="tag">TEMP CONTROL</span>
-        <span class="tag">3.2" DIAMETER</span>
-      </div>
+      <div class="heated-feature-visual" id="heatedFeatureBottle" aria-hidden="true"></div>
     </div>
   </div>
 </section>
@@ -4322,11 +3191,6 @@
 </section>
 
 <!-- Cart FAB -->
-<button class="cart-fab" onclick="toggleCart()">
-  🛒
-  <div class="cart-count empty" id="cartCount">0</div>
-</button>
-
 <!-- Cart Overlay -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
 
@@ -4594,9 +3458,38 @@
   </div>
 </div>
 
-<div class="footer">
-  HYDRASTACK &mdash; MODULAR TUBE SYSTEM &mdash; CONCEPT PRODUCT DESIGN
-</div>
+<!-- Footer -->
+<footer class="site-footer ts-reset band-pine">
+  <div class="container site-footer-inner">
+    <div class="site-footer-brand">
+      <span class="wordmark on-dark">HydraStack<span class="wordmark-dot">.</span></span>
+      <p class="ts-muted">One universal tube. Swap your lid. Size your base. Build the exact bottle you need &mdash; every time.</p>
+      <span class="mono-label on-dark">Modular tube system &mdash; concept product design</span>
+    </div>
+    <nav class="site-footer-col" aria-label="Product">
+      <span class="mono-label on-dark">Product</span>
+      <a href="#" onclick="navGo('.builder-section'); return false;">Bottle Builder</a>
+      <a href="#" onclick="navGo('.shop-section'); return false;">Shop Modules</a>
+      <a href="/gallery.html">Lookbook</a>
+      <a href="#" onclick="navGo('.community-section'); return false;">Community Builds</a>
+    </nav>
+    <nav class="site-footer-col" aria-label="Company">
+      <span class="mono-label on-dark">Company</span>
+      <a href="/about.html">Our Story</a>
+      <a href="/faq.html">FAQ</a>
+      <a href="/support.html">Support</a>
+      <a href="/shipping.html">Shipping &amp; Returns</a>
+    </nav>
+    <nav class="site-footer-col" aria-label="Account">
+      <span class="mono-label on-dark">Account</span>
+      <a href="#" onclick="openAuthModal(); return false;">Sign In</a>
+      <a href="#" onclick="navGo('.feedback-section'); return false;">Leave Feedback</a>
+    </nav>
+  </div>
+  <div class="container site-footer-legal">
+    <span>&copy; <span id="footerYear">2026</span> HydraStack. A concept product &mdash; orders are simulated.</span>
+  </div>
+</footer>
 
 <script>
   // State
@@ -6879,6 +5772,90 @@
   window.openChat = openChat;
   window.closeChat = closeChat;
   window.sendChatInput = sendChatInput;
+})();
+</script>
+
+<script>
+/* === Trailhead shell: hero/marketing SVG injection, nav helper, parallax === */
+(function () {
+  'use strict';
+
+  /* Scroll-to-section without toggling the nav drawer (used by header/footer links). */
+  window.navGo = function (selector) {
+    var el = document.querySelector(selector);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  /* Hero bottle */
+  var heroEl = document.getElementById('heroBottle');
+  if (heroEl && window.HydraBottle) {
+    heroEl.innerHTML = HydraBottle.render(
+      { lid: 'handle', mid: 'standard', base: 'standard', lidColor: 'sand', midColor: 'ember', baseColor: 'stealth' },
+      { size: 'hero', idPrefix: 'hero', shadow: true });
+  }
+
+  /* Tube Principle exploded modules */
+  document.querySelectorAll('.tube-exploded-svg').forEach(function (el, i) {
+    var part = el.getAttribute('data-module');
+    var type = part === 'lid' ? 'handle' : 'standard';
+    el.innerHTML = HydraBottle.renderModule(part, type, 'titanium', { size: 330, idPrefix: 'expl-' + i });
+  });
+
+  /* Marketing cards: full bottle varying only the featured module */
+  var MKT_COLOR = { lidColor: 'titanium', midColor: 'titanium', baseColor: 'titanium' };
+  document.querySelectorAll('[data-bottle-lid]').forEach(function (el, i) {
+    el.innerHTML = HydraBottle.render(
+      Object.assign({ lid: el.getAttribute('data-bottle-lid'), mid: 'standard', base: 'standard' }, MKT_COLOR,
+        { lidColor: 'ember' }),
+      { size: 175, idPrefix: 'mlid-' + i, shadow: true });
+  });
+  document.querySelectorAll('[data-bottle-mid]').forEach(function (el, i) {
+    el.innerHTML = HydraBottle.render(
+      Object.assign({ lid: 'classic', mid: el.getAttribute('data-bottle-mid'), base: 'standard' }, MKT_COLOR,
+        { midColor: 'alpine' }),
+      { size: 175, idPrefix: 'mmid-' + i, shadow: true });
+  });
+  document.querySelectorAll('[data-bottle-base]').forEach(function (el, i) {
+    el.innerHTML = HydraBottle.render(
+      Object.assign({ lid: 'classic', mid: 'standard', base: el.getAttribute('data-bottle-base') }, MKT_COLOR,
+        { baseColor: 'arctic' }),
+      { size: 175, idPrefix: 'mbase-' + i, shadow: true });
+  });
+
+  /* Heated feature band bottle */
+  var heated = document.getElementById('heatedFeatureBottle');
+  if (heated) {
+    heated.innerHTML = HydraBottle.render(
+      { lid: 'handle', mid: 'standard', base: 'heated', lidColor: 'stealth', midColor: 'stealth', baseColor: 'stealth' },
+      { size: 300, idPrefix: 'heatfeat', shadow: true, animateHeat: true });
+  }
+
+  /* Hero parallax: gentle translate on data-parallax elements + bottle float */
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hero = document.querySelector('.hero');
+  if (hero && !reduced) {
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var y = window.pageYOffset;
+        var h = hero.offsetHeight || 1;
+        if (y > h) return;
+        hero.querySelectorAll('[data-parallax]').forEach(function (el) {
+          var speed = parseFloat(el.getAttribute('data-parallax')) || 0.2;
+          el.style.transform = 'translateY(' + (y * speed) + 'px)';
+          el.style.opacity = Math.max(0, 1 - y / (h * 0.7));
+        });
+        if (heroEl) heroEl.style.transform = 'translateY(' + (y * -0.08) + 'px)';
+      });
+    }, { passive: true });
+  }
+
+  /* Footer year */
+  var yearEl = document.getElementById('footerYear');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 })();
 </script>
 
