@@ -57,457 +57,6 @@
     line-height: 1.6;
   }
 
-  /* === BOTTLE BUILDER === */
-  .builder-section {
-    padding: 5rem 2rem;
-    background: linear-gradient(180deg, var(--dark), #0F1115);
-    text-align: center;
-  }
-
-  .builder-layout {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 4rem;
-    flex-wrap: wrap;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  .builder-preview {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 200px;
-    position: sticky;
-    top: 2rem;
-    padding-top: 50px;
-  }
-
-  .preview-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 3px;
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-  }
-
-  .preview-bottle {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.4s ease;
-  }
-
-  .pv-lid {
-    height: 55px;
-    border-radius: 16px 16px 0 0;
-    position: relative;
-    transition: all 0.4s ease;
-    box-shadow: inset 0 2px 8px rgba(255,255,255,0.25), 0 3px 10px rgba(0,0,0,0.25);
-    width: 100px;
-  }
-
-  .pv-handle-arch {
-    width: 74px; height: 42px;
-    border: 7px solid;
-    border-bottom: none;
-    border-radius: 37px 37px 0 0;
-    position: absolute;
-    top: -38px; left: 50%;
-    transform: translateX(-50%);
-    transition: all 0.4s ease;
-  }
-
-  .pv-handle-arch::before, .pv-handle-arch::after {
-    content: '';
-    width: 11px; height: 11px;
-    border-radius: 50%;
-    position: absolute; bottom: -6px;
-    transition: all 0.4s ease;
-  }
-
-  .pv-handle-arch::before { left: -9px; }
-  .pv-handle-arch::after { right: -9px; }
-
-  .pv-straw-btn {
-    width: 46px; height: 24px;
-    border-radius: 12px 12px 4px 4px;
-    position: absolute;
-    top: -18px; left: 50%;
-    transform: translateX(-50%);
-    transition: all 0.4s ease;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
-  }
-
-  .pv-straw-btn::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: rgba(255,255,255,0.4);
-    border-radius: 50%;
-    position: absolute; top: 5px; left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .pv-classic-knob {
-    width: 36px; height: 14px;
-    border-radius: 8px 8px 3px 3px;
-    position: absolute;
-    top: -10px; left: 50%;
-    transform: translateX(-50%);
-    transition: all 0.4s ease;
-  }
-
-  .pv-thread {
-    height: 3px;
-    width: 70%;
-    background: rgba(62,207,207,0.3);
-    transition: all 0.4s ease;
-  }
-
-  .pv-mid {
-    width: 100px;
-    height: 180px;
-    position: relative;
-    transition: all 0.4s ease;
-    box-shadow: inset 2px 0 8px rgba(255,255,255,0.1), inset -2px 0 8px rgba(0,0,0,0.12);
-    overflow: visible;
-  }
-
-  .pv-mid .pv-shine {
-    position: absolute;
-    top: 12px; bottom: 12px; left: 8px;
-    width: 3px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 2px;
-  }
-
-  /* Stanley-style side handle on mid chamber */
-  .pv-mid-handle {
-    position: absolute;
-    right: -28px;
-    top: 18px;
-    width: 22px;
-    height: 130px;
-    border: 7px solid;
-    border-left: none;
-    border-radius: 0 40px 40px 0;
-    display: none;
-    transition: all 0.4s ease;
-  }
-
-  .pv-mid-handle::before,
-  .pv-mid-handle::after {
-    content: '';
-    position: absolute;
-    left: -4px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--handle-color, #4a5f6e);
-    transition: all 0.4s ease;
-  }
-
-  .pv-mid-handle::before { top: -3px; }
-  .pv-mid-handle::after { bottom: -3px; }
-
-  .pv-base-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.4s ease;
-  }
-
-  .pv-adapter {
-    height: 14px;
-    transition: all 0.4s ease;
-    display: none;
-  }
-
-  .pv-base {
-    height: 100px;
-    border-radius: 0 0 12px 12px;
-    position: relative;
-    transition: all 0.4s ease;
-    box-shadow: inset 2px 0 6px rgba(255,255,255,0.08), inset -2px 0 6px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.35);
-  }
-
-  .pv-base-grip {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 10px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 0 0 12px 12px;
-  }
-
-  /* Heat ring glow */
-  .pv-heat-ring {
-    position: absolute;
-    bottom: 14px; left: 50%;
-    transform: translateX(-50%);
-    width: 36px; height: 36px;
-    border: 2px solid rgba(255,150,50,0.4);
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,100,30,0.25), transparent 70%);
-    display: none;
-    transition: all 0.4s ease;
-    animation: heatPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes heatPulse {
-    0%, 100% { opacity: 0.6; box-shadow: 0 0 8px rgba(255,100,30,0.2); }
-    50% { opacity: 1; box-shadow: 0 0 18px rgba(255,100,30,0.4); }
-  }
-
-  /* Builder options */
-  .builder-options {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    min-width: 280px;
-    max-width: 440px;
-    text-align: left;
-  }
-
-  .option-group { }
-
-  .option-group-title {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 3px;
-    color: var(--accent);
-    margin-bottom: 0.8rem;
-    display: block;
-  }
-
-  .option-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .option-btn {
-    background: rgba(255,255,255,0.04);
-    border: 2px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 0.6rem 1rem;
-    color: var(--warm);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 400;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .option-btn:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.2);
-  }
-
-  .option-btn.active {
-    background: rgba(62,207,207,0.1);
-    border-color: var(--accent);
-    color: white;
-    font-weight: 600;
-  }
-
-  .option-btn .mini-icon { font-size: 0.9rem; }
-
-  /* Per-section color pickers */
-  .color-section-picker {
-    margin-top: 0.5rem;
-  }
-
-  .color-section-label {
-    font-size: 0.72rem;
-    color: #7788AA;
-    font-weight: 400;
-    margin-bottom: 0.4rem;
-    display: block;
-  }
-
-  .color-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 0.8rem;
-  }
-
-  .builder-swatch {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-  }
-
-  .builder-swatch:hover { transform: scale(1.12); }
-
-  .builder-swatch.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 10px rgba(62,207,207,0.3);
-  }
-
-  /* Build summary */
-  .build-summary {
-    margin-top: 1rem;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 1.2rem 1.5rem;
-  }
-
-  .build-summary .summary-title {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    color: var(--accent);
-    margin-bottom: 0.6rem;
-    display: block;
-  }
-
-  .summary-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.25rem 0;
-    font-size: 0.8rem;
-    color: #AAB8CC;
-    font-weight: 300;
-  }
-
-  .summary-line .val { color: var(--warm); font-weight: 500; }
-
-  /* Features */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    padding: 4rem 2rem;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .feature-card {
-    text-align: center;
-    padding: 2rem 1.5rem;
-    background: rgba(255,255,255,0.03);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: all 0.3s ease;
-  }
-
-  .feature-card:hover { background: rgba(255,255,255,0.06); transform: translateY(-4px); }
-
-  .feature-icon { font-size: 2rem; margin-bottom: 0.8rem; display: block; }
-  .feature-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
-  .feature-card p { font-size: 0.78rem; color: #7788AA; line-height: 1.5; font-weight: 300; }
-
-
-  /* === BUILDER ACTION BUTTONS === */
-  .builder-actions {
-    display: flex;
-    gap: 0.8rem;
-    margin-top: 1.2rem;
-    flex-wrap: wrap;
-  }
-
-  .builder-action-btn {
-    flex: 1;
-    min-width: 140px;
-    padding: 0.7rem 1.2rem;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-  }
-
-  .builder-action-btn.save-btn {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: var(--warm);
-  }
-
-  .builder-action-btn.save-btn:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: var(--accent);
-  }
-
-  .builder-action-btn.cart-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: var(--dark);
-    font-weight: 700;
-  }
-
-  .builder-action-btn.cart-btn:hover { opacity: 0.9; }
-
-  .builder-action-btn.added {
-    background: #2ecc71 !important;
-    color: #fff !important;
-    border-color: #2ecc71 !important;
-  }
-
-  /* === SAVE BUILD NAME PROMPT === */
-  .save-name-prompt {
-    display: none;
-    margin-top: 0.8rem;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 1rem;
-  }
-
-  .save-name-prompt.open { display: block; }
-
-  .save-name-prompt input {
-    width: 100%;
-    padding: 0.5rem 0.8rem;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 8px;
-    color: var(--warm);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem;
-    margin-bottom: 0.6rem;
-    outline: none;
-  }
-
-  .save-name-prompt input:focus { border-color: var(--accent); }
-
-  .save-name-prompt .save-name-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .save-name-prompt button {
-    flex: 1;
-    padding: 0.45rem;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .save-name-confirm {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: var(--dark);
-  }
-
-  .save-name-cancel {
-    background: rgba(255,255,255,0.06);
-    color: var(--warm);
-    border: 1px solid rgba(255,255,255,0.1) !important;
-  }
-
   /* === MY BUILDS MODAL === */
   .builds-overlay {
     position: fixed;
@@ -949,503 +498,6 @@
     margin-top: 0.4rem;
     font-family: 'Space Mono', monospace;
   }
-
-  /* === SHOP === */
-  .shop-section {
-    padding: 5rem 2rem;
-    background: linear-gradient(180deg, #0F1115, #0D0F13);
-    text-align: center;
-  }
-
-  .shop-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.5rem;
-    max-width: 1050px;
-    margin: 0 auto;
-  }
-
-  /* Individual Parts Header */
-  .individual-parts-header {
-    max-width: 1050px;
-    margin: 0 auto 2rem;
-    text-align: center;
-    padding: 1.5rem 0 0.5rem;
-    border-top: 1px solid rgba(62,207,207,0.12);
-  }
-
-  .individual-parts-header h3 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
-    letter-spacing: 0.5px;
-  }
-
-  .individual-parts-header h3 span {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .individual-parts-header p {
-    color: #8899AA;
-    font-size: 0.95rem;
-    font-weight: 300;
-  }
-
-  /* Starter Bundle Card */
-  .starter-bundle {
-    max-width: 1050px;
-    margin: 0 auto 2.5rem;
-    background: linear-gradient(135deg, rgba(62,207,207,0.08), rgba(42,168,216,0.06));
-    border: 2px solid rgba(62,207,207,0.2);
-    border-radius: 24px;
-    padding: 2.5rem;
-    display: flex;
-    align-items: center;
-    gap: 3rem;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-
-  .starter-bundle:hover {
-    border-color: rgba(62,207,207,0.35);
-    box-shadow: 0 8px 32px rgba(62,207,207,0.1);
-  }
-
-  .starter-bundle .bundle-badge {
-    position: absolute;
-    top: 16px; right: 20px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    color: #4CAF50;
-    background: rgba(76,175,80,0.12);
-    border: 1px solid rgba(76,175,80,0.3);
-    border-radius: 20px;
-    padding: 4px 12px;
-  }
-
-  .bundle-visual {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  .bv-lid {
-    width: 64px; height: 35px;
-    background: linear-gradient(180deg, #D8E2EA, var(--lid-section));
-    border-radius: 10px 10px 0 0;
-    box-shadow: inset 0 2px 5px rgba(255,255,255,0.25);
-    position: relative;
-  }
-
-  .bv-lid::before {
-    content: '';
-    width: 24px; height: 10px;
-    background: linear-gradient(180deg, #E8EEF2, #B0BEC5);
-    border-radius: 6px 6px 2px 2px;
-    position: absolute;
-    top: -7px; left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .bv-thread {
-    width: 45px; height: 2px;
-    background: rgba(62,207,207,0.3);
-  }
-
-  .bv-mid {
-    width: 64px; height: 100px;
-    background: linear-gradient(180deg, var(--mid-section), #7A9AAE);
-    box-shadow: inset 2px 0 4px rgba(255,255,255,0.1), inset -2px 0 4px rgba(0,0,0,0.1);
-    position: relative;
-  }
-
-  .bv-mid .bv-shine {
-    position: absolute;
-    top: 8px; bottom: 8px; left: 5px;
-    width: 2px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 2px;
-  }
-
-  .bv-base {
-    width: 64px; height: 55px;
-    background: linear-gradient(180deg, var(--bottom-section), #5A7A8E);
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
-
-  .bundle-info {
-    flex: 1;
-  }
-
-  .bundle-info .bundle-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 3px;
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-    display: block;
-  }
-
-  .bundle-info h3 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    margin-bottom: 0.4rem;
-  }
-
-  .bundle-info .bundle-desc {
-    font-size: 0.88rem;
-    color: #8899AA;
-    font-weight: 300;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-    max-width: 420px;
-  }
-
-  .bundle-pricing {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .bundle-price {
-    font-family: 'Space Mono', monospace;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
-
-  .bundle-original {
-    font-family: 'Space Mono', monospace;
-    font-size: 1rem;
-    color: #667788;
-    text-decoration: line-through;
-  }
-
-  .bundle-savings {
-    font-size: 0.78rem;
-    color: #4CAF50;
-    font-weight: 600;
-  }
-
-  .bundle-includes {
-    display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.2rem;
-  }
-
-  .bundle-includes .bi-item {
-    font-size: 0.72rem;
-    color: #AAB8CC;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 4px 10px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .bundle-atc {
-    padding: 0.8rem 2rem;
-    background: var(--accent);
-    border: none;
-    border-radius: 12px;
-    color: var(--dark);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.25s ease;
-  }
-
-  .bundle-atc:hover {
-    background: #50E0E0;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(62,207,207,0.3);
-  }
-
-  .bundle-atc.added {
-    background: #4CAF50;
-    color: white;
-  }
-
-  @media (max-width: 650px) {
-    .starter-bundle {
-      flex-direction: column;
-      text-align: center;
-      padding: 2rem 1.5rem;
-      gap: 1.5rem;
-    }
-    .bundle-includes { justify-content: center; }
-    .bundle-pricing { justify-content: center; }
-  }
-
-  .product-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 18px;
-    padding: 1.8rem 1.4rem 1.4rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .product-card:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.14);
-    transform: translateY(-4px);
-  }
-
-  .product-card .prod-icon {
-    width: 60px; height: 60px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
-    flex-shrink: 0;
-  }
-
-  .product-card h4 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-  }
-
-  .product-card .prod-desc {
-    font-size: 0.72rem;
-    color: #7788AA;
-    line-height: 1.4;
-    font-weight: 300;
-    margin-bottom: 0.8rem;
-    min-height: 32px;
-  }
-
-  .product-card .prod-price {
-    font-family: 'Space Mono', monospace;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--accent);
-    margin-bottom: 1rem;
-  }
-
-  .add-to-cart-btn {
-    width: 100%;
-    padding: 0.65rem 1rem;
-    background: rgba(62,207,207,0.12);
-    border: 2px solid var(--accent);
-    border-radius: 10px;
-    color: var(--accent);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-  }
-
-  .add-to-cart-btn:hover {
-    background: var(--accent);
-    color: var(--dark);
-  }
-
-  .add-to-cart-btn.added {
-    background: rgba(76,175,80,0.15);
-    border-color: #4CAF50;
-    color: #4CAF50;
-  }
-
-  .add-to-cart-btn .atc-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #4CAF50;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    margin-left: 0.4rem;
-    vertical-align: middle;
-  }
-
-  .atc-inline-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-  }
-
-  .atc-inline-controls .atc-pm-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 1.5px solid #4CAF50;
-    background: rgba(76,175,80,0.1);
-    color: #4CAF50;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    padding: 0;
-    line-height: 1;
-  }
-
-  .atc-inline-controls .atc-pm-btn:hover {
-    background: #4CAF50;
-    color: #fff;
-  }
-
-  .atc-inline-controls .atc-qty-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #4CAF50;
-    min-width: 20px;
-    text-align: center;
-  }
-
-  /* Per-product color selector */
-  .prod-color-label {
-    font-size: 0.65rem;
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 1px;
-    color: #7788AA;
-    margin-bottom: 0.3rem;
-    text-align: center;
-  }
-
-  .prod-color-row {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    margin-bottom: 0.8rem;
-  }
-
-  .prod-swatch {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-  }
-
-  .prod-swatch:hover {
-    transform: scale(1.15);
-  }
-
-  .prod-swatch.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 8px rgba(62,207,207,0.4);
-  }
-
-  .prod-swatch.custom-prod-swatch {
-    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red) !important;
-    position: relative;
-  }
-
-  .prod-swatch.custom-prod-swatch::after {
-    content: '+';
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.6rem;
-    font-weight: 800;
-    color: white;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
-  }
-
-  .prod-custom-picker {
-    display: none;
-    margin-top: 0.4rem;
-    text-align: center;
-  }
-
-  .prod-custom-picker.open { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-
-  .prod-custom-picker input[type="color"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 30px; height: 30px;
-    border: 2px solid rgba(255,255,255,0.15);
-    border-radius: 50%;
-    background: none;
-    cursor: pointer;
-    padding: 0;
-  }
-
-  .prod-custom-picker input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-  .prod-custom-picker input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
-
-  .prod-custom-price-tag {
-    font-size: 0.6rem;
-    color: var(--accent);
-    font-family: 'Space Mono', monospace;
-  }
-
-  /* Color name tag in cart items */
-  .ci-color {
-    font-size: 0.65rem;
-    color: #7788AA;
-    font-weight: 400;
-  }
-
-  /* Bundle color row */
-  .bundle-color-section {
-    margin-bottom: 1.2rem;
-  }
-
-  .bundle-color-label {
-    font-size: 0.65rem;
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 1px;
-    color: #7788AA;
-    margin-bottom: 0.4rem;
-  }
-
-  .bundle-color-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .bundle-swatch {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
-  }
-
-  .bundle-swatch:hover {
-    transform: scale(1.15);
-  }
-
-  .bundle-swatch.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 8px rgba(62,207,207,0.4);
-  }
-
-  /* Floating cart button */
 
   /* Cart Drawer */
   .cart-overlay {
@@ -2366,260 +1418,6 @@
     100% { filter: drop-shadow(0 0 0px rgba(62,207,207,0)); }
   }
 
-  /* === CUSTOM COLOR PICKER === */
-  .builder-swatch.custom-swatch {
-    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red) !important;
-    position: relative;
-  }
-
-  .builder-swatch.custom-swatch::after {
-    content: '+';
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: white;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-  }
-
-  .custom-color-picker {
-    display: none;
-    margin-top: 0.6rem;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 0.8rem;
-  }
-
-  .custom-color-picker.open { display: block; }
-
-  .custom-color-picker label {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 2px;
-    color: #7788AA;
-    display: block;
-    margin-bottom: 0.4rem;
-  }
-
-  .custom-picker-row {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-
-  .custom-picker-row input[type="color"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 44px;
-    height: 44px;
-    border: 2px solid rgba(255,255,255,0.15);
-    border-radius: 50%;
-    background: none;
-    cursor: pointer;
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .custom-picker-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-  .custom-picker-row input[type="color"]::-webkit-color-swatch {
-    border: none;
-    border-radius: 50%;
-  }
-
-  .custom-color-price {
-    font-size: 0.72rem;
-    color: var(--accent);
-    font-weight: 600;
-    font-family: 'Space Mono', monospace;
-  }
-
-  .custom-color-note {
-    font-size: 0.65rem;
-    color: #556677;
-    margin-top: 0.3rem;
-  }
-
-  @media (max-width: 768px) {
-    .builder-layout { flex-direction: column; align-items: center; }
-    .builder-preview { position: static; }
-    .builder-options { min-width: auto; width: 100%; max-width: 400px; }
-  }
-  /* === BUILD ASSISTANT CHAT === */
-  .assist-btn {
-    background: rgba(62,207,207,0.1) !important;
-    border: 1px solid rgba(62,207,207,0.3) !important;
-    color: var(--accent) !important;
-  }
-  .assist-btn:hover {
-    background: rgba(62,207,207,0.2) !important;
-  }
-
-  .chat-window {
-    width: 100%;
-    max-height: 500px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(62,207,207,0.15);
-    border-radius: 16px;
-    margin-top: 1.2rem;
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .chat-window.open { display: flex; }
-
-  .chat-header {
-    padding: 1rem 1.2rem;
-    background: rgba(255,255,255,0.03);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .chat-header-title {
-    font-weight: 700;
-    font-size: 0.9rem;
-  }
-  .chat-header-title span {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .chat-close-btn {
-    background: none;
-    border: none;
-    color: #7788AA;
-    font-size: 1.3rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-  }
-  .chat-close-btn:hover { color: var(--warm); }
-
-  .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    max-height: 340px;
-  }
-
-  .chat-msg {
-    max-width: 85%;
-    padding: 0.65rem 0.9rem;
-    border-radius: 14px;
-    font-size: 0.84rem;
-    line-height: 1.5;
-  }
-  .chat-msg.bot {
-    align-self: flex-start;
-    background: rgba(255,255,255,0.06);
-    color: #D0D8E0;
-    border-bottom-left-radius: 4px;
-  }
-  .chat-msg.user {
-    align-self: flex-end;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: var(--dark);
-    font-weight: 600;
-    border-bottom-right-radius: 4px;
-  }
-
-  .chat-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.4rem;
-  }
-  .chat-option-btn {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    border: 1px solid rgba(62,207,207,0.3);
-    background: rgba(62,207,207,0.08);
-    color: var(--accent);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .chat-option-btn:hover {
-    background: rgba(62,207,207,0.2);
-    border-color: var(--accent);
-  }
-
-  .chat-build-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(62,207,207,0.2);
-    border-radius: 12px;
-    padding: 0.8rem;
-    margin-top: 0.5rem;
-  }
-  .chat-build-card .build-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.78rem;
-    padding: 0.25rem 0;
-    color: #AAB8CC;
-  }
-  .chat-build-card .build-row span:last-child {
-    color: var(--accent);
-    font-weight: 600;
-  }
-  .chat-apply-btn {
-    width: 100%;
-    margin-top: 0.6rem;
-    padding: 0.5rem;
-    border-radius: 10px;
-    border: none;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: var(--dark);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .chat-apply-btn:hover { opacity: 0.85; }
-
-  .chat-input-area {
-    padding: 0.8rem;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    display: none;
-  }
-  .chat-input-area.active { display: flex; gap: 0.5rem; }
-  .chat-input {
-    flex: 1;
-    padding: 0.55rem 0.8rem;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    color: var(--warm);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.85rem;
-    outline: none;
-  }
-  .chat-input:focus { border-color: var(--accent); }
-  .chat-input::placeholder { color: #556677; }
-  .chat-send-btn {
-    padding: 0.55rem 1rem;
-    border-radius: 10px;
-    border: none;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: var(--dark);
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 0.85rem;
-  }
-
-  @media (max-width: 480px) {
-    .chat-window { max-height: 400px; }
-  }
 </style>
 </head>
 <body>
@@ -2914,88 +1712,52 @@
 </section>
 
 <!-- === BOTTLE BUILDER === -->
-<section class="builder-section">
-  <div class="section-header reveal">
-    <h2>Build Your <span>Bottle</span></h2>
-    <p>Pick your lid, base, and color for each section — the preview updates live.</p>
+<section class="builder-section ts-reset section band-paper2">
+  <div class="container">
+  <div class="ts-section-header reveal">
+    <span class="mono-label clay">Configurator</span>
+    <h2 class="ts-h1">Build your bottle</h2>
+    <p class="ts-lead">Pick your lid, base, and color for each section &mdash; the preview updates live.</p>
   </div>
 
   <div class="builder-layout reveal">
     <!-- Live Preview -->
-    <div class="builder-preview">
-      <!-- label removed -->
-      <div class="preview-bottle" id="previewBottle">
-        <div class="pv-lid" id="pvLid">
-          <div class="pv-handle-arch" id="pvHandleArch"></div>
-          <div class="pv-straw-btn" id="pvStrawBtn" style="display:none;"></div>
-          <div class="pv-classic-knob" id="pvClassicKnob" style="display:none;"></div>
-        </div>
-        <div class="pv-thread"></div>
-        <div class="pv-mid" id="pvMid">
-          <div class="pv-shine"></div>
-          <div class="pv-mid-handle" id="pvMidHandle"></div>
-        </div>
-        <div class="pv-thread"></div>
-        <div class="pv-base-wrap" id="pvBaseWrap">
-          <div class="pv-adapter" id="pvAdapter"></div>
-          <div class="pv-base" id="pvBase">
-            <div class="pv-base-grip"></div>
-            <div class="pv-heat-ring" id="pvHeatRing"></div>
-          </div>
-        </div>
-      </div>
+    <div class="builder-preview card">
+      <span class="mono-label">Live preview</span>
+      <div class="preview-bottle" id="previewBottle"></div>
+      <div class="preview-3d-hint mono-label" id="preview3dHint" hidden>Drag to rotate</div>
     </div>
 
     <!-- Options -->
     <div class="builder-options">
       <!-- Lid -->
       <div class="option-group">
-        <span class="option-group-title">01 — LID MODULE</span>
+        <span class="option-group-title mono-label">01 &mdash; Lid module</span>
         <div class="option-row">
-          <button class="option-btn active" data-lid="handle" onclick="selectLid('handle')">
-            <span class="mini-icon">🔗</span> Handle
-          </button>
-          <button class="option-btn" data-lid="straw" onclick="selectLid('straw')">
-            <span class="mini-icon">🥤</span> Straw
-          </button>
-          <button class="option-btn" data-lid="classic" onclick="selectLid('classic')">
-            <span class="mini-icon">⬆️</span> Classic
-          </button>
+          <button class="option-btn active" data-lid="handle" onclick="selectLid('handle')">Handle</button>
+          <button class="option-btn" data-lid="straw" onclick="selectLid('straw')">Straw</button>
+          <button class="option-btn" data-lid="classic" onclick="selectLid('classic')">Classic</button>
         </div>
       </div>
 
       <!-- Mid -->
       <div class="option-group">
-        <span class="option-group-title">02 — MID CHAMBER</span>
+        <span class="option-group-title mono-label">02 &mdash; Mid chamber</span>
         <div class="option-row">
-          <button class="option-btn active" data-mid="standard" onclick="selectMid('standard')">
-            <span class="mini-icon">🧊</span> Standard
-          </button>
-          <button class="option-btn" data-mid="handle" onclick="selectMid('handle')">
-            <span class="mini-icon">☕</span> Handle
-          </button>
-          <button class="option-btn" data-mid="xl" onclick="selectMid('xl')">
-            <span class="mini-icon">📏</span> XL 24oz
-          </button>
+          <button class="option-btn active" data-mid="standard" onclick="selectMid('standard')">Standard</button>
+          <button class="option-btn" data-mid="handle" onclick="selectMid('handle')">Handle</button>
+          <button class="option-btn" data-mid="xl" onclick="selectMid('xl')">XL 24oz</button>
         </div>
       </div>
 
       <!-- Base -->
       <div class="option-group">
-        <span class="option-group-title">03 — BASE MODULE</span>
+        <span class="option-group-title mono-label">03 &mdash; Base module</span>
         <div class="option-row">
-          <button class="option-btn" data-base="narrow" onclick="selectBase('narrow')">
-            <span class="mini-icon">🚗</span> Narrow
-          </button>
-          <button class="option-btn active" data-base="standard" onclick="selectBase('standard')">
-            <span class="mini-icon">📐</span> Standard
-          </button>
-          <button class="option-btn" data-base="xl" onclick="selectBase('xl')">
-            <span class="mini-icon">💧</span> XL
-          </button>
-          <button class="option-btn" data-base="heated" onclick="selectBase('heated')">
-            <span class="mini-icon">🔥</span> Heated
-          </button>
+          <button class="option-btn" data-base="narrow" onclick="selectBase('narrow')">Narrow</button>
+          <button class="option-btn active" data-base="standard" onclick="selectBase('standard')">Standard</button>
+          <button class="option-btn" data-base="xl" onclick="selectBase('xl')">XL</button>
+          <button class="option-btn" data-base="heated" onclick="selectBase('heated')">Heated</button>
         </div>
       </div>
 
@@ -3108,86 +1870,82 @@
       </div>
     </div>
   </div>
+  </div>
 </section>
 
 <!-- Features -->
-<div class="features-grid stagger-children">
-  <div class="feature-card">
-    <span class="feature-icon">📐</span>
-    <h4>Uniform Core Tube</h4>
-    <p>Lid + mid share a 3.2" diameter. The base adapts to your cupholder.</p>
-  </div>
-  <div class="feature-card">
-    <span class="feature-icon">♻️</span>
-    <h4>18/8 Stainless</h4>
-    <p>Food-grade metal throughout. No plastic taste. Built for life.</p>
-  </div>
-  <div class="feature-card">
-    <span class="feature-icon">🧊</span>
-    <h4>Vacuum Insulated</h4>
-    <p>Double-wall mid chamber — 24hr cold, 12hr hot.</p>
-  </div>
-  <div class="feature-card">
-    <span class="feature-icon">🔥</span>
-    <h4>Heated Base</h4>
-    <p>Rechargeable heating element keeps drinks at your ideal temp.</p>
+<div class="features-band ts-reset section-tight band-pine">
+  <div class="container features-grid stagger-children">
+    <div class="feature-card">
+      <span class="mono-label on-dark">Uniform core tube</span>
+      <p>Lid + mid share a 3.2&quot; diameter. The base adapts to your cupholder.</p>
+    </div>
+    <div class="feature-card">
+      <span class="mono-label on-dark">18/8 stainless</span>
+      <p>Food-grade metal throughout. No plastic taste. Built for life.</p>
+    </div>
+    <div class="feature-card">
+      <span class="mono-label on-dark">Vacuum insulated</span>
+      <p>Double-wall mid chamber &mdash; 24hr cold, 12hr hot.</p>
+    </div>
+    <div class="feature-card">
+      <span class="mono-label on-dark">Heated base</span>
+      <p>Rechargeable heating element keeps drinks at your ideal temp.</p>
+    </div>
   </div>
 </div>
 
 <!-- === SHOP === -->
-<section class="shop-section">
-  <div class="section-header reveal">
-    <h2>Shop <span>Modules</span></h2>
-    <p>Grab the starter set or build your own — every piece sold individually.</p>
+<section class="shop-section ts-reset section">
+  <div class="container">
+  <div class="ts-section-header reveal">
+    <span class="mono-label clay">Shop</span>
+    <h2 class="ts-h1">Shop modules</h2>
+    <p class="ts-lead">Grab the starter set or build your own &mdash; every piece sold individually.</p>
   </div>
 
   <!-- Starter Bundle -->
-  <div class="starter-bundle reveal-scale">
-    <div class="bundle-badge">SAVE 40%</div>
-    <div class="bundle-visual">
-      <div class="bv-lid"></div>
-      <div class="bv-thread"></div>
-      <div class="bv-mid"><div class="bv-shine"></div></div>
-      <div class="bv-thread"></div>
-      <div class="bv-base"></div>
-    </div>
+  <div class="starter-bundle card reveal-scale">
+    <div class="bundle-badge chip">Save 40%</div>
+    <div class="bundle-visual bottle-tilt" id="bundleVisual" aria-hidden="true"></div>
     <div class="bundle-info">
-      <span class="bundle-tag">STARTER SET</span>
-      <h3>HydraStack Complete Bottle</h3>
-      <p class="bundle-desc">Everything you need to start — Classic Lid, 16oz insulated Mid Chamber, and Standard Base. A fully functional vacuum-insulated water bottle, ready to go out of the box.</p>
+      <span class="mono-label clay">Starter set</span>
+      <h3 class="ts-h2">HydraStack Complete Bottle</h3>
+      <p class="bundle-desc">Everything you need to start &mdash; Classic Lid, 16oz insulated Mid Chamber, and Standard Base. A fully functional vacuum-insulated water bottle, ready to go out of the box.</p>
       <div class="bundle-includes">
-        <span class="bi-item">⬆️ Classic Lid</span>
-        <span class="bi-item">🧊 Mid Chamber 16oz</span>
-        <span class="bi-item">📐 Standard Base</span>
+        <span class="m-tag">Classic Lid</span>
+        <span class="m-tag">Mid Chamber 16oz</span>
+        <span class="m-tag">Standard Base</span>
       </div>
       <div class="bundle-pricing">
-        <span class="bundle-price">$29.99</span>
+        <span class="bundle-price ts-price">$29.99</span>
         <span class="bundle-original">$49.97</span>
         <span class="bundle-savings">Save $19.98</span>
       </div>
       <div class="bundle-color-section">
-        <div class="bundle-color-label">COLOR</div>
+        <div class="mono-label">Color</div>
         <div class="bundle-color-row" id="bundleColorRow"></div>
         <div class="prod-custom-picker" id="prodPicker-starter-bundle">
           <input type="color" value="#8B5CF6" oninput="applyProductCustomColor('starter-bundle', this.value)">
           <span class="prod-custom-price-tag">+$26.97 (3 pcs)</span>
         </div>
       </div>
-      <button class="bundle-atc" id="atc-starter" onclick="addToCart('starter-bundle')">Add Starter Set to Cart</button>
+      <button class="bundle-atc btn btn-primary" id="atc-starter" onclick="addToCart('starter-bundle')">Add Starter Set to Cart</button>
     </div>
   </div>
 
   <div class="individual-parts-header reveal">
-    <h3>Individual <span>Parts</span></h3>
-    <p>Swap, upgrade, or expand — every piece sold separately.</p>
+    <h3 class="ts-h2">Individual parts</h3>
+    <p class="ts-muted">Swap, upgrade, or expand &mdash; every piece sold separately.</p>
   </div>
   <div class="shop-grid" id="shopGrid"></div>
 
   <div class="individual-parts-header reveal" style="margin-top: 3rem;">
-    <h3>Accessories</h3>
-    <p>Add-ons and extras that work with any HydraStack setup.</p>
+    <h3 class="ts-h2">Accessories</h3>
+    <p class="ts-muted">Add-ons and extras that work with any HydraStack setup.</p>
   </div>
   <div class="shop-grid" id="accessoryGrid"></div>
+  </div>
 </section>
 
 <!-- Cart FAB -->
@@ -3627,79 +2385,19 @@
     const mc = getColorObj(midColor, 'mid');
     const bc = getColorObj(baseColor, 'base');
 
-    const lidGrad = `linear-gradient(180deg, ${lc.main[0]}, ${lc.main[1]})`;
-    const midGrad = `linear-gradient(180deg, ${mc.main[0]}, ${mc.main[1]})`;
-    const baseGrad = `linear-gradient(180deg, ${bc.main[0]}, ${bc.main[1]})`;
+    const config = {
+      lid: currentLid, mid: currentMid, base: currentBase,
+      lidColor: lc, midColor: mc, baseColor: bc
+    };
 
-    // Lid
-    const pvLid = document.getElementById('pvLid');
-    pvLid.style.background = lidGrad;
-
-    const pvHandleArch = document.getElementById('pvHandleArch');
-    const pvStrawBtn = document.getElementById('pvStrawBtn');
-    const pvClassicKnob = document.getElementById('pvClassicKnob');
-
-    pvHandleArch.style.display = 'none';
-    pvStrawBtn.style.display = 'none';
-    pvClassicKnob.style.display = 'none';
-
-    if (currentLid === 'handle') {
-      pvHandleArch.style.display = 'block';
-      pvHandleArch.style.borderColor = lc.accent;
-      pvHandleArch.style.setProperty('--knob-color', lc.accent);
-    } else if (currentLid === 'straw') {
-      pvStrawBtn.style.display = 'block';
-      pvStrawBtn.style.background = lc.accent;
-    } else {
-      pvClassicKnob.style.display = 'block';
-      pvClassicKnob.style.background = lc.accent;
-    }
-
-    // Mid
-    const pvMid = document.getElementById('pvMid');
-    pvMid.style.background = midGrad;
-    const pvMidHandle = document.getElementById('pvMidHandle');
-    if (currentMid === 'handle') {
-      pvMidHandle.style.display = 'block';
-      pvMidHandle.style.borderColor = mc.accent;
-      pvMidHandle.style.setProperty('--handle-color', mc.accent);
-      pvMid.style.height = '180px';
-    } else if (currentMid === 'xl') {
-      pvMidHandle.style.display = 'none';
-      pvMid.style.height = '230px';
-    } else {
-      pvMidHandle.style.display = 'none';
-      pvMid.style.height = '180px';
-    }
-
-    // Base
-    const pvBase = document.getElementById('pvBase');
-    const pvAdapter = document.getElementById('pvAdapter');
-    const pvHeatRing = document.getElementById('pvHeatRing');
-
-    pvBase.style.background = baseGrad;
-    pvHeatRing.style.display = 'none';
-
-    if (currentBase === 'narrow') {
-      pvAdapter.style.display = 'block';
-      pvAdapter.style.width = '100px';
-      pvAdapter.style.background = bc.adapter;
-      pvAdapter.style.clipPath = 'polygon(0 0, 100% 0, 78% 100%, 22% 100%)';
-      pvBase.style.width = '65px';
-      pvBase.style.height = '100px';
-    } else if (currentBase === 'xl') {
-      pvAdapter.style.display = 'none';
-      pvBase.style.width = '100px';
-      pvBase.style.height = '140px';
-    } else if (currentBase === 'heated') {
-      pvAdapter.style.display = 'none';
-      pvBase.style.width = '100px';
-      pvBase.style.height = '110px';
-      pvHeatRing.style.display = 'block';
-    } else {
-      pvAdapter.style.display = 'none';
-      pvBase.style.width = '100px';
-      pvBase.style.height = '100px';
+    const container = document.getElementById('previewBottle');
+    if (container && window.HydraBottle) {
+      container.innerHTML = HydraBottle.render(config,
+        { size: 'lg', idPrefix: 'cfg', shadow: true, animateHeat: true });
+      // micro-pop so module/color changes feel tactile
+      container.classList.remove('pv-pop');
+      void container.offsetWidth;
+      container.classList.add('pv-pop');
     }
 
     // Summary
@@ -3709,6 +2407,9 @@
     document.getElementById('sumLidColor').textContent = lc.name;
     document.getElementById('sumMidColor').textContent = mc.name;
     document.getElementById('sumBaseColor').textContent = bc.name;
+
+    // 3D preview hook (Phase 6 — no-op until bottle-3d.js loads)
+    if (window.Hydra3D) Hydra3D.update(config);
   }
 
   // Init
@@ -3753,6 +2454,7 @@
       const picker = document.getElementById('prodPicker-' + productId);
       if (picker) picker.classList.remove('open');
     }
+    renderProdThumb(productId);
   }
 
   function buildBundleSwatches() {
@@ -3784,14 +2486,53 @@
   const productCustomColors = {};
   products.forEach(p => { productCustomColors[p.id] = '#8B5CF6'; });
 
+  // Which single module (part, type) each shop product maps to for its SVG thumb
+  const PRODUCT_MODULE = {
+    'lid-handle': ['lid', 'handle'], 'lid-straw': ['lid', 'straw'], 'lid-classic': ['lid', 'classic'],
+    'mid-16': ['mid', 'standard'], 'mid-handle': ['mid', 'handle'], 'mid-xl': ['mid', 'xl'],
+    'base-narrow': ['base', 'narrow'], 'base-standard': ['base', 'standard'],
+    'base-xl': ['base', 'xl'], 'base-heated': ['base', 'heated']
+  };
+
+  function prodColorObj(productId) {
+    const key = productColors[productId] || 'stealth';
+    if (key === 'custom') {
+      const hex = productCustomColors[productId];
+      const darker = shadeColor(hex, -25);
+      return { name: 'Custom', main: [hex, darker], accent: hex, adapter: darker };
+    }
+    return colorData[key] || colorData.stealth;
+  }
+
+  let prodThumbSeq = 0;
+  function renderProdThumb(productId) {
+    if (!window.HydraBottle) return;
+    if (productId === 'starter-bundle') { renderBundleVisual(); return; }
+    const el = document.getElementById('prodThumb-' + productId);
+    const mod = PRODUCT_MODULE[productId];
+    if (el && mod) {
+      el.innerHTML = HydraBottle.renderModule(mod[0], mod[1], prodColorObj(productId),
+        { size: 210, idPrefix: 'pt-' + productId + '-' + (prodThumbSeq++), animateHeat: true });
+    }
+  }
+
+  function renderBundleVisual() {
+    const el = document.getElementById('bundleVisual');
+    if (!el || !window.HydraBottle) return;
+    const c = prodColorObj('starter-bundle');
+    el.innerHTML = HydraBottle.render(
+      { lid: 'classic', mid: 'standard', base: 'standard', lidColor: c, midColor: c, baseColor: c },
+      { size: 260, idPrefix: 'bv-' + (prodThumbSeq++), shadow: true });
+  }
+
   function buildProductCard(p, targetGrid) {
     const card = document.createElement('div');
-    card.className = 'product-card';
+    card.className = 'product-card card card-hover';
 
     // Accessories don't need color swatches
     let swatchesHtml = '';
     if (!p.accessory) {
-      swatchesHtml = '<div class="prod-color-label">COLOR</div><div class="prod-color-row">';
+      swatchesHtml = '<div class="prod-color-label mono-label">Color</div><div class="prod-color-row">';
       Object.keys(colorData).forEach(key => {
         const isActive = productColors[p.id] === key ? ' active' : '';
         swatchesHtml += `<div class="prod-swatch${isActive}" style="background: ${colorData[key].swatch};" data-product="${p.id}" data-color="${key}" title="${colorData[key].name}" onclick="selectProductColor('${p.id}', '${key}')"></div>`;
@@ -3805,15 +2546,20 @@
       </div>`;
     }
 
+    const visualHtml = PRODUCT_MODULE[p.id]
+      ? `<div class="prod-thumb bottle-tilt" id="prodThumb-${p.id}" aria-hidden="true"></div>`
+      : `<div class="prod-icon" aria-hidden="true">${p.icon}</div>`;
+
     card.innerHTML = `
-      <div class="prod-icon" style="background: ${p.bg};">${p.icon}</div>
-      <h4>${p.name}</h4>
+      ${visualHtml}
+      <h4 class="prod-name">${p.name}</h4>
       <div class="prod-desc">${p.desc}</div>
-      <div class="prod-price">$${p.price.toFixed(2)}</div>
+      <div class="prod-price ts-price">$${p.price.toFixed(2)}</div>
       ${swatchesHtml}
       <button class="add-to-cart-btn" id="atc-${p.id}" onclick="addToCart('${p.id}')">Add to Cart</button>
     `;
     targetGrid.appendChild(card);
+    renderProdThumb(p.id);
   }
 
   function buildShop() {
@@ -3830,6 +2576,7 @@
       }
     });
     buildBundleSwatches();
+    renderBundleVisual();
   }
 
   // Cart key combines product id and color
@@ -4782,56 +3529,12 @@
   }
 
   // Build a full bottle preview HTML for cards (My Builds / Community)
+  let miniBottleSeq = 0;
   function buildBottlePreviewHtml(lidType, midType, baseType, lcObj, mcObj, bcObj) {
-    const mt = midType || 'standard';
-
-    // Lid accessories
-    let lidAccessory = '';
-    if (lidType === 'handle') {
-      lidAccessory = `<div class="pv-handle-arch" style="display:block; border-color:${lcObj.accent}; --knob-color:${lcObj.accent};"></div>`;
-    } else if (lidType === 'straw') {
-      lidAccessory = `<div class="pv-straw-btn" style="display:block; background:${lcObj.accent};"></div>`;
-    } else if (lidType === 'classic') {
-      lidAccessory = `<div class="pv-classic-knob" style="display:block; background:${lcObj.accent};"></div>`;
-    }
-
-    // Mid handle & xl
-    const midHandle = mt === 'handle' ? `<div class="pv-mid-handle" style="display:block; border-color:${mcObj.accent}; --handle-color:${mcObj.accent};"></div>` : '';
-    const midExtraStyle = mt === 'xl' ? ' height:130px;' : '';
-
-    // Base
-    let baseStyle = `background: linear-gradient(180deg, ${bcObj.main[0]}, ${bcObj.main[1]});`;
-    let adapterHtml = '';
-    let heatRingHtml = '';
-    if (baseType === 'narrow') {
-      adapterHtml = `<div class="pv-adapter" style="display:block; width:60px; background:${bcObj.adapter}; clip-path:polygon(0 0, 100% 0, 78% 100%, 22% 100%);"></div>`;
-      baseStyle += ' width:39px; height:58px;';
-    } else if (baseType === 'xl') {
-      baseStyle += ' height:82px;';
-    } else if (baseType === 'heated') {
-      baseStyle += ' height:64px;';
-      heatRingHtml = '<div class="pv-heat-ring" style="display:block;"></div>';
-    }
-
-    return `
-      <div class="mini-bottle">
-        <div class="pv-lid" style="background: linear-gradient(180deg, ${lcObj.main[0]}, ${lcObj.main[1]});">
-          ${lidAccessory}
-        </div>
-        <div class="pv-thread"></div>
-        <div class="pv-mid" style="background: linear-gradient(180deg, ${mcObj.main[0]}, ${mcObj.main[1]}); position:relative;${midExtraStyle}">
-          <div class="pv-shine"></div>
-          ${midHandle}
-        </div>
-        <div class="pv-thread"></div>
-        <div class="pv-base-wrap">
-          ${adapterHtml}
-          <div class="pv-base" style="${baseStyle}">
-            <div class="pv-base-grip"></div>
-            ${heatRingHtml}
-          </div>
-        </div>
-      </div>`;
+    return '<div class="mini-bottle">' + HydraBottle.render(
+      { lid: lidType, mid: midType || 'standard', base: baseType,
+        lidColor: lcObj, midColor: mcObj, baseColor: bcObj },
+      { size: 'sm', idPrefix: 'mini-' + (miniBottleSeq++) }) + '</div>';
   }
 
   function escapeHtml(str) {
@@ -5292,6 +3995,7 @@
     document.getElementById('chatMessages').innerHTML = '';
   }
 
+  let baCardSeq = 0;
   function addBotMsg(text, options, buildCard) {
     const container = document.getElementById('chatMessages');
     const msg = document.createElement('div');
@@ -5308,15 +4012,25 @@
 
     if (buildCard) {
       const total = (buildCard.lidPrice + buildCard.midPrice + buildCard.basePrice).toFixed(2);
+      const rec = window._baRecommendation;
+      const preview = (rec && window.HydraBottle)
+        ? '<div class="chat-build-preview">' + HydraBottle.render(
+            { lid: rec.lid, mid: rec.mid, base: rec.base,
+              lidColor: rec.color, midColor: rec.color, baseColor: rec.color },
+            { size: 118, idPrefix: 'ba-' + (baCardSeq++) }) + '</div>'
+        : '';
       html += `<div class="chat-build-card">
-        <div class="build-row"><span>Lid</span><span>${buildCard.lidName} — ${buildCard.lidColorName}</span></div>
-        <div class="build-row"><span></span><span style="color:#556677;font-size:0.72rem;">${buildCard.lidDesc}</span></div>
-        <div class="build-row"><span>Mid</span><span>${buildCard.midName} — ${buildCard.midColorName}</span></div>
-        <div class="build-row"><span></span><span style="color:#556677;font-size:0.72rem;">${buildCard.midDesc}</span></div>
-        <div class="build-row"><span>Base</span><span>${buildCard.baseName} — ${buildCard.baseColorName}</span></div>
-        <div class="build-row"><span></span><span style="color:#556677;font-size:0.72rem;">${buildCard.baseDesc}</span></div>
-        <div class="build-row" style="border-top:1px solid rgba(255,255,255,0.08);padding-top:0.5rem;margin-top:0.3rem;"><span style="font-weight:700;">Total</span><span style="font-weight:700;">$${total}</span></div>
-        <button class="chat-apply-btn" onclick="window._baApply()">Load This Build</button>
+        ${preview}
+        <div class="chat-build-rows">
+          <div class="build-row"><span>Lid</span><span>${buildCard.lidName} — ${buildCard.lidColorName}</span></div>
+          <div class="build-row build-row-desc"><span></span><span>${buildCard.lidDesc}</span></div>
+          <div class="build-row"><span>Mid</span><span>${buildCard.midName} — ${buildCard.midColorName}</span></div>
+          <div class="build-row build-row-desc"><span></span><span>${buildCard.midDesc}</span></div>
+          <div class="build-row"><span>Base</span><span>${buildCard.baseName} — ${buildCard.baseColorName}</span></div>
+          <div class="build-row build-row-desc"><span></span><span>${buildCard.baseDesc}</span></div>
+          <div class="build-row build-row-total"><span>Total</span><span>$${total}</span></div>
+          <button class="chat-apply-btn" onclick="window._baApply()">Load This Build</button>
+        </div>
       </div>`;
     }
 
