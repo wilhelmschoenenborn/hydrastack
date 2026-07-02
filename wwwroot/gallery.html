@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" class="ts-reset">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lookbook — HydraStack</title>
+<meta name="description" content="Curated HydraStack configurations — trail, desk, gym, and road builds — plus the community's most-loved combinations.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<script src="/js/bottle-svg.js"></script>
+</head>
+<body class="ts-body has-fixed-header">
+
+<header class="site-header glass">
+  <div class="site-header-inner">
+    <div class="site-header-left">
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+      <a class="wordmark" href="/">HydraStack<span class="wordmark-dot">.</span></a>
+    </div>
+    <nav class="site-header-links" aria-label="Primary">
+      <a href="/#builder">Builder</a>
+      <a href="/#shop">Shop</a>
+      <a href="/gallery.html">Lookbook</a>
+      <a href="/about.html">Story</a>
+      <a href="/faq.html">FAQ</a>
+    </nav>
+    <div class="site-header-actions">
+      <a href="/#builder" class="btn btn-primary btn-sm">Build yours</a>
+    </div>
+  </div>
+</header>
+
+<div class="nav-menu-overlay" id="navMenuOverlay"></div>
+<div class="nav-menu" id="navMenu">
+  <div class="nav-menu-label">Navigate</div>
+  <a href="/">Home</a>
+  <a href="/#builder">Build Your Bottle</a>
+  <a href="/#shop">Shop Modules</a>
+  <a href="/#community">Community Builds</a>
+  <div class="nav-menu-divider"></div>
+  <div class="nav-menu-label">Explore</div>
+  <a href="/gallery.html">Lookbook</a>
+  <a href="/about.html">Our Story</a>
+  <a href="/faq.html">FAQ</a>
+  <a href="/support.html">Support</a>
+  <a href="/shipping.html">Shipping &amp; Returns</a>
+</div>
+
+<section class="page-hero">
+  <div class="hero-wash" aria-hidden="true"></div>
+  <div class="container page-hero-inner">
+    <span class="mono-label on-dark">Lookbook</span>
+    <h1 class="ts-h1">Ten builds we can't<br>stop reaching for.</h1>
+    <p class="ts-lead">Curated configurations for real days &mdash; each one loads straight into the builder so you can make it yours.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="look-grid" id="lookGrid"></div>
+  </div>
+</section>
+
+<section class="section band-paper2" id="communityStrip" hidden>
+  <div class="container">
+    <div class="ts-section-header reveal">
+      <span class="mono-label clay">From the community</span>
+      <h2 class="ts-h1">Most-loved community builds</h2>
+    </div>
+    <div class="look-grid" id="communityLookGrid"></div>
+  </div>
+</section>
+
+<section class="section band-pine cta-band">
+  <div class="container">
+    <span class="mono-label on-dark">Your turn</span>
+    <h2 class="ts-h1">None of these quite you?</h2>
+    <a href="/#builder" class="btn btn-primary">Build from scratch</a>
+  </div>
+</section>
+
+<footer class="site-footer band-pine">
+  <div class="container site-footer-inner">
+    <div class="site-footer-brand">
+      <span class="wordmark on-dark">HydraStack<span class="wordmark-dot">.</span></span>
+      <p class="ts-muted">One universal tube. Swap your lid. Size your base. Build the exact bottle you need &mdash; every time.</p>
+      <span class="mono-label on-dark">Modular tube system &mdash; concept product design</span>
+    </div>
+    <nav class="site-footer-col" aria-label="Product">
+      <span class="mono-label on-dark">Product</span>
+      <a href="/#builder">Bottle Builder</a>
+      <a href="/#shop">Shop Modules</a>
+      <a href="/gallery.html">Lookbook</a>
+      <a href="/#community">Community Builds</a>
+    </nav>
+    <nav class="site-footer-col" aria-label="Company">
+      <span class="mono-label on-dark">Company</span>
+      <a href="/about.html">Our Story</a>
+      <a href="/faq.html">FAQ</a>
+      <a href="/support.html">Support</a>
+      <a href="/shipping.html">Shipping &amp; Returns</a>
+    </nav>
+    <nav class="site-footer-col" aria-label="Account">
+      <span class="mono-label on-dark">Account</span>
+      <a href="/">Sign In</a>
+      <a href="/#feedback">Leave Feedback</a>
+    </nav>
+  </div>
+  <div class="container site-footer-legal">
+    <span>&copy; <span id="footerYear">2026</span> HydraStack. A concept product &mdash; orders are simulated.</span>
+  </div>
+</footer>
+
+<script src="/js/site.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* Soft backdrop tint per preset, derived from the mid color */
+  function backdropFor(preset) {
+    var c = HydraBottle.resolveColors(preset.midColor);
+    return 'radial-gradient(80% 70% at 50% 85%, ' + hexA(c.main[1], 0.28) + ', transparent 75%), var(--paper-2)';
+  }
+  function hexA(hex, a) {
+    var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+
+  var grid = document.getElementById('lookGrid');
+  HydraBottle.PRESETS.forEach(function (pz, i) {
+    var card = document.createElement('div');
+    card.className = 'look-card card-hover reveal';
+    card.innerHTML =
+      '<div class="look-backdrop" style="background:' + backdropFor(pz) + '">' +
+        '<div class="bottle-tilt">' +
+        HydraBottle.render(pz, { size: 250, idPrefix: 'look-' + i, shadow: true, animateHeat: true }) +
+        '</div>' +
+      '</div>' +
+      '<div class="look-info">' +
+        '<span class="look-name">' + pz.name + '</span>' +
+        '<span class="look-tagline">' + pz.tagline + '</span>' +
+        '<a class="btn btn-ghost btn-sm" href="/?cfg=' + pz.key + '#builder">Open in builder</a>' +
+      '</div>';
+    grid.appendChild(card);
+    /* pages load with their own observer in site.js — re-observe injected cards */
+  });
+
+  /* re-run reveal observer for injected cards */
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  grid.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
+
+  /* Community strip — hidden unless the API answers with shared builds */
+  fetch('/api/builds/community')
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (builds) {
+      if (!builds || !builds.length) return;
+      var strip = document.getElementById('communityStrip');
+      var cgrid = document.getElementById('communityLookGrid');
+      builds.slice(0, 6).forEach(function (b, i) {
+        var card = document.createElement('div');
+        card.className = 'look-card card-hover';
+        var votes = (b.upvotes || 0) - (b.downvotes || 0);
+        card.innerHTML =
+          '<div class="look-backdrop" style="background: var(--paper)">' +
+          HydraBottle.render(
+            { lid: b.lidType, mid: b.midType || 'standard', base: b.baseType,
+              lidColor: b.lidColor, midColor: b.midColor, baseColor: b.baseColor },
+            { size: 210, idPrefix: 'clook-' + i, shadow: true }) +
+          '</div>' +
+          '<div class="look-info">' +
+            '<span class="mono-label">' + escapeHtml(b.username || '') + ' · ' + votes + ' votes</span>' +
+            '<span class="look-name">' + escapeHtml(b.buildName || 'Untitled') + '</span>' +
+            '<a class="btn btn-ghost btn-sm" href="/#community">See community</a>' +
+          '</div>';
+        cgrid.appendChild(card);
+      });
+      strip.hidden = false;
+    })
+    .catch(function () { /* no backend or no builds — strip stays hidden */ });
+
+  function escapeHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+})();
+</script>
+</body>
+</html>

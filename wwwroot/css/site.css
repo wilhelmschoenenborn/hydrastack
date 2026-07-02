@@ -1923,6 +1923,142 @@ body.has-fixed-header { padding-top: 64px; }
 .feedback-msg { font-size: 0.88rem; min-height: 1.2em; text-align: center; margin-top: 0.5rem; }
 
 /* --------------------------------------------------------------------------
+   Content pages (about / faq / gallery / support / shipping)
+   -------------------------------------------------------------------------- */
+
+.page-hero {
+  background: var(--pine-deep);
+  color: var(--on-pine);
+  padding: clamp(3.5rem, 7vw, 5.5rem) 0 clamp(2.8rem, 6vw, 4.5rem);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+.page-hero .hero-wash { position: absolute; inset: -30%; }
+.page-hero-inner { position: relative; }
+.page-hero .mono-label { display: block; margin-bottom: 1rem; }
+.page-hero h1 { color: #FFFFFF; margin-bottom: 1rem; }
+.page-hero .ts-lead { max-width: 40rem; }
+
+.prose { max-width: 44rem; }
+.prose p { color: var(--ink-soft); line-height: 1.75; margin: 0 0 1.2rem; font-size: 1.02rem; }
+.prose h2 { margin: 2.4rem 0 0.9rem; }
+.prose h2:first-child { margin-top: 0; }
+
+.cta-band { text-align: center; }
+.cta-band .btn { margin-top: 1.6rem; }
+
+/* FAQ accordion */
+.faq-group { max-width: 46rem; margin: 0 auto 2.6rem; }
+.faq-group > .mono-label { display: block; margin-bottom: 1rem; }
+.faq-item {
+  background: #FFFFFF;
+  border: 1px solid var(--sand-line);
+  border-radius: var(--r-md);
+  margin-bottom: 0.7rem;
+  overflow: hidden;
+}
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.05rem 1.3rem;
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: var(--ink);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transition: color var(--dur-fast);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: '+';
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--clay);
+  transition: transform var(--dur-fast);
+  flex-shrink: 0;
+}
+.faq-item[open] summary { color: var(--clay-deep); }
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item .faq-answer {
+  padding: 0 1.3rem 1.15rem;
+  color: var(--ink-soft);
+  font-size: 0.93rem;
+  line-height: 1.7;
+}
+
+/* Gallery / lookbook */
+.look-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.5rem;
+}
+.look-card {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: #FFFFFF;
+  border: 1px solid var(--sand-line);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+}
+.look-backdrop {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 2.2rem 1rem 1.6rem;
+  min-height: 300px;
+}
+.look-info { padding: 1.2rem 1.4rem 1.4rem; display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start; }
+.look-name { font-family: var(--font-display); font-weight: 580; font-size: 1.2rem; color: var(--pine); }
+.look-tagline { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 0.5rem; }
+
+/* Contact / support cards */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.3rem;
+}
+.contact-card { padding: 1.7rem 1.6rem; display: flex; flex-direction: column; gap: 0.6rem; align-items: flex-start; }
+.contact-card p { margin: 0; color: var(--ink-soft); font-size: 0.93rem; line-height: 1.65; }
+
+/* Timeline (about page) */
+.timeline { max-width: 44rem; margin: 0 auto; position: relative; padding-left: 1.6rem; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--sand-line);
+}
+.timeline-item { position: relative; padding: 0 0 1.8rem 1.2rem; }
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -1.6rem;
+  top: 6px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--clay);
+  border: 2.5px solid var(--paper);
+  box-shadow: 0 0 0 1.5px var(--clay);
+}
+.timeline-item .mono-label { display: block; margin-bottom: 0.3rem; }
+.timeline-item h3 { margin: 0 0 0.35rem; }
+.timeline-item p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.65; }
+
+/* Policy blocks (shipping page) */
+.policy-block { max-width: 46rem; margin: 0 auto 2rem; padding: 1.7rem 1.8rem; }
+.policy-block h2 { margin: 0 0 0.7rem; }
+.policy-block p, .policy-block li { color: var(--ink-soft); font-size: 0.95rem; line-height: 1.7; }
+.policy-block ul { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+
+/* --------------------------------------------------------------------------
    Accessibility + motion guards
    -------------------------------------------------------------------------- */
 

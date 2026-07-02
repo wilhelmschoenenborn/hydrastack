@@ -301,7 +301,7 @@
 </section>
 
 <!-- === BOTTLE BUILDER === -->
-<section class="builder-section ts-reset section band-paper2">
+<section class="builder-section ts-reset section band-paper2" id="builder">
   <div class="container">
   <div class="ts-section-header reveal">
     <span class="mono-label clay">Configurator</span>
@@ -485,7 +485,7 @@
 </div>
 
 <!-- === SHOP === -->
-<section class="shop-section ts-reset section">
+<section class="shop-section ts-reset section" id="shop">
   <div class="container">
   <div class="ts-section-header reveal">
     <span class="mono-label clay">Shop</span>
@@ -748,7 +748,7 @@
 </div>
 
 <!-- === COMMUNITY BUILDS === -->
-<section class="community-section ts-reset section band-paper2">
+<section class="community-section ts-reset section band-paper2" id="community">
   <div class="container">
     <div class="ts-section-header reveal">
       <span class="mono-label clay">Community</span>
@@ -766,7 +766,7 @@
 </section>
 
 <!-- === FEEDBACK & REVIEWS === -->
-<section class="feedback-section ts-reset section">
+<section class="feedback-section ts-reset section" id="feedback">
   <div class="container">
     <div class="ts-section-header reveal">
       <span class="mono-label clay">Feedback</span>
@@ -3181,6 +3181,17 @@
   /* Footer year */
   var yearEl = document.getElementById('footerYear');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  /* Gallery deep link: /?cfg=<preset-key>#builder preconfigures the builder */
+  var cfgMatch = window.location.search.match(/[?&]cfg=([a-z0-9-]+)/);
+  if (cfgMatch && window.HydraBottle) {
+    var preset = HydraBottle.PRESETS.filter(function (p) { return p.key === cfgMatch[1]; })[0];
+    if (preset && typeof window.loadBuild === 'function') {
+      setTimeout(function () {
+        loadBuild(preset.lid, preset.mid, preset.base, preset.lidColor, preset.midColor, preset.baseColor);
+      }, 250);
+    }
+  }
 })();
 </script>
 
